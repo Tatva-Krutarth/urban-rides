@@ -1,0 +1,15 @@
+<svg width="200" height="200" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- Dollar symbol -->
+    <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="60" fill="black" stroke="black" stroke-width="1">$</text>
+
+    <!-- Circulating animation around the dollar symbol -->
+    <circle cx="50" cy="50" r="35" stroke="black" stroke-width="5" fill="none">
+        <animate attributeName="r" from="35" to="40" dur="1s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-width" values="3;2;3" dur="1s" repeatCount="indefinite"/>
+    </circle>
+
+    <circle cx="50" cy="50" r="45" stroke="black" stroke-width="5" fill="none">
+        <animate attributeName="r" from="45" to="50" dur="1s" repeatCount="indefinite" begin="0.5s"/>
+        <animate attributeName="stroke-width" values="2;1;2" dur="1s" repeatCount="indefinite" begin="0.5s"/>
+    </circle>
+</svg>
