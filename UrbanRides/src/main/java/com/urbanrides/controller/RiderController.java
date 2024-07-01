@@ -2,6 +2,7 @@ package com.urbanrides.controller;
 
 
 import com.urbanrides.dtos.*;
+import com.urbanrides.model.SupportTypeLogs;
 import com.urbanrides.service.CabBookingService;
 import com.urbanrides.service.RiderOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,8 +110,22 @@ public class RiderController {
         return "rider/riderNotifications";
     }
 
+    @PostMapping("/rider-get-support")
+    public ResponseEntity<String> saveGetSupport(@Valid @ModelAttribute RiderGetSupportDto riderGetSupportDto, HttpSession session, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity<>("Invalid request", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            riderOtherService.getSupportSaveToLogs(riderGetSupportDto, session);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Failed to submit the complain: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @RequestMapping("/rider-my-trip")
-    public String riderMyTrip() {
+    public String riderMyTrip(HttpServletRequest request, Model model) {
+        List<RiderMyTripDataDto> listOfRiderTripDetails = riderOtherService.getTripDetails(request);
+        model.addAttribute("tripDetails", listOfRiderTripDetails);
         return "rider/riderMyTrips";
     }
 
@@ -152,6 +167,7 @@ public class RiderController {
         UserManagementDataDto userManagementDataDto = riderOtherService.getUserManagementDetails(req);
         return userManagementDataDto;
     }
+
     @ResponseBody
     @PostMapping("/update-personal-details")
     public ResponseEntity<String> riderPersonalDetailSubmit(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
@@ -176,6 +192,7 @@ public class RiderController {
             return new ResponseEntity<>("Failed to update login details: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping("/update-profile-photo")
     public ResponseEntity<String> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -189,7 +206,6 @@ public class RiderController {
             return new ResponseEntity<>("Failed to update profile photo: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 
 }

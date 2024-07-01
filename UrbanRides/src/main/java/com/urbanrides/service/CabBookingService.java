@@ -252,7 +252,7 @@ public class CabBookingService {
         Trip trip = tripDao.getTipById(riderReachInfo.getTripId());
         generalTripDetails.setCaptainAway(riderReachInfo.getCaptainAway());
         generalTripDetails.setCaptainEstimatedReachTime(convertMinsToLocalDateTime(riderReachInfo.getCaptainEstimatedReachTime()));
-        generalTripDetails.setGeneralTripId(trip);
+        generalTripDetails.setTripObj(trip);
         int tripID = generalTripDetailsDao.saveGeneralTripDetails(generalTripDetails);
 
         return tripID;
@@ -269,7 +269,7 @@ public class CabBookingService {
         GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripDetails(tripId);
         generalTripDetails.setTripEndTime(LocalDateTime.now());
         generalTripDetailsDao.saveGeneralTripDetails(generalTripDetails);
-        Trip generalTrip = tripDao.getTipById(generalTripDetails.getGeneralTripId().getTripId());
+        Trip generalTrip = tripDao.getTipById(generalTripDetails.getTripObj().getTripId());
 
 
         String folderName = "captain" + 2;
@@ -311,7 +311,7 @@ public class CabBookingService {
 
         //session user
         User riderUser = usersDao.getUserByUserId(1);
-        Trip trip = tripDao.getTipById(generalTripDetails.getGeneralTripId().getTripId());
+        Trip trip = tripDao.getTipById(generalTripDetails.getTripObj().getTripId());
         UserDetails capUserDetails = userDetailsDao.getUserDetailsById(trip.getCaptainUserObj().getUserId());
 
         NotificationLogs notificationLogs = new NotificationLogs();

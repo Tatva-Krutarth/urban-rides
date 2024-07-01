@@ -22,7 +22,7 @@
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="<c:url value="/resources/css/riderMyTrips.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/getHelp.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
 
     <!-- Icon -->
@@ -108,58 +108,23 @@
     </div>
 </nav>
 
-<div class="container my-trip-container">
-    <div class="my-tips-text">
-        My Trips
-    </div>
-    <div class="accordion" id="accordionExample">
-        <div class="card p-0 mt-2 mb-2">
-            <div class="card-header noti-container p-0" id="headingOne">
-                <div class="noti-img-cont">
-                    <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">
-                </div>
-                <div class="my-trip-accor-details-cont mt-2 mb-3">
-                    <div class="service-type-text">Service Type :- <span class="my-trip-serviceType">Taxi Booking</span></div>
-                    <hr class="hr-accor">
-                    <div class="my-trip-accor-details">
-                        <div class="my-trip-accor-details-resp-cont">
-                            <span class="my-trip-accor-details-resp">Pick up location : &nbsp; </span><span class="my-trip-pickup">Mota Mavva</span>
-                        </div>
-                        <div class="my-trip-accor-details-resp-cont">
-                            <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span class="my-trip-pickup">Mota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota Mavva</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="my-trip-time">
-                    22:204 22/07/2023
-                </div>
-                <button class="accordion-button" onclick="toggleAccordion(event, 'collapseOne')">View More</button>
-            </div>
-            <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-                <div class="card-body">
-                    Some placeholder content for the first accordion panel. This panel is hidden by default.
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Get Support Section -->
 <div class="container my-trip-container mt-5">
     <div class="my-tips-text">
         Get Support
     </div>
-    <p>If you have any queries, requests, or complaints, please use the form below to get in touch with us. Our support team is here to assist you.</p>
+    <p>If you have any queries, requests, or complaints, please use the form below to get in touch with us. Our support
+        team is here to assist you.</p>
 
-    <form action="support-request" method="post" enctype="multipart/form-data" class="mt-4">
+    <form id="supportForm" action="support-request" method="post" enctype="multipart/form-data" class="mt-4">
         <div class="mb-3">
             <label for="supportType" class="form-label">Type of Support</label>
             <select class="form-select" id="supportType" name="supportType" required>
                 <option value="" selected disabled>Select</option>
-                <option value="query">Query</option>
-                <option value="request">Request</option>
-                <option value="complaint">Complaint</option>
-                <option value="call">Ask for a Call</option>
+                <option value="1">Query</option>
+                <option value="2">Request</option>
+                <option value="3">Complaint</option>
+                <option value="4">Ask for a Call</option>
             </select>
         </div>
         <div class="mb-3">
@@ -170,9 +135,19 @@
             <label for="uploadFile" class="form-label">Upload File (if any)</label>
             <input class="form-control" type="file" id="uploadFile" name="uploadFile">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" id="submitBtn" class="submit-btn">Submit</button>
     </form>
+
 </div>
 
-<div class="hs-toast-wrapper hs-toast-fixed-top" id="example"></div>
-<script
+
+<div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
+<script src="<c:url value="/resources/js/toaster.js"/>"></script>
+
+
+<%------------------------------------jquerry  validation--%>
+
+<script src="<c:url value="/resources/js/riderHelp.js"/>"></script>
+
+</body>
+</html>

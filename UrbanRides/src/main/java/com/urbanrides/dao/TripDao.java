@@ -3,6 +3,7 @@
 package com.urbanrides.dao;
 
 
+import com.urbanrides.model.NotificationLogs;
 import com.urbanrides.model.Trip;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,11 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class TripDao{
+public class TripDao {
 
     @Autowired
     private HibernateTemplate hibernateTemplate;
@@ -43,14 +48,31 @@ public class TripDao{
             return resultList;
         }
     }
+
     @Transactional
 
     public Trip getTipById(Integer id) {
         return this.hibernateTemplate.get(Trip.class, id);
     }
+
     @Transactional
-    public void updateGeneralTrip(com.urbanrides.model.Trip generalTrip) {
+    public void updateGeneralTrip(Trip generalTrip) {
         this.hibernateTemplate.update(generalTrip);
     }
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Transactional
+    public List<Trip> getAllTrip(int userId) {
+        Session session = entityManager.unwrap(Session.class);
+        String hql = "FROM Trip WHERE tripUserId.userId = :userId";
+        Query<Trip> query = session.createQuery(hql, Trip.class);
+        query.setParameter("userId", userId);
+
+        List<Trip> result = query.getResultList();
+        return result.isEmpty() ? null : result;
+    }
+
 }
 

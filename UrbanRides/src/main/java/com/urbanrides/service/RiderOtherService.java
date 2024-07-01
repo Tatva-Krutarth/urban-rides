@@ -1,19 +1,20 @@
 package com.urbanrides.service;
 
 
-import com.urbanrides.dao.TripDao;
-import com.urbanrides.dao.UserDetailsDao;
-import com.urbanrides.dao.UsersDao;
+import com.sun.mail.imap.protocol.ID;
+import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
 import com.urbanrides.helper.CommonValidation;
 import com.urbanrides.helper.NotificationTypeEnum;
 import com.urbanrides.helper.PasswordToHash;
+import com.urbanrides.helper.SupportType;
 import com.urbanrides.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class RiderOtherService {
@@ -314,6 +316,145 @@ public class RiderOtherService {
             return relativePath;
         }
         return fullPath; // If rootDir not found, return fullPath as is
+    }
+
+
+    @Autowired
+    private GeneralTripDetailsDao generalTripDetailsDao;
+//    -------------------------get trip details-----------------------------------------
+
+    public List<RiderMyTripDataDto> getTripDetails(HttpServletRequest request) {
+        List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
+
+        // session trip id, assuming 1 is a placeholder for the actual userId from the session
+        List<Trip> tripList = tripDao.getAllTrip(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
+
+        for (Trip perTrip : tripList) {
+            RiderMyTripDataDto riderDataList = new RiderMyTripDataDto();
+            riderDataList.setServiceTypeId(perTrip.getServiceType().getServiceTypeId());
+            riderDataList.setVehicleTypeId(perTrip.getVehicleId().getVehicleId());
+            riderDataList.setPickUpLocation(perTrip.getPickupAddress());
+            riderDataList.setDropOffLocation(perTrip.getDropoffAddress());
+            riderDataList.setTripDate(formatLocalDateTime(perTrip.getCreatedDate(), formatter));
+            riderDataList.setDistance(perTrip.getDistance());
+
+
+            //Generate the trip id code
+//            riderDataList.setTripId(perTrip.getTripId());
+            riderDataList.setTripId("adlo8dhfeq7c29");
+
+
+//            for service type 1 only
+            if (perTrip.isAccepted()) {
+                riderDataList.setIsAccepted(1);
+                riderDataList.setIsCancelationDetails(2);
+                riderDataList.setIsCaptainDetails(1);
+                //it should be ride completion time
+                try {
+                    riderDataList.setDuration(perTrip.getEstimatedTime().toString());
+                } catch (NullPointerException e) {
+                    riderDataList.setDuration("--");
+                }
+
+                riderDataList.setCharges(perTrip.getCharges());
+//                UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
+                UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+                riderDataList.setCaptainName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+
+                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain2/profilePhoto.png";
+//                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain" + perTrip.getCaptainUserObj().getUserId() + "/profilePhoto.png";
+                riderDataList.setCaptainProfilePath(captainProfilePath);
+                GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripByTripId(perTrip.getTripId());
+                if (generalTripDetails == null) {
+                    riderDataList.setStatus(2);
+
+                } else {
+                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRating());
+                    if (generalTripDetails.getIsTripCompleted()) {
+                        riderDataList.setStatus(1);
+                    } else {
+                        riderDataList.setStatus(2);
+                    }
+                }
+
+            } else {
+                riderDataList.setIsAccepted(2);
+                riderDataList.setIsCaptainDetails(2);
+                riderDataList.setIsCancelationDetails(1);
+                riderDataList.setStatus(2);
+
+                riderDataList.setCancellationReason(perTrip.getReasonForCancellation());
+                if (perTrip.getReasonForCancellation() == null) {
+                    riderDataList.setCancellationReason("Captain Not Available Or Cancelled By Rider");
+
+                } else {
+                    riderDataList.setCancellationReason(perTrip.getReasonForCancellation());
+                }
+            }
+
+
+            riderMyTripList.add(riderDataList);
+        }
+
+        return riderMyTripList;
+    }
+
+
+    @Autowired
+    private SupportTypeLogsDao supportTypeLogsDao;
+
+
+
+    public void getSupportSaveToLogs(RiderGetSupportDto riderGetSupportDto, HttpSession session) throws IOException {
+        SupportTypeLogs supportTypeLogs = new SupportTypeLogs();
+        supportTypeLogs.setSupportType(SupportType.getValueById(riderGetSupportDto.getSupportType()));
+        supportTypeLogs.setDescription(riderGetSupportDto.getDescription());
+        MultipartFile complainFile = riderGetSupportDto.getUploadFile();
+
+        if (complainFile == null || complainFile.isEmpty()) {
+            supportTypeLogs.setFile(false);
+        } else {
+            supportTypeLogs.setFile(true);
+
+            // Define the directory paths
+            String baseDir = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "riderDocuments" + File.separator;
+            String userDir = baseDir + "riderComplain" + File.separator + 3 + File.separator;
+//            String userDir = baseDir + "riderComplain" + File.separator + user.getUserId() + File.separator;
+
+            // Create directories if they do not exist
+            File directory = new File(userDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            // Define the file name
+            String fileName = complainFile.getOriginalFilename();
+            String filePath = userDir + fileName;
+
+            // Save the file
+            complainFile.transferTo(new File(filePath));
+
+            supportTypeLogs.setFileName(fileName);
+        }
+
+        // Get user object from session or database
+        User user = (User) session.getAttribute("user"); // Assuming user is stored in session
+        if (user == null) {
+            user = usersDao.getUserByUserId(1); // Default user, replace with actual logic
+        }
+        supportTypeLogs.setUserObj(user);
+
+        // Generate support case ID (implement the method)
+        supportTypeLogs.setSupportCaseId(generateSupportCaseId());
+
+        // Save to database
+        supportTypeLogsDao.saveSupportLogs(supportTypeLogs);
+    }
+
+    private String generateSupportCaseId() {
+        // Implement your logic to generate a unique support case ID
+        return UUID.randomUUID().toString();
     }
 
 }

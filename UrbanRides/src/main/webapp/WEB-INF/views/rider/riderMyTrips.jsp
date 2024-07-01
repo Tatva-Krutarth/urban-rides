@@ -154,19 +154,96 @@
                 <div class="my-trip-time">
                     22:204 22/07/2023
                 </div>
+                <div class="my-trip-status">
+                    Status : <span class="my-trip-status-value">Cancelled</span>
+                </div>
                 <button class="accordion-button" onclick="toggleAccordion(event, 'collapseOne')">
                     View More
                 </button>
             </div>
 
             <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-                <div class="card-body">
-                    Some placeholder content for the first accordion panel. This panel is hidden by default.
+                <div class="card-body p-0">
+
+
+                    <div class="captain-info-nav">
+                        <div class="captain-info-profile">
+                            <img src="<c:url value='/resources/images/profile-logo.svg' />" alt="">
+                        </div>
+                        <div class="captain-info-discription">
+                            <div class="ratings-star">
+
+                                <div class="captain-org-name">
+                                    You have ratted Ramesh Kumar
+                                </div>
+
+
+                                <div id="rating-system">
+                                    <!-- Display Stars -->
+                                    <div class="d-flex gap-1">
+                                        <svg class="star" data-index="0" xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 24 24">
+                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        </svg>
+                                        <svg class="star" data-index="1" xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 24 24">
+                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        </svg>
+                                        <svg class="star" data-index="2" xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 24 24">
+                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        </svg>
+                                        <svg class="star" data-index="3" xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 24 24">
+                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        </svg>
+                                        <svg class="star" data-index="4" xmlns="http://www.w3.org/2000/svg"
+                                             viewBox="0 0 24 24">
+                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
+                                            <defs>
+                                                <linearGradient id="half-filled-gradient">
+                                                    <stop offset="50%" stop-color="#f59e0b"/>
+                                                    <stop offset="50%" stop-color="gray"/>
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="trip-details-bottom-cont">
+                        <div class="left-part">
+                            <div>
+                                <span>Distance : -</span>
+                                <span>25 Km</span>
+                            </div>
+                            <div>
+                                <span>   Charges  :-     </span>
+                                <span>   45 rs</span>
+                            </div>
+                        </div>
+
+                        <div class="right-part">
+                            <div>
+                                <span>Duration  :-</span>
+                                <span>25 Mins </span>
+                            </div>
+                            <div>
+                                <span>Trip Id  :-</span>
+                                <span>25</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cancelation-reason">Cancelation Reason :- The ride is cancelled due to no avability of the captain..</div>
                 </div>
             </div>
         </div>
-
-
     </div>
 </div>
 

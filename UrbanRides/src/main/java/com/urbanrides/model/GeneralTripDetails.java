@@ -16,12 +16,12 @@ public class GeneralTripDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trip_id", nullable = false)
-    private int tripId;
+    private int generalTripDetailId;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "general_trip_id", nullable = false)
     @NotNull(message = "General Trip ID cannot be null")
-    private Trip generalTripId;
+    private Trip tripObj;
 
     @Column(name = "captain_estimated_reach_time", nullable = false)
     private LocalDateTime captainEstimatedReachTime;
@@ -50,6 +50,10 @@ public class GeneralTripDetails {
     @Size(max = 100, message = "Feed back should not be more than 50 characters")
     @Column(name = "feedback" )
     private String feedback;
+
+
+
+    private float captainRating;
 
 
 }

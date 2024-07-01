@@ -220,6 +220,7 @@ body {
 
 /*---------------------common buttons-----------------------------*/
 
+
 .common-btn-color7-theme {
     background-color: transparent;
     color: white;
@@ -228,18 +229,33 @@ body {
     /*border-radius: 25px;*/
     margin: 5px 0px 5px 12px;
     padding: 2px 14px;
-    background-color: #0D63A5;
     padding: 8px;
-    border-radius: 12px;
+
     /*background-color: #0D63A5;*/
     /*color: #FFD717;*/
 }
 
-/*.common-btn-color7-theme:hover {*/
-/*    background-color: #0D63A5;*/
-/*    color: #FFD717;*/
-/*}*/
+.common-btn-color7-theme:hover {
+    background-color: #0D63A5;
+    color: #FFD717;
+}
 
+.submit-btn {
+    background-color: #0D63A5;
+    color: white;
+    border: 0px solid #ffffff;
+    padding: 6px 25px;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+    margin: auto; /* Center horizontally */
+    display: block; /* Ensure block-level display to use margin: auto */
+
+}
+
+.submit-btn:hover {
+    background-color: #083358;
+    color: #FFD717;
+}
 
 .common-btn-color3-theme {
     background-color: #0D63A5;
@@ -403,283 +419,6 @@ body {
 }
 
 
-/*-------------give rating-----------------*/
-
-.give-star {
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    fill: gray;
-}
-
-.star-filled {
-    fill: #f59e0b;
-}
-
-.star-half-filled {
-    fill: url(#half-filled-gradient);
-}
-
-#give-rating-system {
-    /*padding-right: 12px;*/
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.ratting-modal-content {
-    border-top-right-radius: 25px;
-    border-top-left-radius: 25px;
-}
-
-.ratting-start-allign {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding-right: 20px;
-
-}
-
-.ratting-start-allign svg {
-    width: 45px;
-    height: 45px;
-}
-
-#rating-text, #rating-text-conclude {
-    text-wrap: nowrap;
-}
-
-.pay-to-captain {
-    font-weight: 500;
-    font-size: 20px;
-    /*color: gray;*/
-}
-
-.pay-amount {
-    font-weight: 600;
-    color: black;
-    font-size: 24px;
-}
-
-.thank-you {
-    font-weight: 500;
-    color: #001F3F;
-    font-size: 20px;
-}
-
-.captain-info-profile-conclude {
-    width: 41px;
-    height: 35px;
-    border-radius: 50%;
-    border: 1px solid white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px 15px 0px 15px;
-    box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5);
-}
-
-.captain-info-profile-conclude img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    /*border: 1px solid white;*/
-}
-
-.always-focus {
-    color: #0c0c0c;
-    position: absolute;
-    font-size: 12px;
-    top: -9px;
-    left: 11px;
-    padding: 2px 4px;
-    background: white;
-}
-
-
-/*-----------card--------------------------------------------------------------*/
-
-.my-trip-status-value {
-    color: red;
-    font-weight: 500;
-}
-
-.captain-info-nav {
-    background-color: #0D63A5;
-    height: 60px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    /*border-top-right-radius: 15px;*/
-    /*border-top-left-radius: 15px;*/
-}
-
-.captain-info-profile {
-    width: 41px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0px 15px 0px 20px;
-    box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5);
-}
-
-.ratings-star {
-    color: white;
-    font-weight: 500;
-    font-size: 18px;
-    display: flex;
-    /*flex-direction: row;*/
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
-    margin: 5px 0px 0px 0px;
-}
-
-
-#rating-system {
-    padding-right: 12px;
-    width: 180px;
-}
-
-.captain-info-profile img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    /*border: 1px solid white;*/
-}
-
-.captain-info-discription {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    padding: 12px;
-}
-
-.captain-info-name {
-    color: white;
-    font-weight: 500;
-    font-size: 20px;
-}
-
-.captain-info-cont {
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: row;
-    align-items: center;
-    padding: 0px 0px 0px 12px;
-    margin: 20px 0px 5px 0px;
-}
-
-.captain-info-otp-field {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.otp-wrapper {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0px 20px;
-}
-
-.otp-wrapper input:focus {
-    outline: none;
-}
-
-.otp-wrapper input {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    border: 1px solid #0D63A5;
-    border-radius: 8px;
-    background-color: #0D63A5;
-    color: #ffffff;
-    font-weight: 500;
-}
-
-.otp-wrapper input::placeholder {
-    color: #ffffff50
-}
-
-.otp-notes {
-    font-size: 14px;
-    color: rgb(63, 63, 63);
-    display: flex;
-    font-weight: 500;
-    justify-content: flex-start;
-    font-family: 'Roboto', sans-serif;
-    padding: 0px 0px 0px 12px;
-}
-
-.captain-info-rout-info-cont {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row;
-    align-items: center;
-    padding: 0px 12px 0px 12px;
-    margin: 20px 0px 20px 0px;
-}
-
-.help-line {
-    display: none;
-    justify-content: space-between;
-    flex-direction: row;
-    align-items: center;
-    padding: 0px 12px 0px 12px;
-    margin: 20px 0px 20px 0px;
-}
-
-.captain-info-cancel-text {
-    font-size: 18px;
-    font-weight: bold;
-    color: #337ab7;
-    /*margin-top: 6px;*/
-}
-
-/*------below card----------------------*/
-.trip-details-bottom-cont {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px;
-}
-
-.trip-details-bottom-cont > div {
-    width: 50%;
-}
-
-.left-part {
-    border-right: 1px solid gray;
-    margin-right: 30px;
-    /*background: #0D63A5;*/
-}
-
-.left-part > div {
-    display: flex;
-
-    justify-content: space-between;
-    margin-right: 35px;
-}
-
-.cancelation-reason {
-    padding: 0px 12px 12px 12px;
-    font-size: 15px;
-    font-weight: 500;
-}
-
-.right-part > div {
-    display: flex;
-    justify-content: space-between;
-    margin-right: 35px;
-}
-
 @media only screen and (min-width: 360px) and (max-width: 460px) {
 
     #reached {
@@ -699,8 +438,6 @@ body {
 
 }
 
-
-/*-----------card-------------------------------*/
 
 @media only screen and (max-width: 756px) and (min-width: 360px) {
 
@@ -808,44 +545,44 @@ body {
         padding: 0px;
     }
 
-    @media only screen and (max-width: 756px) and (min-width: 360px) {
-        .noti-img-cont {
-            width: 100px;
-            display: flex;
-            justify-content: center;
-            background-color: #0D63A5;
-            align-items: flex-start;
-        }
+}
 
-        .ratings-star {
-            color: white;
-            font-weight: 500;
-            font-size: 18px;
-            display: flex;
-            /*flex-direction: row;*/
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-direction: column;
-            margin: 5px 0px 0px 0px;
-        }
-
-        .captain-info-nav {
-            height: 75px;
-        }
-
-        .noti-img-cont img {
-            margin-top: 20px;
-        }
-
-        .my-trip-accor-details-resp-cont {
-
-            margin-top: 12px;
-        }
-
-        #rating-system {
-            padding-right: 12px;
-            width: 190px;
-        }
+@media only screen and (max-width: 756px) and (min-width: 360px) {
+    .noti-img-cont {
+        width: 100px;
+        display: flex;
+        justify-content: center;
+        background-color: #0D63A5;
+        align-items: flex-start;
     }
 
+    .ratings-star {
+        color: white;
+        font-weight: 500;
+        font-size: 18px;
+        display: flex;
+        /*flex-direction: row;*/
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-direction: column;
+        margin: 5px 0px 0px 0px;
+    }
+
+    .captain-info-nav {
+        height: 75px;
+    }
+
+    .noti-img-cont img {
+        margin-top: 20px;
+    }
+
+    .my-trip-accor-details-resp-cont {
+
+        margin-top: 12px;
+    }
+
+    #rating-system {
+        padding-right: 12px;
+        width: 190px;
+    }
 }

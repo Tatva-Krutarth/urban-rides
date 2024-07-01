@@ -73,6 +73,8 @@
                 <value>com.urbanrides.model.ServiceType</value>
                 <value>com.urbanrides.model.PackageTrip</value>
                 <value>com.urbanrides.model.NotificationLogs</value>
+<!--                <value>com.urbanrides.model.SupportTypes</value>-->
+                <value>com.urbanrides.model.SupportTypeLogs</value>
             </list>
         </property>
     </bean>
