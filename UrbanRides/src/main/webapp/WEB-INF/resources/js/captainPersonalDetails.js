@@ -1,282 +1,142 @@
-const fileInput_3 = document.getElementById('adhar-card-file-uplaod');
-const fileNameField_3 = document.getElementById('aadhar-card-name-id');
 
-fileInput_3.addEventListener('change', (event) => {
-    $(".aadhar-card-view").removeClass("d-none")
-    // Get the selected file(s)
-    const files = event.target.files;
+$("#myForm").validate({
 
-    // If one or more files are selected
-    if (files.length > 0) {
-        // Get the name of the first file
-        const fileName = files[0].name;
-
-        // Update the value of the input field with the file name
-        fileNameField_3.value = fileName;
-    } else {
-        // If no files are selected, clear the input field
-        fileNameField_3.value = 'Upload Profile Pic';
-    }
-});
-$(".aadhar-card-view").bind("click", (e) => {
-
-    e.preventDefault();
-    const file = fileInput_3.files[0];
-    const objUrl = URL.createObjectURL(file);
-    const newTab = window.open(objUrl, "_blank");
-    newTab.focus();
-});
-
-
-const fileInput_1 = document.getElementById('driving-license-file-upload');
-const fileNameField_1 = document.getElementById('driving-license');
-
-fileInput_1.addEventListener('change', (event) => {
-    $(".driving-licence-view").removeClass("d-none")
-    // Get the selected file(s)
-    const files = event.target.files;
-
-    // If one or more files are selected
-    if (files.length > 0) {
-        // Get the name of the first file
-        const fileName = files[0].name;
-
-        // Update the value of the input field with the file name
-        fileNameField_1.value = fileName;
-    } else {
-        // If no files are selected, clear the input field
-        fileNameField_1.value = 'Upload Profile Pic';
-    }
-});
-$(".driving-licence-view").bind("click", (e) => {
-
-    e.preventDefault();
-    const file = fileInput_1.files[0];
-    const objUrl = URL.createObjectURL(file);
-    const newTab = window.open(objUrl, "_blank");
-    newTab.focus();
-});
-
-
-const fileInput_2 = document.getElementById('profile-photo-upload');
-const fileNameField_2 = document.getElementById('profile-photo');
-
-fileInput_2.addEventListener('change', (event) => {
-    $(".profile-photo-view").removeClass("d-none")
-    // Get the selected file(s)
-    const files = event.target.files;
-
-    // If one or more files are selected
-    if (files.length > 0) {
-        // Get the name of the first file
-        const fileName = files[0].name;
-
-        // Update the value of the input field with the file name
-        fileNameField_2.value = fileName;
-    } else {
-        // If no files are selected, clear the input field
-        fileNameField_2.value = 'Upload Profile Pic';
-    }
-});
-$(".profile-photo-view").bind("click", (e) => {
-
-    e.preventDefault();
-    const file = fileInput_2.files[0];
-    const objUrl = URL.createObjectURL(file);
-    const newTab = window.open(objUrl, "_blank");
-    newTab.focus();
-});
-
-
-const fileInput_4 = document.getElementById('registration-certificate-upload');
-const fileNameField_4 = document.getElementById('registration-certificate');
-
-fileInput_4.addEventListener('change', (event) => {
-    $(".registration-certificate-view").removeClass("d-none")
-    // Get the selected file(s)
-    const files = event.target.files;
-
-    // If one or more files are selected
-    if (files.length > 0) {
-        // Get the name of the first file
-        const fileName = files[0].name;
-
-        // Update the value of the input field with the file name
-        fileNameField_4.value = fileName;
-    } else {
-        // If no files are selected, clear the input field
-        fileNameField_4.value = 'Upload Profile Pic';
-    }
-});
-$(".registration-certificate-view").bind("click", (e) => {
-
-    e.preventDefault();
-    const file = fileInput_4.files[0];
-    const objUrl = URL.createObjectURL(file);
-    const newTab = window.open(objUrl, "_blank");
-    newTab.focus();
-});
-
-
-$(".navigation li").hover(function () {
-    var isHovered = $(this).is(":hover");
-    if (isHovered) {
-        $(this).children("ul").stop().slideDown(300);
-    } else {
-        $(this).children("ul").stop().slideUp(300);
-    }
-});
-
-$(document).ready(function () {
-    $.validator.addMethod("accept", function (value, element, param) {
-        return value.match(new RegExp("." + param + "$"));
-    });
-
-    $('#form-id').validate({
-        rules: {
-            drivingLicense: {
-                required: true,
-                accept: "pdf"
-            },
-            profilePhoto: {
-                required: true,
-                accept: "jpg|png"
-            },
-            adharCard: {
-                required: true,
-                accept: "pdf"
-            },
-            registrationCertificate: {
-                required: true,
-                accept: "pdf"
-            },
-            rcExpiration: {
-                required: true,
-                date: true,
-                min: "2024-06-01",
-                max: "2040-01-01"
-            },
-            licenseExpiration: {
-                required: true,
-                date: true,
-                min: "2024-06-01",
-                max: "2040-01-01"
-            }
+    rules: {
+        riderFirstName: {
+            required: true,
+            minlength: 1,
+            maxlength: 10,
+            lettersOnly: true // Assuming you have a custom method for letters only
         },
-        messages: {
-            drivingLicense: {
-                required: 'Please upload a file',
-                accept: 'Only PDF files are allowed'
-            },
-            profilePhoto: {
-                required: 'Please upload a file',
-                accept: 'Upload jpg or png files'
-            },
-            adharCard: {
-                required: 'Please upload a file',
-                accept: 'Only PDF files are allowed'
-            },
-            registrationCertificate: {
-                required: 'Please upload a file',
-                accept: 'Only PDF files are allowed'
-            },
-            rcExpiration: {
-                required: "Please enter RC Expiration Date",
-                date: "Invalid date format",
-                min: "Date must be after 2024-06-01",
-                max: "Date must be before 2040-01-01"
-            },
-            licenseExpiration: {
-                required: "Please enter License Expiration Date",
-                date: "Invalid date format",
-                min: "Date must be after 01-06-2024",
-                max: "Date must be before 01-01-2040"
-            },
+        riderLastName: {
+            required: true,
+            minlength: 1,
+            maxlength: 10,
+            lettersOnly: true
         },
-        errorElement: "span",
-        errorClass: "error",
-        submitHandler: function (form) {
+        phone: {
+            required: true,
+            digits: true,
+            minlength: 10,
+            maxlength: 13
+        },
+        age: {
+            required: true,
+            digits: true,
+            min: 18,
+            max: 130,
+        },
+        termsCheckbox: {
+            required: true
+        }
+    },
+    messages: {
+        // Error messages for each field
+        riderFirstName: {
+            required: "Please enter your first name",
+            minlength: "Please enter at least one character",
+            maxlength: "The length of the last name must be below 10"
 
-            var drivingLicense = $("#driving-license-file-upload")
-            var profilephoto = $("#profile-photo-upload")
-            var adhar = $("#adhar-card-file-uplaod")
-            var rc = $("#registration-certificate-upload")
-            var rcExpiration = $("#rcExpiration").val();
-            var licenseExpiration = $("#licenseExpiration").val();
+        },
+        riderLastName: {
+            required: "Please enter your last name",
+            minlength: "Please enter at least one character",
+            maxlength: "The length of the last name must be below 10"
+        },
+        phone: {
+            required: "Please enter a phone number",
+            digits: "Phone number must contain only digits",
+            minlength: "Phone number must be at least 10 digits long",
+            maxlength: "Phone number must be no longer than 13 digits"
+        },
+        age: {
+            required: "Please enter your age",
+            min: "Age must be 18 or above",
+            digits: "Age cannot contain characters",
+            max: "Age cannot be greater than 130",
 
+        },
+        termsCheckbox: {
+            required: "Please accept the terms and conditions"
+        }
+    },
+    // ignore: "#error-ignore",
+    errorElement: "span",
+    errorClass: "error",
+    submitHandler: function (form) {
+        var formData = $(form).serializeArray();
+        var jsonData = {};
 
-            $(".loader").css("display", "flex");
-            var formData = new FormData();
-            formData.append("drivingLicense", drivingLicense[0].files[0])
-            formData.append("profilePhoto", profilephoto[0].files[0])
-            formData.append("adharCard", adhar[0].files[0])
-            formData.append("registrationCertificate", rc[0].files[0])
-            formData.append("rcExpiration", rcExpiration)
-            formData.append("licenseExpiration", licenseExpiration)
+        $.each(formData, function (index, element) {
+            jsonData[element.name] = element.value;
+        });
+        console.log(JSON.stringify(jsonData))
+        $(".loader").css("display", "flex");
 
-            console.log(rcExpiration)
+        $.ajax({
+            url: form.action,
+            method: form.method,
+            data: JSON.stringify(jsonData),
+            contentType: 'application/json',
+            dataType: 'text',
+            success: function (response) {
+                // Handle successful response
 
-            $.ajax({
-                url: form.action,
-                method: form.method,
-                processData: false,
-                contentType: false,
-                dataType: 'text',
-                enctype: 'multipart/form-data',
-                data: formData,
-                success: function (response) {
-                    console.log(response)
-                    // Handle successful response
-
-                    if (response.startsWith("Data")) {
-                        showSuccesstMsg(response);
+                if (typeof response === 'string') {
+                    if (response.startsWith("Login")) {
+                        showSuccesstMsg("Personal Details Saved");
                         setTimeout(function () {
                             $(".loader").hide();
-                            window.location.href = "/UrbanRides/captain-dashboard";
+                            window.location.href = "/UrbanRides/captain/captain-document-details";
                         }, 3000); // 3000ms = 3 seconds
                     } else {
-                        showErrorMsg(response)
-                        $(".loader").hide();
+                        showErrorMsg(response);
                     }
-
-                    console.log("Form submitted successfully:", response);
                     $(".loader").hide();
 
-                },
-                error: function (xhr, textStatus, errorThrown) {
-                    console.error("Error:", xhr, textStatus, errorThrown);
-                    $(".loader").hide();
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        if (Array.isArray(errorResponse.errors)) {
-                            // handle error response in the format {"errors":["Phone number must be between 10 and 13 characters"]}
-                            const errorMessage = errorResponse.errors[0];
-                            showErrorMsg(errorMessage);
-                            console.log("Backend try:", errorMessage);
-                        } else {
-                            // handle non-array error response
-                            showErrorMsg(errorResponse);
-                            console.log("Backend try:", errorResponse);
-                        }
-                    } catch (e) {
-                        // Handle non-JSON response
-                        if (typeof xhr.responseText === 'string') {
-                            // handle string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch:", xhr.responseText);
-                        } else {
-                            // handle non-string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch:", xhr.responseText);
-                        }
+                } else {
+                    showErrorMsg(response);
+                }
+                console.log("Form submitted successfully:", response);
+                $(".loader").hide();
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                console.error("Error:", xhr, textStatus, errorThrown);
+                $(".loader").hide();
+                try {
+                    const errorResponse = JSON.parse(xhr.responseText);
+                    if (Array.isArray(errorResponse.errors)) {
+                        // handle error response in the format {"errors":["Phone number must be between 10 and 13 characters"]}
+                        const errorMessage = errorResponse.errors[0];
+                        showErrorMsg(errorMessage);
+                        console.log("Backend try:", errorMessage);
+                    } else {
+                        // handle non-array error response
+                        showErrorMsg(errorResponse);
+                        console.log("Backend try:", errorResponse);
+                    }
+                } catch (e) {
+                    // Handle non-JSON response
+                    if (typeof xhr.responseText === 'string') {
+                        // handle string error response
+                        showErrorMsg(xhr.responseText);
+                        console.log("Backend catch:", xhr.responseText);
+                    } else {
+                        // handle non-string error response
+                        showErrorMsg(xhr.responseText);
+                        console.log("Backend catch:", xhr.responseText);
                     }
                 }
-            });
-        }
-
-
-    });
+            }
+        });
+    }
 });
-;document.getElementById('back-button').addEventListener('click', function () {
+
+jQuery.validator.addMethod("lettersOnly", function (value, element) {
+    return this.optional(element) || /^[a-zA-Z]+$/.test(value);
+}, "Please enter only letters");
+
+document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });

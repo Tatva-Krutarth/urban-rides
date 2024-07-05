@@ -27,9 +27,6 @@ public class OtpLogs {
     @Column(name = "email")
     private String email;
 
-    @Nullable
-    @Column(name = "phone")
-    private String phone;
 
     @NotNull(message = "Request send time cannot be null")
     @Column(name = "opt_req_send_time")
@@ -37,10 +34,6 @@ public class OtpLogs {
 
     @Column(name = "opt_submit_time")
     private LocalTime optSubmitTime;
-
-    @NotNull(message = "Attempt cannot be null")
-    @Column(name = "attempt")
-    private int attempt;
 
     @NotNull(message = "Generated OTP cannot be null")
     @Column(name = "generated_otp")

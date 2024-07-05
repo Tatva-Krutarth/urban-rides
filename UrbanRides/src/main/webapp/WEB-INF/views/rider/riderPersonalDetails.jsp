@@ -126,8 +126,6 @@
 <script src="<c:url value="/resources/js/userRegistrationBackground.js"/>"></script>
 
 
-
-
 </body>
 
 

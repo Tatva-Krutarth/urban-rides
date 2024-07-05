@@ -6,7 +6,8 @@ import lombok.Data;
 
 public class UserSessionObj {
 
-    public int userId;
-    public int accountTypeId;
-//    public String email;
+    private int userId;
+    private int accountTypeId;
+    private int accountStatus;
+    private String profileLoc;
 }

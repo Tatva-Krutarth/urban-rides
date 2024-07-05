@@ -6,9 +6,7 @@ import com.urbanrides.exceptions.PastOrFutureDate;
 import lombok.Data;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 public class CaptainPersonalDetailsDto {
@@ -37,4 +35,14 @@ public class CaptainPersonalDetailsDto {
     @Pattern(regexp = "^(19|20)\\d\\d-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$", message = "Invalid date format")
     @PastOrFutureDate(message = "Date must be between 2024-06-01 and 2040-01-01")
     private String licenseExpiration;
+
+
+    @NotNull(message = "Vehicle type is required")
+    @Min(value = 1, message = "Vehicle type must be at least 1")
+    @Max(value = 5, message = "Vehicle type must be at most 5")
+    private int vehicleType;
+
+    @NotNull(message = "Vehicle number is required")
+    @Pattern(regexp = "^[A-Z]{2}[ -]?[0-9]{2}[ -]?[A-Z]{1,2}[ -]?[0-9]{4}$", message = "Invalid vehicle number format")
+    private String numberPlate;
 }

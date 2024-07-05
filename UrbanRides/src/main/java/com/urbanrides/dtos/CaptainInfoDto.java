@@ -12,8 +12,9 @@ public class CaptainInfoDto {
     private String photo;
     private String location;
     private double ratings;
-    private int generalTripId;
+    private int tripId;
     private String latitude;
     private String longitude;
     private String riderAddress;
+    private String vehicleNumber;
 }

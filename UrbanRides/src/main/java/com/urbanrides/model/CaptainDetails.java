@@ -1,4 +1,5 @@
 package com.urbanrides.model;
+
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,8 +11,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "captain_details")
 public class CaptainDetails {
+
     @Id
-    @Column(name = "captainDetailsId")
+    @Column(name = "captain_details_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int captainDetailsId;
 
@@ -20,41 +22,58 @@ public class CaptainDetails {
     @NotNull(message = "User cannot be null")
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "adhar_card", nullable = false)
     private boolean adharCard = false;
 
-    @Column(nullable = false)
+    @Column(name = "is_adhar_approved", nullable = false)
+    private boolean isAdharApproved = false;
+
+    @Column(name = "driving_license", nullable = false)
     private boolean drivingLicense = false;
 
-    @Column(name = "LicenseExpirationDate")
-    @Future(message = "License expiration date should be in future")
-    private LocalDate LicenseExpirationDate;
+    @Column(name = "is_license_approved", nullable = false)
+    private boolean isLicenseApproved = false;
 
-    @Column(nullable = false)
+    @Column(name = "license_expiration_date")
+    @Future(message = "License expiration date should be in the future")
+    private LocalDate licenseExpirationDate;
+
+    @Column(name = "profile_photo", nullable = false)
     private boolean profilePhoto = false;
 
-    @Column(nullable = false)
+    @Column(name = "registration_certificate", nullable = false)
     private boolean registrationCertificate = false;
 
-    @Column(name = "rcExpirationDate")
-    @Future(message = "RC expiration date should be in future")
+    @Column(name = "is_rc_approved", nullable = false)
+    private boolean isRcApproved = false;
+
+    @Column(name = "rc_expiration_date")
+    @Future(message = "RC expiration date should be in the future")
     private LocalDate rcExpirationDate;
 
-    @Column(nullable = false)
-    private boolean uploadedCertificate = false;
+    @Column(name = "is_document_approved", nullable = false)
+    private boolean isDocumentApproved = false;
 
-    @Column(nullable = false)
-    private boolean isApproved = false;
-
-    @Column(nullable = false)
+    @Column(name = "is_live", nullable = false)
     private boolean isLive = false;
 
-    @Column(nullable = false)
+    @Column(name = "total_earnings", nullable = false)
     @Min(value = 0, message = "Total earnings cannot be negative")
     private float totalEarnings = 0;
 
     @CreationTimestamp
-    @Column(name = "uploadedDate")
+    @Column(name = "uploaded_date")
     private LocalDate uploadedDate;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "vehicle_type_id")
+    private VehicleType vehicleType;
+
+    @NotNull(message = "Profile photo estension is required")
+    @Column(name = "profile_photo_extension")
+    private String profilePhotoExtension;
+
+    @NotNull(message = "Number plate is required")
+    @Column(name = "number_plate")
+    private String numberPlate;
 }

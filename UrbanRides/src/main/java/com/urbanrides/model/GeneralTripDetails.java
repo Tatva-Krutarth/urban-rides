@@ -1,25 +1,33 @@
 package com.urbanrides.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "general_trip_details")
-public class GeneralTripDetails {
+public class GeneralTripDetails  {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "trip_id", nullable = false)
+    @Column(name = "general_trip_id", nullable = false)
     private int generalTripDetailId;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "general_trip_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trip_id", nullable = false)
     @NotNull(message = "General Trip ID cannot be null")
     private Trip tripObj;
 
@@ -48,12 +56,26 @@ public class GeneralTripDetails {
     private Boolean isTripCompleted = false;
 
     @Size(max = 100, message = "Feed back should not be more than 50 characters")
-    @Column(name = "feedback" )
+    @Column(name = "feedback")
     private String feedback;
 
+    @Column(name = "captain_ratting")
+    @Nullable
+    private float captainRatting = 0.0f;
 
 
-    private float captainRating;
-
-
+    public GeneralTripDetails(int generalTripDetailId, Trip tripObj, LocalDateTime captainEstimatedReachTime, String captainAway, LocalDateTime captainActualReachTime, Boolean isOtpValidated, Boolean isCaptainReached, LocalDateTime tripStartTime, LocalDateTime tripEndTime, Boolean isTripCompleted, String feedback, float captainRatting) {
+        this.generalTripDetailId = generalTripDetailId;
+        this.tripObj = tripObj;
+        this.captainEstimatedReachTime = captainEstimatedReachTime;
+        this.captainAway = captainAway;
+        this.captainActualReachTime = captainActualReachTime;
+        this.isOtpValidated = isOtpValidated;
+        this.isCaptainReached = isCaptainReached;
+        this.tripStartTime = tripStartTime;
+        this.tripEndTime = tripEndTime;
+        this.isTripCompleted = isTripCompleted;
+        this.feedback = feedback;
+        this.captainRatting = captainRatting;
+    }
 }

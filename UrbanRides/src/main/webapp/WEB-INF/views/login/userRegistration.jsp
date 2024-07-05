@@ -22,12 +22,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
     <link rel="stylesheet" href="<c:url value="/resources/css/userRegistration.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
 </head>

@@ -1,7 +1,5 @@
 package com.urbanrides.dao;
 
-
-import com.urbanrides.model.User;
 import com.urbanrides.model.UserDetails;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,6 +19,10 @@ public class UserDetailsDao {
     @Autowired
     private SessionFactory sessionFactory;
 
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
+
     @Transactional
     public void saveUserDetails(UserDetails userDetails) {
         this.hibernateTemplate.save(userDetails);
@@ -28,46 +30,28 @@ public class UserDetailsDao {
 
     @Transactional
     public UserDetails getUserDetailsById(int id) {
-        Session s = sessionFactory.openSession();
-        try {
-            String sm = "FROM UserDetails WHERE userDetailsId = :id ";
-            Query qq = s.createQuery(sm);
-            qq.setParameter("id", id);
-            List<UserDetails> list = qq.list();
-            if (list != null && !list.isEmpty()) {
-                return list.get(0);
-            } else {
-                return null; // or you can return a default OtpLogs object
-            }
-        } finally {
-            s.close();
-        }
-    }
+        Session session = getCurrentSession();
+        String hql = "FROM UserDetails WHERE userDetailsId = :id";
+        Query<UserDetails> query = session.createQuery(hql, UserDetails.class);
+        query.setParameter("id", id);
 
+        List<UserDetails> list = query.getResultList();
+        return list.isEmpty() ? null : list.get(0);
+    }
 
     @Transactional
     public UserDetails getUserDetailsByUserId(int id) {
-        Session s = sessionFactory.openSession();
-        try {
-            String sm = "FROM UserDetails WHERE user.userId = :id ";
-            Query qq = s.createQuery(sm);
-            qq.setParameter("id", id);
-            List<UserDetails> list = qq.list();
-            if (list != null && !list.isEmpty()) {
-                return list.get(0);
-            } else {
-                return null; // or you can return a default OtpLogs object
-            }
-        } finally {
-            s.close();
-        }
+        Session session = getCurrentSession();
+        String hql = "FROM UserDetails WHERE user.userId = :id";
+        Query<UserDetails> query = session.createQuery(hql, UserDetails.class);
+        query.setParameter("id", id);
+
+        List<UserDetails> list = query.getResultList();
+        return list.isEmpty() ? null : list.get(0);
     }
 
-
-    //update
     @Transactional
     public void updateUserDetails(UserDetails userDetails) {
         this.hibernateTemplate.update(userDetails);
     }
-
 }

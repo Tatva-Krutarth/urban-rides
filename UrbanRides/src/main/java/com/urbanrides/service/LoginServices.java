@@ -2,10 +2,7 @@ package com.urbanrides.service;
 
 //import com.urbanrides.dao.UserDetailsDao;
 
-import com.urbanrides.dao.CaptainDetailsDao;
-import com.urbanrides.dao.UserDetailsDao;
-import com.urbanrides.dao.UserRegistrationDao;
-import com.urbanrides.dao.UsersDao;
+import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
 import com.urbanrides.helper.*;
 import com.urbanrides.model.*;
@@ -119,7 +116,7 @@ public class LoginServices {
         OtpLogs otpLogs = new OtpLogs();
         otpLogs.setEmail(userRegistrationDto.getEmail());
         otpLogs.setOptReqSendTime(LocalTime.now());
-        otpLogs.setAttempt(1);
+//        otpLogs.setAttempt(1);
         otpLogs.setGeneratedOtp(otpGenerator.generateOTP());
         otpLogs.setOtpPassed(false);
         return otpLogs;
@@ -129,7 +126,7 @@ public class LoginServices {
         OtpLogs otpLogs = new OtpLogs();
         otpLogs.setEmail(email);
         otpLogs.setOptReqSendTime(LocalTime.now());
-        otpLogs.setAttempt(1);
+//        otpLogs.setAttempt(1);
         otpLogs.setGeneratedOtp(otpGenerator.generateOTP());
         otpLogs.setOtpPassed(false);
         return otpLogs;
@@ -210,20 +207,23 @@ public class LoginServices {
             //saving the user
             int userId = setUserData(userRegistrationDto);
             User justRegisteredUser = usersDao.getUserByUserId(userId);
-
+            justRegisteredUser.setAccountStatus(1);
+            usersDao.updateUser(justRegisteredUser);
             if (userRegistrationDto.getAcccoutTypeId() == 3) {
                 HttpSession session = request.getSession();
                 UserSessionObj userSessionObj = new UserSessionObj();
                 userSessionObj.setUserId(justRegisteredUser.getUserId());
+                userSessionObj.setAccountStatus(1);
                 userSessionObj.setAccountTypeId(justRegisteredUser.getAccountType());
-                session.setAttribute("userSessionObj", userSessionObj);
+                session.setAttribute("riderSessionObj", userSessionObj);
                 return "Rider Registered";
             } else {
                 HttpSession session = request.getSession();
                 UserSessionObj userSessionObj = new UserSessionObj();
                 userSessionObj.setUserId(justRegisteredUser.getUserId());
+                userSessionObj.setAccountStatus(1);
                 userSessionObj.setAccountTypeId(justRegisteredUser.getAccountType());
-                session.setAttribute("userSessionObj", userSessionObj);
+                session.setAttribute("captainSessionObj", userSessionObj);
                 return "Captain Registered";
             }
         } else {
@@ -247,14 +247,13 @@ public class LoginServices {
 
         user.setSalt(saltString);
         user.setPasswordHash(hashedPasswordString);
-        int userId= usersDao.saveUser(user);
+        int userId = usersDao.saveUser(user);
         return userId;
     }
 
 
     public String riderPersonalDetailSubmit(RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
         UserDetails userDetails = new UserDetails();
-        System.out.println(riderPersonalDetailsDto);
         userDetails.setFirstName(riderPersonalDetailsDto.getRiderFirstName());
         userDetails.setLastName(riderPersonalDetailsDto.getRiderLastName());
         userDetails.setPhone(riderPersonalDetailsDto.getPhone());
@@ -263,23 +262,74 @@ public class LoginServices {
 
         HttpSession session = request.getSession();
 
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("userSessionObj");
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+
         if (user == null) {
             return "User not found";
         }
         //checking if the userdetails are already filled
-        UserDetails userDetailsChekcing = userDetailsDao.getUserDetailsById(userSessionObj.getUserId());
+        user.setAccountStatus(2);
 
-        if(userDetailsChekcing != null) {
+
+        UserDetails userDetailsChekcing = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+
+        if (userDetailsChekcing != null) {
             return "User details already filled, please login";
         }
         userDetails.setUser(user);
         System.out.println(userDetails);
+        userSessionObj.setAccountStatus(2);
+        session.setAttribute("riderSessionObj", userSessionObj);
+        usersDao.updateUser(user);
+
         userDetailsDao.saveUserDetails(userDetails);
-        return "Login successful + " + user.getAccountType();
+        return "Login successful";
     }
 
+    public String captainPersonalDetailSubmit(RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
+        UserDetails userDetails = new UserDetails();
+        userDetails.setFirstName(riderPersonalDetailsDto.getRiderFirstName());
+        userDetails.setLastName(riderPersonalDetailsDto.getRiderLastName());
+        userDetails.setPhone(riderPersonalDetailsDto.getPhone());
+        userDetails.setAge(riderPersonalDetailsDto.getAge());
+
+
+        HttpSession session = request.getSession();
+
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+
+        if (user == null) {
+            return "User not found";
+        }
+        //checking if the userdetails are already filled
+
+        UserDetails userDetailsChekcing = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+
+        if (userDetailsChekcing != null) {
+            return "User details already filled, please login";
+        }
+        user.setAccountStatus(2);
+        userSessionObj.setAccountStatus(2);
+        session.setAttribute("captainSessionObj", userSessionObj);
+
+        usersDao.updateUser(user);
+        userDetails.setUser(user);
+        System.out.println(userDetails);
+        userDetailsDao.saveUserDetails(userDetails);
+        return "Login successful";
+    }
+
+    public String getCapatainName(HttpServletRequest req) {
+
+        HttpSession session = req.getSession();
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+
+        String capatainName = userDetails.getFirstName();
+        return capatainName;
+    }
 
     public String riderLoginService(UserLoginDto userLoginDto, HttpServletRequest request) {
         User user = usersDao.getUserByEmail(userLoginDto.getEmail());
@@ -291,13 +341,33 @@ public class LoginServices {
             if (verified) {
 
 
-                HttpSession session = request.getSession();
-                UserSessionObj userSessionObj = new UserSessionObj();
-                userSessionObj.setUserId(user.getUserId());
-                userSessionObj.setAccountTypeId(user.getAccountType());
-                session.setAttribute("userSessionObj", userSessionObj);
+                if (user.getAccountType() == 3) {
+                    HttpSession session = request.getSession();
+                    UserSessionObj userSessionObj = new UserSessionObj();
+                    userSessionObj.setUserId(user.getUserId());
+                    userSessionObj.setAccountStatus(user.getAccountStatus());
+                    userSessionObj.setAccountTypeId(user.getAccountType());
+                    session.setAttribute("riderSessionObj", userSessionObj);
+                    return "Login successful + " + user.getAccountType();
+                } else {
+                    HttpSession session = request.getSession();
+                    UserSessionObj userSessionObj = new UserSessionObj();
+                    userSessionObj.setUserId(user.getUserId());
+                    userSessionObj.setAccountStatus(user.getAccountStatus());
+                    userSessionObj.setAccountTypeId(user.getAccountType());
+                    session.setAttribute("captainSessionObj", userSessionObj);
+                    return "Login successful + " + user.getAccountType();
+                }
 
-                return "Login successful + " + user.getAccountType();
+
+//                HttpSession session = request.getSession();
+//                UserSessionObj userSessionObj = new UserSessionObj();
+//                userSessionObj.setUserId(user.getUserId());
+//                userSessionObj.setAccountStatus(user.getAccountStatus());
+//                userSessionObj.setAccountTypeId(user.getAccountType());
+//                session.setAttribute("riderSessionObj", userSessionObj);
+//
+//                return "Login successful + " + user.getAccountType();
             } else {
                 return "Invalid password ";
             }
@@ -452,6 +522,12 @@ public class LoginServices {
 
 
     public String saveCaptainPersonalDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session, HttpServletRequest request) {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
+
+        if (captainDetails != null) {
+            return "User document are already filled.";
+        }
 
         int i = uploadDocumentCaptain(captainPersonalDetailsDto, session);
         if (i != 4) {
@@ -462,13 +538,23 @@ public class LoginServices {
         return msg;
     }
 
+    @Autowired
+    VehicleTypeDao vehicleTypeDao;
+
     public String saveCaptainDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpServletRequest request) {
         CaptainDetails captainDetails = new CaptainDetails();
-
+        String originalFileName = captainPersonalDetailsDto.getProfilePhoto().getOriginalFilename();
+        String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("userSessionObj");
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+        user.setAccountStatus(3);
+        userSessionObj.setAccountStatus(3);
+        captainDetails.setProfilePhotoExtension(extension);
         captainDetails.setUser(user);
+        VehicleType vehicleType = vehicleTypeDao.getVehicaleId(captainPersonalDetailsDto.getVehicleType());
+        captainDetails.setVehicleType(vehicleType);
+        captainDetails.setNumberPlate(captainPersonalDetailsDto.getNumberPlate());
         captainDetails.setAdharCard(true);
         captainDetails.setDrivingLicense(true);
         captainDetails.setLicenseExpirationDate(dateTimeConverter.stringToLocalDate(captainPersonalDetailsDto.getLicenseExpiration()));
@@ -476,12 +562,16 @@ public class LoginServices {
         captainDetails.setRcExpirationDate(dateTimeConverter.stringToLocalDate(captainPersonalDetailsDto.getLicenseExpiration()));
         captainDetails.setProfilePhoto(true);
         captainDetailsDao.saveCaptainDetails(captainDetails);
+        usersDao.updateUser(user);
+        session.setAttribute("captainSessionObj", userSessionObj);
         return "Data uploaded successfully";
     }
 
     public int uploadDocumentCaptain(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session) {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+
         // -------- File Uploding---------------------------------
-        String captainId = "2"; // assuming this method exists
+        String captainId = String.valueOf(userSessionObj.getUserId()); // assuming this method exists
         String folderName = "captain" + captainId;
         String folderPath = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "captainDocuments" + File.separator + folderName;
         File folder = new File(folderPath);
@@ -549,6 +639,11 @@ public class LoginServices {
         }
         return i;
     }
+
+
+
+
+
 }
 
 

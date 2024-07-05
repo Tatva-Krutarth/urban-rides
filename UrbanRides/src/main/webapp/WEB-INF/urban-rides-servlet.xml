@@ -21,16 +21,19 @@
     <mvc:resources location="/WEB-INF/resources/"
                    mapping="/resources/**"/>
 
-    <!--    <mvc:interceptors>-->
-    <!--        <mvc:interceptor>-->
-    <!--            <mvc:mapping path="/admin/**" />-->
-    <!--            <bean class="hallodoc.Interceptors.AdminInterceptor"></bean>-->
-    <!--        </mvc:interceptor>-->
-    <!--        <mvc:interceptor>-->
-    <!--            <mvc:mapping path="/provider/**" />-->
-    <!--            <bean class="hallodoc.Interceptors.ProviderInterceptor"></bean>-->
-    <!--        </mvc:interceptor>-->
-    <!--    </mvc:interceptors>-->
+        <mvc:interceptors>
+            <mvc:interceptor>
+                <mvc:mapping path="/rider/**" />
+                <bean class="com.urbanrides.interceptor.RiderInterceptor"></bean>
+            </mvc:interceptor>
+<!--            <mvc:interceptor>-->
+<!--                <mvc:mapping path="/captain/**" />-->
+<!--                <bean class="com.urbanrides.interceptor.CaptainInterceptor"></bean>-->
+<!--            </mvc:interceptor>-->
+        </mvc:interceptors>
+
+
+
     <bean
             class="org.springframework.web.servlet.view.InternalResourceViewResolver"
             name="viewResolver">

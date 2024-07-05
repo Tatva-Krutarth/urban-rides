@@ -217,7 +217,11 @@ body {
 .show-mobile {
     display: none;
 }
-
+.nati-cont {
+    /*background-color: #0D63A5;*/
+    padding: 8px;
+    border-radius: 12px;
+}
 /*---------------------common buttons-----------------------------*/
 
 .common-btn-color7-theme {
@@ -226,14 +230,33 @@ body {
     transition: background-color 0.3s ease;
     border: 0px solid black;
     /*border-radius: 25px;*/
-    margin: 5px 0px 5px 12px;
+    margin: 5px 12px 5px 12px;
     padding: 2px 14px;
-    background-color: #0D63A5;
+    /*background-color: #0D63A5;*/
     padding: 8px;
     border-radius: 12px;
-    /*background-color: #0D63A5;*/
-    /*color: #FFD717;*/
 }
+
+.common-btn-color7-theme:hover {
+    background-color: #0D63A5;
+    color: #FFD717;
+}
+
+
+/*.common-btn-color7-theme {*/
+/*    background-color: transparent;*/
+/*    color: white;*/
+/*    transition: background-color 0.3s ease;*/
+/*    border: 0px solid black;*/
+/*    !*border-radius: 25px;*!*/
+/*    margin: 5px 0px 5px 12px;*/
+/*    padding: 2px 14px;*/
+/*    background-color: #0D63A5;*/
+/*    padding: 8px;*/
+/*    border-radius: 12px;*/
+/*    !*background-color: #0D63A5;*!*/
+/*    !*color: #FFD717;*!*/
+/*}*/
 
 /*.common-btn-color7-theme:hover {*/
 /*    background-color: #0D63A5;*/

@@ -34,6 +34,9 @@ public class TripDao {
         return generalTrip.getTripId(); // Assuming GeneralTrip has a getId() method
     }
 
+    private Session getCurrentSession() {
+        return sessionFactory.getCurrentSession();
+    }
 
     @Transactional
     public List<Trip> getTripForPayment(int userId) {
@@ -49,23 +52,28 @@ public class TripDao {
         }
     }
 
-    @Transactional
-
-    public Trip getTipById(Integer id) {
-        return this.hibernateTemplate.get(Trip.class, id);
-    }
 
     @Transactional
-    public void updateGeneralTrip(Trip generalTrip) {
-        this.hibernateTemplate.update(generalTrip);
+    public Trip getTipById(int tripId) {
+        Session session = getCurrentSession();
+        String hql = "FROM Trip WHERE tripId = :tripId";
+        Query<Trip> query = session.createQuery(hql, Trip.class);
+        query.setParameter("tripId", tripId);
+
+        List<Trip> result = query.getResultList();
+        return result.isEmpty() ? null : result.get(0);
     }
 
-    @PersistenceContext
-    private EntityManager entityManager;
+
+    @Transactional
+    public void updateTrip(Trip tripId) {
+        this.hibernateTemplate.update(tripId);
+    }
+
 
     @Transactional
     public List<Trip> getAllTrip(int userId) {
-        Session session = entityManager.unwrap(Session.class);
+        Session session = getCurrentSession();
         String hql = "FROM Trip WHERE tripUserId.userId = :userId";
         Query<Trip> query = session.createQuery(hql, Trip.class);
         query.setParameter("userId", userId);
@@ -73,6 +81,7 @@ public class TripDao {
         List<Trip> result = query.getResultList();
         return result.isEmpty() ? null : result;
     }
+
 
 }
 

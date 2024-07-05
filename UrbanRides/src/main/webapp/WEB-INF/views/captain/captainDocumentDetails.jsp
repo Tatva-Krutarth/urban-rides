@@ -50,13 +50,14 @@
 <div class="outer-cont">
     <div class="main-cont">
         <nav class="container-fluid nav-class d-flex justify-content-between align-items-center nav">
-            <div class="mx-3 d-flex justify-content-between align-items-center" style="color: white; font-size: 24px; position: relative ">
+            <div class="mx-3 d-flex justify-content-between align-items-center"
+                 style="color: white; font-size: 24px; position: relative ">
                 <div class="back-button" id="back-button">
                     <img src="<c:url value='/resources/images/back-arrow.svg'/>" id="back-arrow">
                 </div>
-               <div>
-                   Urban Rides
-               </div>
+                <div>
+                    Urban Rides
+                </div>
                 <!-- <img src="../../images/Icon.png" alt="companyLogo" class="mx-2"> -->
             </div>
 
@@ -70,21 +71,20 @@
                     <div>
                         <hr class="hr-setting">
                     </div>
-                    <a href="user-login" class="dropdown-list ">
-                         <img src="<c:url value='/resources/images/sign-out.svg' />" alt=""></span>
+                    <a href="captain-logout" class="dropdown-list ">
+                        <img src="<c:url value='/resources/images/sign-out.svg' />" alt=""></span>
                         Sign out
                     </a>
                 </div>
             </div>
 
         </nav>
-        <div class="land-sub-heading-t6 ">Welcome , Krutarth</div>
+        <div class="land-sub-heading-t6 ">Welcome , ${captainName}</div>
         <div class="container">
 
             <div class="captain-details-sub mb-2 mt-2">Here's what you need to do to set up your account</div>
-            <form id="form-id" method="post" action="captain-personal-details-submit"
-                  enctype="multipart/form-data" >
-
+            <form id="form-id" method="post" action="captain-document-details-submit"
+                  enctype="multipart/form-data">
 
 
                 <div class="upload-file-sub-heading mt-4 mb-2">Profile Photo</div>
@@ -92,8 +92,8 @@
                     <div class="input-group">
                         <input id="profile-photo" type="text"
                                class="form-control p-2 verification-files custom-upload"
-                               placeholder="Upload in Jpg or Png format" disabled>
-                        <button class="file-upload-btn btn-color-for-upload" type="button" id="upload">
+                               placeholder="Upload in JPG or PNG format" disabled>
+                        <button class="file-upload-btn btn-color-for-upload" type="button">
                             <img src="<c:url value='/resources/images/upload.svg' />" class="upload-image-file"
                                  alt="">
                             <span class="for-remove-upload ">Upload</span></button>
@@ -114,8 +114,9 @@
                     <div class="input-group">
                         <input id="aadhar-card-name-id" type="text"
                                class="form-control p-2 verification-files custom-upload"
-                               placeholder="Upload Front and Back in Pdf" disabled>
-                        <button class="file-upload-btn btn-color-for-upload" type="button" id="upload">
+                               placeholder="Upload front and back in PDF format"
+                               disabled>
+                        <button class="file-upload-btn btn-color-for-upload" type="button">
                             <img src="<c:url value='/resources/images/upload.svg' />" class="upload-image-file"
                                  alt="">
                             <span class="for-remove-upload ">Upload</span></button>
@@ -140,8 +141,9 @@
                     <div class="input-group">
                         <input id="driving-license" type="text"
                                class="form-control p-2 verification-files custom-upload"
-                               placeholder="Upload Front and Back" disabled>
-                        <button class="file-upload-btn btn-color-for-upload" type="button" id="upload">
+                               placeholder="Upload Front and Back"
+                               disabled>
+                        <button class="file-upload-btn btn-color-for-upload" type="button">
                             <img src="<c:url value='/resources/images/upload.svg' />" class="upload-image-file"
                                  alt="">
                             <span class="for-remove-upload ">Upload</span></button>
@@ -162,7 +164,8 @@
                     <div class="input-group">
                         <input id="registration-certificate" type="text"
                                class="form-control p-2 verification-files custom-upload"
-                               placeholder="Upload in Png Format(Only Front)" disabled>
+                               placeholder="Upload in PDF format (only front)"
+                               disabled>
                         <button class="file-upload-btn btn-color-for-upload" type="button" id="upload">
                             <img src="<c:url value='/resources/images/upload.svg' />" class="upload-image-file"
                                  alt="">
@@ -182,17 +185,35 @@
 
                 <div class="row mt-2">
                     <div class="floating-label-group col-12 col-sm-6">
-                        <div class="upload-file-sub-heading mt-2 mb-1">RC Expiration Date</div>
+                        <div class="upload-file-sub-heading mt-1 mb-1">RC Expiration Date</div>
                         <input type="date" id="rcExpiration" class="form-control taskName" autocomplete="off" autofocus
                                name="rcExpiration" required/>
                     </div>
                     <div class="floating-label-group col-12 col-sm-6">
-                        <div class="upload-file-sub-heading mt-2 mb-1">License Expiration Date</div>
+                        <div class="upload-file-sub-heading mt-1 mb-1">License Expiration Date</div>
                         <input type="date" id="licenseExpiration" class="form-control taskName" autocomplete="off"
                                autofocus
                                name="licenseExpiration" required/>
                     </div>
                 </div>
+                <div class="row mt-1">
+                    <div class="floating-label-group col-12 col-sm-6">
+                        <div class="upload-file-sub-heading mt-1">Vehicle Type</div>
+                        <select id="vehicleType" class="form-select taskName" name="vehicleType" required>
+                            <option value="1" selected>Bike</option>
+                            <option value="2">Rickshaw</option>
+                            <option value="3">Car</option>
+                            <option value="4">Luxury Car</option>
+                            <option value="5">Bus</option>
+                        </select>
+                    </div>
+                    <div class="floating-label-group col-12 col-sm-6">
+                        <div class="upload-file-sub-heading mt-1">Vehicle Number Plate</div>
+                        <input type="text" id="numberPlate" class="form-control taskName" autocomplete="off" autofocus
+                               name="vehicleNumber" required/>
+                    </div>
+                </div>
+
 
 
                 <div class="mt-4 mb-1">
@@ -211,7 +232,7 @@
 <script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
-<script src="<c:url value="/resources/js/captainPersonalDetails.js"/>"></script>
+<script src="<c:url value="/resources/js/captainDocumentDetails.js"/>"></script>
 
 
 <%--<!-- Include GSAP library -->--%>

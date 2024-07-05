@@ -40,7 +40,6 @@ public class UserLogin {
 
     @RequestMapping("/user-registration/{accountType}")
     public String userRegistration(@PathVariable("accountType") int accountType, Model model) {
-        System.out.println(accountType);
         model.addAttribute("accountType", accountType);
         return "login/userRegistration";
     }
@@ -49,8 +48,6 @@ public class UserLogin {
     @PostMapping("/user-registration-otp")
     public ResponseEntity<String> userRegistrationGetOtp(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
         String toasterMsg = loginServices.otpService(userRegistrationDto);
-        System.out.println(toasterMsg);
-        System.out.println(userRegistrationDto);
         if (toasterMsg.contains("error")) {
             return new ResponseEntity<>(toasterMsg, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -60,25 +57,10 @@ public class UserLogin {
     @ResponseBody
     @PostMapping("/user-registration-submit")
     public ResponseEntity<String> userRegistrationSubmit(@Valid @RequestBody UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
-        System.out.println("user-otp");
-        System.out.println(userRegistrationDto);
         String toasterMsg = loginServices.submitRegistration(userRegistrationDto, request);
-        System.out.println(toasterMsg);
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
-    @RequestMapping("/rider-personal-details")
-    public String riderPersonalDetails() {
-        return "login/riderPersonalDetails";
-    }
-
-    @ResponseBody
-    @PostMapping("/rider-personal-details-submit")
-    public ResponseEntity<String> riderPersonalDetailSubmit(@Valid @RequestBody RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
-        String toasterMsg = loginServices.riderPersonalDetailSubmit(riderPersonalDetailsDto, request);
-        System.out.println(toasterMsg);
-        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
-    }
 
     @RequestMapping("/user-login")
     public String userLogin() {
@@ -88,10 +70,7 @@ public class UserLogin {
     @ResponseBody
     @PostMapping("/user-login-submit")
     public ResponseEntity<String> riderLogin(@Valid @RequestBody UserLoginDto userLoginDto, HttpServletRequest request) {
-        System.out.println("rider-login");
-        System.out.println(userLoginDto);
         String toasterMsg = loginServices.riderLoginService(userLoginDto, request);
-        System.out.println(toasterMsg);
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
@@ -116,26 +95,16 @@ public class UserLogin {
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
-    @RequestMapping("/captain-personal-details")
-    public String captainPersonalDetails() {
-        return "login/captainPersonalDetails";
-    }
 
-    @RequestMapping(value = "/captain-personal-details-submit", method = RequestMethod.POST)
-    public ResponseEntity<String> registerUser(@Valid @ModelAttribute("registrationDataDto") CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpServletRequest request, HttpSession session, BindingResult bindingResult, HttpServletRequest httpServletRequest) throws MethodArgumentNotValidException {
-        String toasterMsg = loginServices.saveCaptainPersonalDetails(captainPersonalDetailsDto, session, request);
-        System.out.println(toasterMsg);
-        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
-    }
-
-    @RequestMapping("/captain-support")
-    public String captainSupport() {
-        return "login/captainSupport";
-    }
 
     @RequestMapping("/error-code-404")
     public String errorCode404() {
         return "errorPages/errorCode404";
+    }
+
+    @RequestMapping("/no-session")
+    public String noSessionFound() {
+        return "errorPages/noSessionFound";
     }
 }
 

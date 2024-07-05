@@ -39,7 +39,6 @@ $("#myForm").validate({
         });
         console.log(JSON.stringify(jsonData))
         $(".loader").css("display", "flex");
-
         $.ajax({
             url: form.action,
             method: form.method,
@@ -47,6 +46,7 @@ $("#myForm").validate({
             contentType: 'application/json',
             dataType: 'text',
             success: function (response) {
+
                 // Handle successful response
                 if (typeof response === 'string') {
                     if (response.startsWith("Login")) {
@@ -56,9 +56,9 @@ $("#myForm").validate({
                         setTimeout(function () {
                             $(".loader").hide();
                             if (accountType === "3") {
-                                window.location.href = "/UrbanRides/rider-dashboard";
+                                window.location.href = "/UrbanRides/rider/rider-dashboard";
                             } else {
-                                window.location.href = "/UrbanRides/captain-personal-details";
+                                window.location.href = "/UrbanRides/captain/captain-dashboard";
                             }
                         }, 3000); // 3000ms = 3 seconds
                     } else {
@@ -124,6 +124,6 @@ togglePassword.addEventListener('click', function (e) {
         togglePassword.src = "/UrbanRides/resources/images/password-eye-slash.svg";
     }
 });
-document.getElementById('back-button').addEventListener('click', function() {
+document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });

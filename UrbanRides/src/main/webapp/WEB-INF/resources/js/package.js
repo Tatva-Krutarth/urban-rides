@@ -3,10 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const dropdownContent = document.querySelector(".dropdown-content-package");
     const selectedOptionInput = document.getElementById("selectedOption");
 
-    const options = [{id: "rentTaxi", text: "Rent a Taxi"}, {
-        id: "packageService",
-        text: "Package Service"
-    }, {id: "dailyPickup", text: "Daily Pickup"}];
+    const options = [
+        {id: "rentTaxi", text: "Rent a Taxi"},
+        {id: "dailyPickup", text: "Daily Pickup"}
+    ];
 
     function updateDropdownContent(selectedText) {
         dropdownContent.innerHTML = '';
@@ -33,6 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const dropoffLocation = document.getElementById("dropoffLocation").parentElement;
         const pickupLocation = document.getElementById("pickupLocation");
         const numberOfDays = document.getElementById("numDays").parentElement;
+        const numberOfPassengers = document.getElementById("numPassengers").parentElement;
+        const chargesDivCont = document.getElementById("charges-div-cont");
         const drofOffTime = document.getElementById("drofOffTime").parentElement;
         const hideCheckBox = document.getElementById("hide-all-checkbox");
         const pickUpDropOffLabel = document.getElementById("pickup-dropoff-label-id");
@@ -43,15 +45,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const hideCharges = document.getElementById("hide-chages-notes");
         const specialInstructionsLabel = document.getElementById("special-instruciton");
         const serviceType = document.getElementById("selectedOption");
-
-        // const dailyPickupFields = document.querySelectorAll(".d-none");
+        const validLocationPackage = document.getElementById("valid-location-package");
+        const time = document.getElementById("package-time");
+        const dist = document.getElementById("package-dist");
+        const charges = document.getElementById("charge");
+        const actualNoOfDays = document.getElementById("numDays");
 
         if (optionId === "rentTaxi") {
             numberOfDays.classList.remove("d-none");
+            numberOfPassengers.classList.remove("d-none");
             hideCheckBox.classList.add("d-none");
             selectedDays.classList.add("d-none");
             dropoffLocation.classList.add("d-none");
+            chargesDivCont.classList.add("d-none");
             pickupLocation.value = "Vastrapur";
+            actualNoOfDays.value = 0;
             pickupLocation.readOnly = true;
             hideCheckBoxText.classList.add("d-none");
             specialInstructionsLabel.innerHTML = "Special Instructions (Optional)";
@@ -60,55 +68,33 @@ document.addEventListener("DOMContentLoaded", function () {
             timeAndDistance.classList.add("d-none");
             hideCharges.classList.remove("d-none");
             serviceType.value = "Rent a taxi";
-
+            validLocationPackage.classList.add("d-none");
             pickUpDropOffLabel.innerHTML = "Pick up - Drop off location";
-            // pickupPlaceholder.classList.add("d-none");
-
-            // pickupPlaceholder.forEach(field => field.classList.add("d-none"));
-
-
-        } else if (optionId === "packageService") {
-            dropoffLocation.classList.remove("d-none");
-            hideCheckBox.classList.add("d-none");
-            pickupLocation.value = "";
-            pickupLocation.readOnly = false;
-            // pickupPlaceholder.classList.remove("d-none");
-            serviceType.value = "Package service";
-
-            // pickupPlaceholder.forEach(field => field.classList.remove("d-none"));
-            selectedDays.classList.add("d-none");
-            hideCheckBoxText.classList.add("d-none");
-            specialInstructionsLabel.innerHTML = "Luggage information";
-            pickUpDropOffLabel.classList.remove("d-none");
-            timeAndDistance.classList.remove("d-none");
-            hideCharges.classList.add("d-none");
-
-            pickUpDropOffLabel.innerHTML = "Pick up location";
-            numberOfDays.classList.add("d-none");
-            pickUpToggle.classList.add("d-none");
-
-
         } else if (optionId === "dailyPickup") {
             dropoffLocation.classList.remove("d-none");
             hideCheckBox.classList.remove("d-none");
             selectedDays.classList.remove("d-none");
+            chargesDivCont.classList.remove("d-none");
+
             pickupLocation.value = "";
             pickupLocation.readOnly = false;
-            // pickupPlaceholder.classList.remove("d-none");
             hideCharges.classList.add("d-none");
             serviceType.value = "Daily pick up";
-
-            // pickupPlaceholder.forEach(field => field.classList.remove("d-none"));
+            validLocationPackage.classList.remove("d-none");
+            $("#pickupLocation, #dropoffLocation").prop("placeholder", "");
+            $('#charges').val(0);
+            $('#numDays').val(0);
+            $("#valid-location-package").val('');
             numberOfDays.classList.remove("d-none");
             pickUpDropOffLabel.classList.remove("d-none");
             pickUpDropOffLabel.innerHTML = "Pick up location";
             timeAndDistance.classList.remove("d-none");
-
+            dist.value = "--";
+            time.value = "--";
             hideCheckBoxText.classList.remove("d-none");
             specialInstructionsLabel.innerHTML = "Special Instructions (Optional)";
             pickUpToggle.classList.add("d-none");
-
-
+            $('#package-form')[0].reset();
         }
     }
 
@@ -193,7 +179,7 @@ $(document).ready(function () {
             }, numPassengers: {
                 required: true, digits: true, max: 30 // Updated max passengers limit
             }, numDays: {
-                required: true, digits: true, max: 30 // Updated max passengers limit
+                required: true, digits: true, min: 1, max: 30 // Updated max passengers limit
             }, pickupDate: {
                 required: true, date: true, futureDate: true // Custom rule for future date validation
             }, pickupTime: {
@@ -208,7 +194,9 @@ $(document).ready(function () {
                 required: true,
             }, vehicleType: {
                 required: true, min: 1 // Ensure a value other than the default "Select" option is chosen
-            },
+            }, validLocation: {
+                required: true
+            }
         }, messages: {
             // Error messages for validation rules
             pickupLocation: {
@@ -222,6 +210,8 @@ $(document).ready(function () {
             }, numDays: {
                 required: "Number of days are required",
                 digits: "Only digits are allowed",
+                min: "Minimum 1 day is allowed",
+
                 max: "Maximum 30 days are allowed",
             }, pickupDate: {
                 required: "Please enter a pickup date",
@@ -239,6 +229,8 @@ $(document).ready(function () {
                 required: "Please add Daily pickup days",
             }, vehicleType: {
                 required: "Please select a vehicle type."
+            }, validLocation: {
+                required: "Location doest not exist",
             }
         }, errorElement: "div", errorClass: "error", submitHandler: function (form) {
 
@@ -340,3 +332,307 @@ $(document).ready(function () {
         $('#package-form').submit(); // Trigger form submission
     });
 });
+
+// ----------------------------------------map-----------------------------------
+function rentAtaxiStaticLoc() {
+    const defaultLocation = {lat: 23.037737, lng: 72.527735};
+
+    if (!userMarker) {
+        userMarker = new google.maps.Marker({
+            position: defaultLocation, map: map, title: 'Default Location'
+        });
+    } else {
+        userMarker.setPosition(defaultLocation);
+    }
+
+    // map.setCenter(defaultLocation);
+    //
+    // // Clear all previous captain markers from the map
+    // captainMarkers.forEach(marker => {
+    //     marker.setMap(null);
+    // });
+    // captainMarkers = [];
+    //
+    // captains.forEach(captain => {
+    //     const marker = new google.maps.Marker({
+    //         position: {lat: captain.lat, lng: captain.lng}, map: map, title: captain.name
+    //     });
+    //
+    //     marker.addListener('click', () => {
+    //         new google.maps.InfoWindow({
+    //             content: `<h2>${captain.name}</h2><p>Details about the captain...</p>`
+    //         }).open(map, marker);
+    //         // calculateDistance(userMarker.getPosition(), marker.getPosition());
+    //     });
+    //
+    //     captainMarkers.push(marker);
+    // });
+}
+
+
+// ---------------------------------lugguage and daily pickup
+
+$(document).ready(function () {
+
+
+    $("#pickupLocation").on("change", function () {
+        setTimeout(setMapDetailsForPackage, 1000);
+    });
+    $("#dropoffLocation").on("change", function () {
+        setTimeout(setMapDetailsForPackage, 1000);
+    });
+});
+
+function setMapDetailsForPackage() {
+    var pickup = $("#pickupLocation").val();
+    var dropoff = $("#dropoffLocation").val();
+    if (pickup && dropoff && pickup.trim() !== "" && dropoff.trim() !== "") {
+        console.log(pickup, dropoff);
+        calculateDistanceByAddressForPackage(pickup, dropoff);
+    }
+}
+
+
+function calculateDistanceByAddressForPackage(originAddress, destinationAddress) {
+    const geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode({address: originAddress}, (results, status) => {
+        if (status === 'OK' && results.length > 0) {
+            const origin = results[0].geometry.location;
+            $("#valid-location-package").val('');
+
+            // Check if origin is outside Gujarat
+            if (!isWithinAhmedabad(results[0].geometry.bounds || results[0].geometry.viewport)) {
+                showErrorMsg('The origin address is outside Ahmedabad.');
+                document.getElementById('submitBtn').disabled = true;
+                return;
+            }
+
+            geocoder.geocode({address: destinationAddress}, (results, status) => {
+                if (status === 'OK' && results.length > 0) {
+                    const destination = results[0].geometry.location;
+
+                    // Check if destination is outside Gujarat
+                    if (!isWithinGujarat(results[0].geometry.bounds || results[0].geometry.viewport)) {
+                        showErrorMsg('The destination address is outside Gujarat.');
+                        document.getElementById('submitBtn').disabled = true;
+                        return;
+                    }
+
+                    travelMode = google.maps.TravelMode.DRIVING;
+
+                    const distanceService = new google.maps.DistanceMatrixService();
+                    distanceService.getDistanceMatrix({
+                        origins: [origin], destinations: [destination], travelMode: travelMode,
+                    }, (response, status) => {
+                        if (status === 'OK') {
+                            const distanceText = response.rows[0].elements[0].distance.text;
+                            const distanceValue = response.rows[0].elements[0].distance.value;
+                            const time = response.rows[0].elements[0].duration.text;
+
+                            // Convert distance to km
+                            const distanceInKm = distanceValue / 1000;
+                            console.log(distanceInKm)
+                            if (distanceInKm < 1 || distanceInKm > 100) {
+                                showErrorMsg('The distance should be between 1 to 100 Km.');
+                                document.getElementById('submitBtn').disabled = true;
+                                return;
+                            }
+
+                            console.log(`Distance: ${distanceText}, Time: ${time}`);
+
+                            // Set the distance and time to the elements
+                            document.querySelectorAll('.dynamic-distance-package').forEach((element) => {
+                                element.innerText = distanceText;
+                            });
+
+                            // const distanceInNumber = Math.round(distanceInKm); // Round the distance
+
+                            // const multipliers = [5, 6, 8, 10];
+                            // const timeWeightage = getTimeWeightage(); // Get the time weightage
+
+                            // Update price elements
+                            // document.querySelectorAll('.vehicle-price-text').forEach((element, index) => {
+                            //     if (index < multipliers.length) {
+                            //         const price = Math.round(distanceInNumber * multipliers[index] * timeWeightage); // Calculate and round price
+                            //         element.innerHTML = `Rs ${price}`;
+                            //     }
+                            // });
+
+                            document.querySelectorAll('.dynamic-time-package').forEach((element) => {
+                                element.innerText = time;
+                            });
+
+                            // Enable the submit button if everything is valid
+                            document.getElementById('submitBtn').disabled = false;
+                            $("#valid-location-package").val('Valid location');
+                            let vehicle = document.getElementById('vehicleType').value;
+                            let numPassengers = parseInt(document.getElementById('numPassengers').value); // Parse numPassengers as integer
+                            let locationValid = $("#valid-location-package").val();
+                            let numDays = $("#numDays").val();
+
+                            // Check conditions for validity
+                            if (vehicle !== "" && locationValid === "Valid location" && numPassengers > 0 && numPassengers < 30 && numDays > 0 && numDays < 30) {
+                                calculatePrice(); // Call calculatePrice function if conditions are met
+                            }
+                            // Calculate and display the route
+                            const directionsService = new google.maps.DirectionsService();
+                            const request = {
+                                origin: originAddress, destination: destinationAddress, travelMode: travelMode,
+                            };
+                            directionsService.route(request, (response, status) => {
+                                if (status === 'OK') {
+                                    const routes = response.routes;
+                                    if (routes && routes.length > 0) {
+                                        directionsDisplay.setDirections(response);
+                                    } else {
+                                        showErrorMsg('Unable to calculate route');
+                                    }
+                                } else {
+                                    showErrorMsg('Error: ', status);
+                                }
+                            });
+                        } else {
+                            console.error('Error calculating distance:', status);
+                            showErrorMsg('Error calculating distance:', status);
+                            document.getElementById('submitBtn').disabled = true;
+                        }
+                    });
+                } else {
+                    showErrorMsg('The destination address is not valid or not found on the map.');
+                    document.getElementById('submitBtn').disabled = true;
+                }
+            });
+        } else {
+            showErrorMsg('The origin address is not valid or not found on the map.');
+            document.getElementById('submitBtn').disabled = true;
+        }
+    });
+}
+
+//check within the gujarat
+function isWithinGujarat(bounds) {
+    const gujaratBounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(20.1400, 68.0700), // Southwest coordinates
+        new google.maps.LatLng(24.7000, 74.2000)  // Northeast coordinates
+    );
+    return gujaratBounds.intersects(bounds);
+}
+
+
+autocompletePickup = new google.maps.places.Autocomplete(document.getElementById("pickupLocation"), {
+    bounds: new google.maps.LatLngBounds(new google.maps.LatLng(20.1, 68.1), new google.maps.LatLng(24.7, 74.5)),
+    componentRestrictions: {country: "in"},
+    fields: ["address_components", "geometry", "icon", "name"],
+    strictBounds: false,
+});
+
+autocompleteDropoff = new google.maps.places.Autocomplete(document.getElementById("dropoffLocation"), {
+    bounds: new google.maps.LatLngBounds(new google.maps.LatLng(20.1, 68.1), new google.maps.LatLng(24.7, 74.5)),
+    componentRestrictions: {country: "in"},
+    fields: ["address_components", "geometry", "icon", "name"],
+    strictBounds: false,
+});
+
+
+// ------------------price calculation-----------------------
+document.getElementById('vehicleType').addEventListener('change', checkAndCalculate);
+document.getElementById('numPassengers').addEventListener('blur', checkAndCalculate);
+document.getElementById('numDays').addEventListener('blur', checkAndCalculate);
+
+function checkAndCalculate() {
+    debugger
+    let vehicle = document.getElementById('vehicleType').value;
+    let numPassengers = parseInt(document.getElementById('numPassengers').value); // Parse numPassengers as integer
+    let locationValid = $("#valid-location-package").val();
+    let numDays = $("#numDays").val();
+
+    // Check conditions for validity
+    if (vehicle !== "" && locationValid === "Valid location" && numPassengers > 0 && numPassengers < 30 && numDays > 0 && numDays < 30) {
+        calculatePrice(); // Call calculatePrice function if conditions are met
+    }
+
+}
+
+function calculatePrice() {
+    let estimatedTime = $("#package-time").text();
+    estimatedTime = getTimeFromSpan(estimatedTime); // Convert time string to minutes
+    console.log("THis is the time  " + estimatedTime)
+    let distance = getDistanceFromSpan(document.getElementById('package-dist').innerHTML);
+    let vehicle = $('#vehicleType').val();
+    let numPassengers = parseInt(document.getElementById('numPassengers').value);
+    let numDays = $("#numDays").val();
+
+    let totalPrice = calculatePriceFromTimeAndVehicle(estimatedTime, vehicle, distance, numPassengers, numDays);
+    const totalPriceFormatted = parseFloat(totalPrice.toFixed(2));
+    const chargesValue = Math.floor(totalPriceFormatted);
+    console.log(totalPrice)
+    console.log(totalPriceFormatted)
+    console.log(chargesValue)
+    console.log(estimatedTime)
+    console.log(vehicle)
+    console.log(distance)
+    console.log(numPassengers)
+    console.log(numDays)
+    // Update the charges field with the calculated price
+    document.getElementById('charges').value = chargesValue;
+}
+
+function getTimeFromSpan(timeString) {
+    let hours = 0;
+    let minutes = 0;
+
+    // Split the timeString into parts
+    let timeParts = timeString.split(" ");
+
+    // Loop through the time parts and extract hours and minutes
+    for (let i = 0; i < timeParts.length; i++) {
+        if (timeParts[i].includes("hr")) {
+            hours = parseInt(timeParts[i - 1]);
+        }
+        if (timeParts[i].includes("min")) {
+            minutes = parseInt(timeParts[i - 1]);
+        }
+    }
+
+    // Convert everything to minutes
+    return hours * 60 + minutes;
+}
+
+function getDistanceFromSpan(distanceString) {
+    return parseFloat(distanceString.replace(" km", ""));
+}
+
+function calculatePriceFromTimeAndVehicle(estimatedTime, vehicle, distance, numPassengers, numDays) {
+    let basePrice = 0;
+    switch (vehicle) {
+        case "1":
+            basePrice = 5;
+            break;
+        case "2":
+            basePrice = 6;
+            break;
+        case "3":
+            basePrice = 8;
+            break;
+        case "4":
+            basePrice = 10;
+            break;
+        case "5":
+            basePrice = 20;
+            break;
+        default:
+            basePrice = 0;
+            break;
+    }
+    debugger
+    let timePrice = estimatedTime * 6;
+    let distancePrice = distance * 3;
+    let numPassengersPrice = numPassengers * 30;
+    let pricePerDays = numDays * 30;
+
+    // Calculate total price
+    let totalPrice = basePrice + timePrice + distancePrice + numPassengersPrice + pricePerDays;
+
+    return totalPrice;
+}

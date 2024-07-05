@@ -82,16 +82,10 @@ $("#myForm").validate({
 
                 if (typeof response === 'string') {
                     if (response.startsWith("Login")) {
-                        let loginMessage = response.substring(0, response.indexOf("+")); // get the "Login successful" part
-                        showSuccesstMsg(loginMessage.trim()); // trim to remove extra spaces
-                        let accountType = response.substring(response.indexOf("+") + 1).trim(); // get the account type digit
+                        showSuccesstMsg(response); // trim to remove extra spaces
                         setTimeout(function () {
                             $(".loader").hide();
-                            if (accountType === "3") {
-                                window.location.href = "/UrbanRides/rider/rider-dashboard";
-                            } else {
-                                window.location.href = "/UrbanRides/captain/captain-personal-details";
-                            }
+                            window.location.href = "/UrbanRides/rider/rider-dashboard";
                         }, 3000); // 3000ms = 3 seconds
                     } else {
                         showErrorMsg(response);
@@ -141,6 +135,6 @@ jQuery.validator.addMethod("lettersOnly", function (value, element) {
     return this.optional(element) || /^[a-zA-Z]+$/.test(value);
 }, "Please enter only letters");
 
-document.getElementById('back-button').addEventListener('click', function() {
+document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });

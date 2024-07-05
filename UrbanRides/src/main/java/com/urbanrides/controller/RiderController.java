@@ -4,6 +4,7 @@ package com.urbanrides.controller;
 import com.urbanrides.dtos.*;
 import com.urbanrides.model.SupportTypeLogs;
 import com.urbanrides.service.CabBookingService;
+import com.urbanrides.service.LoginServices;
 import com.urbanrides.service.RiderOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -38,6 +39,21 @@ public class RiderController {
 
     @Autowired
     private RiderOtherService riderOtherService;
+    @Autowired
+    private LoginServices loginServices;
+
+    @RequestMapping("/rider-personal-details")
+    public String riderPersonalDetails() {
+        System.out.println("inside the demo");
+        return "rider/riderPersonalDetails";
+    }
+
+    @ResponseBody
+    @PostMapping("/rider-personal-details-submit")
+    public ResponseEntity<String> riderPersonalDetailSubmit(@Valid @RequestBody RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
+        String toasterMsg = loginServices.riderPersonalDetailSubmit(riderPersonalDetailsDto, request);
+        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
+    }
 
     @RequestMapping("/rider-dashboard")
     public String riderDashboard() {
@@ -48,15 +64,16 @@ public class RiderController {
     @ResponseBody
     @PostMapping("/rider-normal-ride-submit")
     public ResponseEntity<String> riderNormalRideSubmit(@Valid @RequestBody RiderNormalRideDto riderNormalRideDto) {
-        String toasterMsg = cabBookingService.generalRide(riderNormalRideDto);
+        String toasterMsg = cabBookingService.generalRide(riderNormalRideDto );
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
     @ResponseBody
     @PostMapping("/cancel-ride-submit")
     public ResponseEntity<String> riderNormalRideSubmit(@RequestParam("cancelation-reason") String cancellationReason, @RequestParam("trip-id") int tripId) {
+        System.out.println("here we go again");
         String toasterMsg = cabBookingService.cancelRide(cancellationReason, tripId);
-        System.out.println(toasterMsg);
+
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
@@ -122,6 +139,7 @@ public class RiderController {
             return new ResponseEntity<>("Failed to submit the complain: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @RequestMapping("/rider-my-trip")
     public String riderMyTrip(HttpServletRequest request, Model model) {
         List<RiderMyTripDataDto> listOfRiderTripDetails = riderOtherService.getTripDetails(request);
@@ -207,5 +225,13 @@ public class RiderController {
         }
     }
 
+    @RequestMapping("/rider-logout")
+    public String riderLogout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "landingPage/landingPage";
+    }
 
 }

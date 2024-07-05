@@ -440,7 +440,11 @@ body {
     visibility: hidden;
     position: absolute;
 }
-
+#valid-location-package {
+    visibility: hidden;
+    position: absolute;
+    /*display: none;*/
+}
 #pickup-error, #dropoff-error {
     color: red;
     font-size: 12px;
@@ -556,6 +560,18 @@ body {
     bottom: -3%;
 }
 
+#valid-location-package-error {
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    /*left: 50%;*/
+    /*position: absolute;*/
+    /*transform: translateX(-50%);*/
+    /*bottom: -51%;*/
+    /*z-index: 100;*/
+}
+
 .pickUpimage {
     position: absolute;
     right: 17px;
@@ -630,6 +646,11 @@ input:not(:focus):valid ~ .floating-label {
     padding: 0px 3px;
 }
 
+.nati-cont {
+    /*background-color: #0D63A5;*/
+    padding: 8px;
+    border-radius: 12px;
+}
 
 /*---------------------common buttons-----------------------------*/
 
@@ -639,10 +660,11 @@ input:not(:focus):valid ~ .floating-label {
     transition: background-color 0.3s ease;
     border: 0px solid black;
     /*border-radius: 25px;*/
-    margin: 5px 0px 5px 12px;
+    margin: 5px 12px 5px 12px;
     padding: 2px 14px;
+    background-color: #0D63A5;
     padding: 8px;
-
+    border-radius: 12px;
 }
 
 .common-btn-color7-theme:hover {
@@ -904,7 +926,9 @@ input:not(:focus):valid ~ .floating-label {
     font-size: 20px;
 }
 
-
+#otpForm{
+    position: relative;
+}
 /*-----otp fields in captain info-----------*/
 
 .captain-info-cont {
@@ -1239,8 +1263,12 @@ input:not(:focus):valid ~ .floating-label {
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-}
+    text-align: center;
 
+}
+#dailyPickup , #selectedService{
+    align-items: center;
+}
 .dropdown-content-package a:hover {
     background-color: #f1f1f1;
 }

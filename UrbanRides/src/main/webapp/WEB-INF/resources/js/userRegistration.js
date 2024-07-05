@@ -290,25 +290,26 @@ $(document).ready(function () {
             dataType: 'text',
 
             success: function (response) {
-
-                // Handle successful response
+// Handle successful response
                 if (typeof response === 'string') {
                     if (response === "Rider Registered" || response === "Captain Registered") {
+                        $(".loader").hide();
+
                         showSuccesstMsg(response);
                         setTimeout(function () {
-                            $(".loader").hide();
-                            window.location.href = "../rider-personal-details";
+                            const redirectUrl = response === "Rider Registered" ? "../rider/rider-personal-details" : "../captain/captain-personal-details";
+                            window.location.href = redirectUrl;
                         }, 3000); // 3000ms = 3 seconds
                     } else {
                         showErrorMsg(response);
+                        $(".loader").hide();
                     }
-                    $(".loader").hide();
-
                 } else {
                     showErrorMsg(response);
+                    $(".loader").hide();
                 }
                 console.log("Form submitted successfully:", response);
-                $(".loader").hide();
+
 
                 // You can update UI, display messages, etc. based on the response
             }, error: function (error) {

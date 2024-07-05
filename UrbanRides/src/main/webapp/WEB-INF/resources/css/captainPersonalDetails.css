@@ -301,14 +301,14 @@ margin-right: 15px;
 }
 
 
-#registration-certificate-upload-error, #adhar-card-file-uplaod-error , #profile-photo-upload-error , #driving-license-file-upload-error {
+#registration-certificate-upload-error, #adhar-card-file-uplaod-error , #profile-photo-upload-error ,  #driving-license-file-upload-error {
     color: red;
     position: absolute;
     top: 51px;
     font-size: 14px;
     left: 3px;
 }
-#licenseExpiration-error , #rcExpiration-error{
+#licenseExpiration-error , #rcExpiration-error, #numberPlate-error{
     color: red;
     font-size: 14px;
 }

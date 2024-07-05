@@ -7,10 +7,13 @@ $(document).ready(function () {
             $('#rider-form').show();
             $('#package-form').hide();
             $('.package-submit').addClass('d-none'); // Hide the "Book Now" button
+            initMap();
+
         } else {
             $('#rider-form').hide();
             $('#package-form').show();
             $('.package-submit').removeClass('d-none'); // Show the "Book Now" button
+            rentAtaxiStaticLoc();
         }
     });
 });
@@ -125,29 +128,32 @@ $(document).ready(function () {
         $('#rider-form').submit(); // Trigger form submission
     });
 });
-
 $(document).ready(function () {
-    $(".vehicle-row").on("click", setMapDetails);
-    $("#pickup").on("blur", setMapDetails);
-    $("#dropoff").on("blur", setMapDetails);
+    $(".vehicle-row").on("click", function () {
+        setActiveVehicle($(this));
+    });
 
+    $("#pickup").on("change", function () {
+        setTimeout(setMapDetails, 1000);
+    });
+    $("#dropoff").on("change", function () {
+        setTimeout(setMapDetails, 1000);
+    });
 });
 
-function setMapDetails() {
-    var $target = $(this).closest(".vehicle-row");
-    if ($target.length === 0) {
-        $target = $(this);
-    }
+function setActiveVehicle($target) {
     $(".active").removeClass("active");
     $target.addClass("active");
     // Set the value of the hidden input field
     $("#vehicle-id").val($target.data("vehicle-id"));
+}
 
+function setMapDetails() {
     var pickup = $("#pickup").val();
     var dropoff = $("#dropoff").val();
     var vehicleId = $("#vehicle-id").val();
-    if (pickup && dropoff && vehicleId && vehicleId !== "" && !isNaN(vehicleId)) {
-        // console.log(vehicleId)
+    if (pickup && dropoff && pickup.trim() !== "" && dropoff.trim() !== "") {
+        console.log(pickup, dropoff);
         calculateDistanceByAddress(pickup, dropoff);
     }
 }
@@ -169,7 +175,7 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 22.470701, lng: 70.057732}, zoom: 12
     });
-
+    console.log("previsious click");
     distanceService = new google.maps.DistanceMatrixService();
     service = new google.maps.DistanceMatrixService();
     directionsDisplay = new google.maps.DirectionsRenderer({
@@ -292,7 +298,7 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                             const distanceInKm = distanceValue / 1000;
 
                             if (distanceInKm < 0.1 || distanceInKm > 50) {
-                                showErrorMsg('The distance is more than 50 km.');
+                                showErrorMsg('The distance should not be more than 50 km.');
                                 document.getElementById('submitBtn').disabled = true;
                                 return;
                             }
@@ -576,7 +582,6 @@ $(document).ready(function () {
 });
 
 //calculate distance between two markers by using coordinates
-
 function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddress) {
 
     const geocoder = new google.maps.Geocoder();
@@ -861,6 +866,7 @@ function connectToBackend() {
                 $(".registation-lable").text('Wait for Captain to arrive...')
 
                 $(".captain-contact").html(captainInfo.captainContact);
+                $(".vehicle-number").html(captainInfo.vehicleNumber);
                 $(".captain-org-name").html(captainInfo.captainName);
                 var imgElement = document.querySelector('.captain-info-profile img');
                 if (imgElement) {
@@ -1086,7 +1092,7 @@ $('#rating-modal-form-id').submit(function (event) {
             showSuccesstMsg('Ride Completed');
 
             // Reload the page after 2 seconds
-            setTimeout(function() {
+            setTimeout(function () {
                 location.reload();
             }, 3000); // 2000 milliseconds = 2 seconds
         },

@@ -62,7 +62,7 @@ public class Trip {
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-//    @NotBlank(message = "Distance is required")
+    //    @NotBlank(message = "Distance is required")
     @Size(max = 20, message = "Distance cannot be more than 20 characters")
     private String distance;
 
@@ -77,6 +77,9 @@ public class Trip {
     @JoinColumn(name = "captain_user_id", nullable = false)
     private User captainUserObj;
 
+    @Column(name = "trip_code")
+    @NotNull(message = "trip code is required")
+    private String TripCode;
 
     @Column(name = "payment_method")
     private String paymentMethod;

@@ -368,9 +368,8 @@ public class RiderOtherService {
                 GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripByTripId(perTrip.getTripId());
                 if (generalTripDetails == null) {
                     riderDataList.setStatus(2);
-
                 } else {
-                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRating());
+                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRatting());
                     if (generalTripDetails.getIsTripCompleted()) {
                         riderDataList.setStatus(1);
                     } else {

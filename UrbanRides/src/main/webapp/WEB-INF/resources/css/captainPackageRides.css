@@ -1,0 +1,350 @@
+body {
+    height: 100vh;
+    background-color: floralwhite;
+    padding-top: 60px; /* adjust the value to match the height of your nav bar */
+
+    font-family: 'Roboto', sans-serif;
+}
+
+.outer-cont {
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+}
+
+.nav-right-side {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-class {
+    background-color: #001F3F;
+    height: 55px;
+
+}
+
+.dropbtn {
+    border: 0px;
+    background: transparent;
+    display: flex;
+    flex-direction: row;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+.profile-pic {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5);
+}
+
+.profile-pic img {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    /*border: 1px solid white;*/
+}
+
+.profile-pic-side-dropdown {
+    margin-left: 5px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: 4px;
+}
+
+.profile-pic-side-dropdown img {
+    width: 25px;
+    height: 25px;
+}
+
+.main-cont {
+    min-width: 760px;
+    max-width: 800px;
+    background-color: white;
+}
+
+.nav-my-trip-cont {
+    display: flex;
+
+}
+
+.nav-my-trip-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+}
+
+.nav-my-trip-img img {
+    width: 28px;
+    height: 28px;
+}
+
+.nav-my-trip {
+    font-weight: 500;
+    padding-top: 3px
+
+}
+
+.normal-ride {
+    font-weight: 500;
+}
+
+.normal-ride img {
+    width: 24px;
+    margin-right: 5px;
+}
+
+.package-ride {
+    font-weight: 500;
+
+}
+
+.hr-for-divs {
+    margin: 0px;
+}
+
+
+.package-ride img {
+    width: 24px;
+    margin-right: 5px;
+
+}
+
+
+.type-of-ride {
+    display: flex;
+    justify-content: center;
+}
+
+.ride-type-active {
+    border-bottom: 2px solid #001F3F;
+}
+
+@media only screen and (min-width: 360px) and (max-width: 767px) {
+
+    .main-cont {
+        min-width: 100%;
+        max-width: 100%;
+        min-height: 100%;
+        max-height: 100%;
+    }
+
+
+}
+
+
+/*------------------------------------dropdown----------------------------*/
+
+
+.dropdown:hover > .dropdown-content {
+    opacity: 1;
+    /*display: initial;*/
+    visibility: visible;
+    transform: translateY(-2px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.dropdown-content {
+    animation: 0.5s slideup;
+    background-color: ghostwhite;
+    position: absolute;
+    top: 40px;
+    right: 8px;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 250px;
+    text-decoration: none;
+    text-wrap: nowrap;
+    z-index: 1000;
+    box-shadow: 0px 0px 8px grey;
+    border-radius: 5px;
+    transition: background-color 0.5s ease;
+    opacity: 0;
+    transform: translateY(2rem);
+}
+
+.hr-setting {
+    margin: 0px !important;
+    padding: 0px !important;
+}
+
+.dropdown-list {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    margin: 2px 4px;
+    padding: 10px 4px;
+}
+
+.dropdown-list:hover {
+    background: #dcdcdc;
+}
+
+.dropdown-list img {
+    margin: 0px 4px;
+    padding: 0px 4px;
+    width: 27px;
+    height: 27px;
+    filter: hue-rotate(0deg) saturate(0) brightness(0);
+}
+
+@keyframes slideup {
+    from {
+        transform: translateY(25px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.dropdown:hover.dropdown-content {
+    animation: 0.5s slideup;
+}
+
+.show-mobile {
+    display: none;
+}
+
+/*---------------------common buttons-----------------------------*/
+
+.captain-accept-btn{
+    background-color: #0D63A5;
+    color: white;
+    transition: background-color 0.3s ease;
+    border: 0px solid black;
+    border-radius: 12px;
+    padding: 6px 35px;
+    display: block;
+    margin: auto;
+}
+
+.captain-accept-btn:hover {
+    background-color: #0D63A5;
+    color: #FFD717;
+}
+
+.common-btn-color3-theme {
+    background-color: #0D63A5;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.common-btn-color3-theme:hover {
+    background-color: #001F3F;
+    color: #FFD717;
+}
+
+/*------------------------------------package trips------------------------------------*/
+.service-trip-text{
+    font-size: 24px;
+    font-weight: 500;
+    color: #001F3F;
+    margin-top: 20px;
+    /*margin-bottom: 12px;*/
+}
+/*-----back button---------*/
+
+.service-trip-text-sub{
+    font-size: 18px;
+    font-weight: 500;
+    color: #0D63A5;
+    margin-top: 20px;
+}
+.back-button {
+    margin-right: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    /*position: absolute;*/
+    /*left: 5%;*/
+    /*top: 5%;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#back-button img {
+    filter: invert(100%) sepia(0%) saturate(2%) hue-rotate(304deg) brightness(110%) contrast(101%);
+}
+
+.back-button:hover {
+    background-color: #001F3F; /* darker blue background on hover */
+}
+
+#back-arrow {
+    width: 30px; /* initial image size */
+    height: 30px;
+    filter: none; /* initial filter */
+}
+
+#back-arrow:hover {
+    width: 35px; /* larger image size on hover */
+    height: 35px;
+    filter: brightness(0) invert(1); /* white filter on hover */
+}
+
+
+@media only screen and (max-width: 756px) and (min-width: 360px) {
+
+
+    .show-mobile {
+        display: initial;
+    }
+
+    .nav-my-trip-cont {
+        display: none;
+    }
+
+    .nati-cont {
+        display: none;
+    }
+
+
+    .dropbtn {
+        border: 0px;
+        background: transparent;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-left: 0px;
+        margin-right: 5px;
+    }
+
+    .profile-pic {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .profile-pic img {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        /* border: 1px solid white; */
+    }
+
+    .nav-class {
+        background-color: #001F3F;
+        height: 45px;
+        padding: 0px;
+    }
+}

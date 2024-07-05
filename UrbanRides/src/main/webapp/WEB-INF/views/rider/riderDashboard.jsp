@@ -43,85 +43,7 @@
 </head>
 <body>
 <%@include file="../commonImports/loader.jsp" %>
-
-<nav class="container-fluid nav-class d-flex justify-content-between align-items-center fixed-top">
-    <!-- nav content -->
-    <div class="mx-3 d-flex justify-content-between align-items-center"
-         style="color: white; font-size: 24px; position: relative ">
-        <div class="back-button" id="back-button">
-            <img src="<c:url value='/resources/images/back-arrow.svg'/>" id="back-arrow">
-        </div>
-        <div>
-            Urban Rides
-        </div>
-    </div>
-
-    <div class="nav-right-side">
-        <a href="rider-notifications" style="text-decoration: none" class="nati-cont">
-            <img src="<c:url value='/resources/images/notification1.svg' />" alt="">
-        </a>
-
-        <a href="rider-my-trip" style="text-decoration: none" class="common-btn-color7-theme nav-my-trip-cont">
-            <div class="nav-my-trip-img">
-                <img src="<c:url value='/resources/images/location2.svg' />" alt="">
-            </div>
-            <div class="nav-my-trip">
-                My Trips
-            </div>
-        </a>
-        <div class="dropdown d-flex flex-row-reverse align-items-center">
-            <button class="dropbtn ">
-                <div class="profile-pic">
-                    <img src="<c:url value='/resources/images/profile-logo.svg' />" alt="">
-                </div>
-                <div class="profile-pic-side-dropdown">
-                    <img src="<c:url value='/resources/images/down-arrow.svg' />" alt="">
-                </div>
-            </button>
-
-            <div class="dropdown-content">
-                <a href="rider-notifications" class="dropdown-list show-mobile" style="text-decoration: none">
-                    <img src="<c:url value='/resources/images/notification1.svg' />" alt="">    </span>
-                    Notifications</a>
-                <div>
-                    <hr class="hr-setting">
-                </div>
-                <a href="rider-my-trip" class="dropdown-list show-mobile" style="text-decoration: none">
-                    <img src="<c:url value='/resources/images/location2.svg' />" alt="">    </span>
-                    My Trips</a>
-                <div>
-                    <hr class="hr-setting">
-                </div>
-
-
-                <a href="rider-manage-account" class="dropdown-list " style="text-decoration: none">
-                    <img src="<c:url value='/resources/images/manage-account.svg' />" alt="">    </span>
-                    Manage your account</a>
-                <div>
-                    <hr class="hr-setting">
-                </div>
-                <a href="rider-wallet" class="dropdown-list " style="text-decoration: none">
-                    <img src="<c:url value='/resources/images/wallet.svg' />" alt="">    </span>
-                    Wallet</a>
-                <div>
-                    <hr class="hr-setting">
-                </div>
-                <a href="captain-help" class="dropdown-list " style="text-decoration: none">
-                    <img src="<c:url value='/resources/images/help.svg' />" alt="">    </span>
-                    Help</a>
-                <div>
-                    <hr class="hr-setting">
-                </div>
-                <a href="user-login" class="dropdown-list ">
-                    <img src="<c:url value='/resources/images/sign-out.svg' />" alt=""></span>
-                    Sign out
-                </a>
-            </div>
-        </div>
-    </div>
-
-
-</nav>
+<%@include file="../rider/riderNavbar.jsp" %>
 
 
 <div class=" overflow-hidden h-100">
@@ -152,10 +74,8 @@
                         <div id="package-form-inner-cont">
                             <div class="land-sub-heading-t2 w-100 select-service mb-2">Select a service</div>
                             <div class="dropdown-package w-100">
-                                <button type="button" class="dropbtn-package w-100" id="selectedService">Rent a Taxi
-                                </button>
+                                <button type="button" class="dropbtn-package w-100" id="selectedService">Rent a Taxi</button>
                                 <div class="dropdown-content-package w-100">
-                                    <a href="#" id="packageService">Package Service</a>
                                     <a href="#" id="dailyPickup">Daily Pickup</a>
                                 </div>
                             </div>
@@ -164,7 +84,8 @@
                             <div class="input-container mt-3 mb-2">
                                 <input type="text" class="form-control taskName" autocomplete="off" id="pickupLocation"
                                        name="pickupLocation" required>
-                                <label class="floating-label pickup-placeholder d-none place-holder" for="pickupLocation"
+                                <label class="floating-label pickup-placeholder d-none place-holder"
+                                       for="pickupLocation"
                                        id="pickup-dropoff-label-id">Pick up - Drop off
                                     location</label>
                                 <label class="always-focus" id="pick-up-toggle">Pick up - Drop off
@@ -222,14 +143,10 @@
                             <div class="input-container mt-1 mb-2">
                                 <div class="custom-select-wrapper">
                                     <select id="vehicleType" name="vehicleType" class="form-control" required>
-                                        <option value="" class="vehicle-select-package" title="Select a vehicle">Select
-                                        </option>
-                                        <option value="1" class="vehicle-select-package " title="Bike">Bike</option>
-                                        <option value="2" class="vehicle-select-package" title="Rickshaw">Rickshaw
-                                        </option>
+                                        <option value="1" class="vehicle-select-package" selected title="Bike">Bike</option>
+                                        <option value="2" class="vehicle-select-package" title="Rickshaw">Rickshaw</option>
                                         <option value="3" class="vehicle-select-package" title="Car">Car</option>
-                                        <option value="4" class="vehicle-select-package" title="Luxury Car">Luxury Car
-                                        </option>
+                                        <option value="4" class="vehicle-select-package" title="Luxury Car">Luxury Car</option>
                                         <option value="5" class="vehicle-select-package" title="Bus">Bus</option>
                                     </select>
                                 </div>
@@ -270,8 +187,10 @@
                                     <label for="day7">Sunday</label>
                                 </div>
                             </div>
+
                             <div class="w-100 row">
-                                <input type="text" id="selectedDays" class="d-none" required name="selectedDays" value="">
+                                <input type="text" id="selectedDays" class="d-none" required name="selectedDays"
+                                       value="">
                             </div>
                             <div class="input-container mt-3 mb-3">
                                 <input type="number" class="form-control taskName" autocomplete="off" id="numDays"
@@ -281,11 +200,11 @@
                                 <img src="<c:url value='/resources/images/number-of-passenger.svg'/>"
                                      class="pickUpimage pickup-placeholder-img">
                             </div>
-                            <div class="input-container mt-2 mb-2">
-                                <input type="number" class="form-control taskName" autocomplete="off" id="charges"
-                                       name="charges"   >
-<%--                                <label class="floating-label pickup-placeholder place-holder"--%>
-<%--                                       for="numPassengers">Charges</label>--%>
+                            <div class="input-container mt-2 mb-2" id="charges-div-cont">
+                                <input type="number" class="form-control taskName" autocomplete="off" id="charges" readonly
+                                       name="charges" value="0">
+                                <%--                                <label class="floating-label pickup-placeholder place-holder"--%>
+                                <%--                                       for="numPassengers">Charges</label>--%>
                                 <label class="always-focus" for="pickupTime">Charges</label>
 
                                 <img src="<c:url value='/resources/images/charges.svg'/>"
@@ -308,10 +227,15 @@
                             </div>
 
                             <div id="package-distance-time-container" class="d-none mt-4">
-                                <div id="package-distance">Distance :- <span class="dynamic-distance">--</span></div>
-                                <div id="package-ride-time">Estimated time :- <span class="dynamic-time">--</span></div>
+                                <div id="package-distance">Distance :- <span id="package-dist" class="dynamic-distance-package">--</span></div>
+                                <div id="package-ride-time">Estimated time :- <span id="package-time" class="dynamic-time-package">--</span></div>
                             </div>
-                            <div class="otp-notes mt-4" id="hide-chages-notes">Charges:- The charges will be calculated as the Kilometers travelled during the trip</div>
+
+                            <div class="otp-notes mt-4" id="hide-chages-notes">Charges:- The charges will be calculated
+                                as vehicale selected by you (1000-1500 per day) , the Kilometers travelled during the trip per km 2.5 rs.
+                            </div>
+                            <input type="text" class="d-none" name="validLocation" id="valid-location-package" value="">
+
                         </div>
                     </form>
 
@@ -489,6 +413,13 @@
                         <div class="otp-notes">Note:- Please provide this OTP to the captain to confirm the ride.
                         </div>
                         <div class="captain-info-rout-info-cont">
+                            <div class="vehicle-number-text">
+                                Vehicle Number :-
+                            </div>
+                            <div class="vehicle-number">
+                                AD23AD1234
+                            </div>
+                        </div> <div class="captain-info-rout-info-cont">
                             <div class="estimated-waiting-time">
                                 Estimated Waiting Time :-
                             </div>

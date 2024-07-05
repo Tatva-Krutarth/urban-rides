@@ -43,7 +43,7 @@ public class PackageServiceDto {
     @Pattern(regexp = "^$|^([1-7](,([1-7](?!.*\\b\\1\\b)))*?)$", message = "Invalid pickup days format. Should be comma-separated numbers between 1 and 7, with each number appearing only once.")
     private String dailyPickUp;
 
-    @Min(value = 1, message = "Charges must be at least 1")
+//    @Min(value = 1, message = "Charges must be at least 1")
     private int charges;
 
     @NotBlank(message = "Emergency contact number is required")
