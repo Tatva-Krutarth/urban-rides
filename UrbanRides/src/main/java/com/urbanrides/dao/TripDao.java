@@ -41,7 +41,21 @@ public class TripDao {
     @Transactional
     public List<Trip> getTripForPayment(int userId) {
         Session s = sessionFactory.openSession();
-        String queryString = "FROM Trip WHERE tripUserId.userId = :userId AND isAccepted = true";
+        String queryString = "FROM Trip WHERE tripUserId.userId = :userId AND isAccepted = true AND paymentMethod IS NOT NULL";
+        Query<Trip> query = s.createQuery(queryString, Trip.class);
+        query.setParameter("userId", userId);
+        List<Trip> resultList = query.getResultList();
+        if (resultList.isEmpty()) {
+            return null;
+        } else {
+            return resultList;
+        }
+    }
+
+    @Transactional
+    public List<Trip> getTripForPaymentForCaptain(int userId) {
+        Session s = sessionFactory.openSession();
+        String queryString = "FROM Trip WHERE captainUserObj.userId = :userId AND isAccepted = true AND paymentMethod IS NOT NULL";
         Query<Trip> query = s.createQuery(queryString, Trip.class);
         query.setParameter("userId", userId);
         List<Trip> resultList = query.getResultList();
@@ -82,6 +96,15 @@ public class TripDao {
         return result.isEmpty() ? null : result;
     }
 
+
+    @Transactional
+    public List<Trip> getAllTripOfCaptain() {
+        Session session = getCurrentSession();
+        String hql = "FROM Trip WHERE isAccepted = false AND ServiceType.serviceTypeId = 1 AND paymentMethod IS NULL";
+        Query<Trip> query = session.createQuery(hql, Trip.class);
+        List<Trip> result = query.getResultList();
+        return result.isEmpty() ? null : result;
+    }
 
 }
 

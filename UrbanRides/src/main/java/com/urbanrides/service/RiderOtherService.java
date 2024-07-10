@@ -39,13 +39,21 @@ public class RiderOtherService {
     @Autowired
     private com.urbanrides.dao.NotificationLogsDao notificationLogsDao;
 
+    @Autowired
+    private HttpSession httpSession;
 
     @Autowired
     TripDao tripDao;
+    @Autowired
+    PasswordToHash passwordToHash;
+    @Autowired
+    CommonValidation commonValidation;
 
     public List<NotificationDataDto> getNotificationData() {
         List<NotificationDataDto> notiDtoList = new ArrayList<>();
-        List<NotificationLogs> notificationLogsList = notificationLogsDao.getAllNotificationLogs();
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+
+        List<NotificationLogs> notificationLogsList = notificationLogsDao.getAllNotificationLogs(userSessionObj.getUserId());
 
         if (notificationLogsList != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
@@ -67,14 +75,15 @@ public class RiderOtherService {
         return dateTime.format(formatter);
     }
 
+    @Autowired
+    private HttpSession session;
 
 //    --------wallet--------------
 
-    public double getAmount(HttpServletRequest req) {
+    public double getAmount() {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
 
-//        User user = usersDao.getUserByUserId(1);
-        //get session id
-        UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+        UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         BigDecimal walletAmount = userDetails.getWallet();
         double amountDouble = walletAmount.setScale(2, RoundingMode.HALF_UP).doubleValue();
         return amountDouble;
@@ -100,8 +109,10 @@ public class RiderOtherService {
     }
 
     public double depositAmount(double amount) {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+
         try {
-            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
 
             BigDecimal currentAmount = userDetails.getWallet();
             BigDecimal newAmount = currentAmount.add(BigDecimal.valueOf(amount));
@@ -117,12 +128,13 @@ public class RiderOtherService {
     }
 
 
+
     //    -----payment data-----------------
     public List<RiderWalletDataDto> getPaymentData(HttpServletRequest req) {
         List<RiderWalletDataDto> walletList = new ArrayList<>();
 
-//session
-        List<Trip> tripList = tripDao.getTripForPayment(1);
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        List<Trip> tripList = tripDao.getTripForPayment(userSessionObj.getUserId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
 
         for (Trip perTrip : tripList) {
@@ -130,9 +142,9 @@ public class RiderOtherService {
             riderWalletDataDto.setServiceType(perTrip.getServiceType().getServiceTypeId());
             riderWalletDataDto.setDateAndTime(formatLocalDateTime(perTrip.getCreatedDate(), formatter));
 
-//            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
-            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
-            if ("Pay with cash".equals(perTrip.getPaymentMethod())) {
+            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
+//            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+            if ("Pay with cash".equalsIgnoreCase(perTrip.getPaymentMethod())) {
                 riderWalletDataDto.setPaymentMethod(1);
             } else {
                 riderWalletDataDto.setPaymentMethod(2);
@@ -147,10 +159,10 @@ public class RiderOtherService {
 
 //    ----------------get user management detialos -=-------------/
 
-    public UserManagementDataDto getUserManagementDetails(HttpServletRequest request) {
+    public UserManagementDataDto getUserManagementDetails() {
+        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
 
-//get session
-        UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+        UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         UserManagementDataDto userManagementDataDto = new UserManagementDataDto();
         userManagementDataDto.setFirstName(userDetails.getFirstName());
         userManagementDataDto.setLastName(userDetails.getLastName());
@@ -158,10 +170,7 @@ public class RiderOtherService {
         userManagementDataDto.setPhone(userDetails.getPhone());
 
         if (userDetails.isProfilePhoto()) {
-
-            userManagementDataDto.setProfilePhotoPath("/UrbanRides/resources/uploads/riderDocuments/profilePhoto/" + 1);
-//            userManagementDataDto.setProfilePhotoPath("/UrbanRides/resources/uploads/riderDocuments/profilePhoto/" + userId);
-
+            userManagementDataDto.setProfilePhotoPath("/UrbanRides/resources/uploads/riderDocuments/riderProfilePics" + userSessionObj.getUserId() + "/riderProfile" + userSessionObj.getUserId() + userDetails.getProfilePhotoExtention());
         }
 
 
@@ -172,7 +181,9 @@ public class RiderOtherService {
 
     public ResponseEntity<?> riderPersonalDetailSubmit(RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
         try {
-            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+
+            UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
             if (userDetails == null) {
                 return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
             }
@@ -187,10 +198,7 @@ public class RiderOtherService {
     }
 
     //-------------------------------------------------password--------------------------
-    @Autowired
-    PasswordToHash passwordToHash;
-    @Autowired
-    CommonValidation commonValidation;
+
 
     public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest req) throws Exception {
         // Custom validation
@@ -213,7 +221,9 @@ public class RiderOtherService {
     }
 
     public void updatePassword(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) throws Exception {
-        User user = usersDao.getUserByUserId(8);
+        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+
+        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         if (user == null) {
             throw new Exception("User not found");
         }
@@ -241,19 +251,27 @@ public class RiderOtherService {
 
 
     //    -----------------file-----------------------
+
+
     public String updateProfilePic(RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session) throws IOException {
-        String riderId = "2"; // Assuming this method exists to get riderId
-        String folderName = "riderProfilePics" + riderId;
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        // Get UserDetails object for the current user
+        UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
+
+
+        String riderId = String.valueOf(userSessionObj.getUserId());
+        String folderName = "riderProfilePics" + riderId; // Dynamic folder name
         String folderPath = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "riderDocuments" + File.separator + folderName;
         File folder = new File(folderPath);
+
+        // Delete all existing files in the folder
+        deleteFilesInFolder(folder);
 
         if (!folder.exists()) {
             // Create the folder if it doesn't exist
             folder.mkdirs();
         }
 
-        // Dynamically generate the file name based on existing files in the folder
-        int i = 1;
         String fileExtension = getFileExtension(riderUMUpdateProfileLogo.getProfilePhoto().getOriginalFilename()); // Get the actual file extension
 
         // Check for valid file extensions (.png or .jpg)
@@ -262,13 +280,7 @@ public class RiderOtherService {
         }
 
         String fileNameBase = "riderProfile";
-        String fileName = fileNameBase + i + fileExtension;
-
-        // Check for existing file names and find the next available file name
-        while (new File(folderPath + File.separator + fileName).exists()) {
-            i++;
-            fileName = fileNameBase + i + fileExtension;
-        }
+        String fileName = fileNameBase + riderId + fileExtension; // Use riderId in the filename
 
         String fileProfile = folderPath + File.separator + fileName;
         System.out.println("Saving profile photo to: " + fileProfile);
@@ -281,11 +293,32 @@ public class RiderOtherService {
             System.out.println("Error uploading profile photo: " + e.getMessage());
             throw e; // Rethrow the exception to be handled by the controller
         }
+        // Set profile photo flag and extension
+        userDetails.setProfilePhoto(true);
+        userDetails.setProfilePhotoExtention(getFileExtension(riderUMUpdateProfileLogo.getProfilePhoto().getOriginalFilename()));
+
+        // Update user details in the database
+        userdetailsdao.updateUserDetails(userDetails);
+        userSessionObj.setProfileLoc("/resources/uploads/riderDocuments/riderProfilePics" + userSessionObj.getUserId() + "/riderProfile" + userSessionObj.getUserId() + userDetails.getProfilePhotoExtention());
+        session.setAttribute("riderSessionObj", userSessionObj);
 
         // Get the relative path
         String relativePath = getRelativePath(fileProfile, session);
 
         return relativePath;
+    }
+
+    private void deleteFilesInFolder(File folder) {
+        if (folder == null || !folder.exists() || !folder.isDirectory()) {
+            return;
+        }
+
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                file.delete();
+            }
+        }
     }
 
     private String getFileExtension(String fileName) {
@@ -323,11 +356,11 @@ public class RiderOtherService {
     private GeneralTripDetailsDao generalTripDetailsDao;
 //    -------------------------get trip details-----------------------------------------
 
-    public List<RiderMyTripDataDto> getTripDetails(HttpServletRequest request) {
+    public List<RiderMyTripDataDto> getTripDetails() {
         List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
 
-        // session trip id, assuming 1 is a placeholder for the actual userId from the session
-        List<Trip> tripList = tripDao.getAllTrip(1);
+        List<Trip> tripList = tripDao.getAllTrip(userSessionObj.getUserId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
 
         for (Trip perTrip : tripList) {
@@ -339,9 +372,7 @@ public class RiderOtherService {
             riderDataList.setTripDate(formatLocalDateTime(perTrip.getCreatedDate(), formatter));
             riderDataList.setDistance(perTrip.getDistance());
 
-
-            //Generate the trip id code
-//            riderDataList.setTripId(perTrip.getTripId());
+            riderDataList.setTripId(perTrip.getTripCode());
             riderDataList.setTripId("adlo8dhfeq7c29");
 
 
@@ -358,18 +389,19 @@ public class RiderOtherService {
                 }
 
                 riderDataList.setCharges(perTrip.getCharges());
-//                UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
-                UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
+                UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
+//                UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(8);
                 riderDataList.setCaptainName(userDetails.getFirstName() + " , " + userDetails.getLastName());
 
-                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain2/profilePhoto.png";
-//                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain" + perTrip.getCaptainUserObj().getUserId() + "/profilePhoto.png";
+//                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain2/profilePhoto.png";
+                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain" + perTrip.getCaptainUserObj().getUserId() + "/profilePhoto.png";
                 riderDataList.setCaptainProfilePath(captainProfilePath);
                 GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripByTripId(perTrip.getTripId());
                 if (generalTripDetails == null) {
                     riderDataList.setStatus(2);
                 } else {
                     riderDataList.setCaptainRatting(generalTripDetails.getCaptainRatting());
+
                     if (generalTripDetails.getIsTripCompleted()) {
                         riderDataList.setStatus(1);
                     } else {
@@ -403,9 +435,8 @@ public class RiderOtherService {
     @Autowired
     private SupportTypeLogsDao supportTypeLogsDao;
 
-
-
     public void getSupportSaveToLogs(RiderGetSupportDto riderGetSupportDto, HttpSession session) throws IOException {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
         SupportTypeLogs supportTypeLogs = new SupportTypeLogs();
         supportTypeLogs.setSupportType(SupportType.getValueById(riderGetSupportDto.getSupportType()));
         supportTypeLogs.setDescription(riderGetSupportDto.getDescription());
@@ -416,40 +447,44 @@ public class RiderOtherService {
         } else {
             supportTypeLogs.setFile(true);
 
-            // Define the directory paths
+            // Define the base directory path
             String baseDir = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "riderDocuments" + File.separator;
-            String userDir = baseDir + "riderComplain" + File.separator + 3 + File.separator;
-//            String userDir = baseDir + "riderComplain" + File.separator + user.getUserId() + File.separator;
 
-            // Create directories if they do not exist
-            File directory = new File(userDir);
-            if (!directory.exists()) {
-                directory.mkdirs();
+            // Define the user-specific directory path
+            String userDir = baseDir + "riderComplain" + userSessionObj.getUserId() + File.separator;
+
+            // Create user-specific directory if it does not exist
+            File userDirectory = new File(userDir);
+            if (!userDirectory.exists()) {
+                userDirectory.mkdirs();
             }
 
             // Define the file name
-            String fileName = complainFile.getOriginalFilename();
+            String fileExtension = getFileExtension(complainFile.getOriginalFilename());
+            String fileName = "complain" + userSessionObj.getUserId() + fileExtension;
             String filePath = userDir + fileName;
 
             // Save the file
             complainFile.transferTo(new File(filePath));
 
             supportTypeLogs.setFileName(fileName);
+            supportTypeLogs.setFileExtention(fileExtension); // Assuming SupportTypeLogs has a field for file extension
         }
 
         // Get user object from session or database
         User user = (User) session.getAttribute("user"); // Assuming user is stored in session
         if (user == null) {
-            user = usersDao.getUserByUserId(1); // Default user, replace with actual logic
+            user = usersDao.getUserByUserId(userSessionObj.getUserId()); // Default user, replace with actual logic
         }
         supportTypeLogs.setUserObj(user);
 
-        // Generate support case ID (implement the method)
+        // Generate support case ID
         supportTypeLogs.setSupportCaseId(generateSupportCaseId());
 
         // Save to database
         supportTypeLogsDao.saveSupportLogs(supportTypeLogs);
     }
+
 
     private String generateSupportCaseId() {
         // Implement your logic to generate a unique support case ID

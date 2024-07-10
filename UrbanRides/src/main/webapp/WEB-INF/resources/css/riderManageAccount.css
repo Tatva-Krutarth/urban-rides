@@ -198,11 +198,13 @@ body {
 .show-mobile {
     display: none;
 }
+
 .nati-cont {
     /*background-color: #0D63A5;*/
     padding: 8px;
     border-radius: 12px;
 }
+
 /*---------------------common buttons-----------------------------*/
 
 .common-btn-color7-theme {
@@ -300,10 +302,11 @@ body {
     height: calc(100vh - 45px);
 }
 
-#captain-manage-account-cont{
+#captain-manage-account-cont {
     height: 100%;
 
 }
+
 .doc-cont {
     position: relative;
 
@@ -493,7 +496,26 @@ body {
         margin-right: 5px;
     }
 
+    .aprroved-status {
+        position: absolute;
+        right: 32px;
+        top: 30px;
 
+    }
+
+    #aprroved-img {
+        position: absolute;
+        right: 0px;
+        top: 29px;
+    }
+
+    .right-part {
+        width: 100%;
+        /*background-color: pink;*/
+        display: flex;
+        flex-direction: column;
+        padding: 0px 0px 0px 0px;
+    }
     .profile-pic {
         width: 30px;
         height: 30px;

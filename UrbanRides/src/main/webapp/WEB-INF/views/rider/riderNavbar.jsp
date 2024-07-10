@@ -41,7 +41,14 @@
         <div class="dropdown d-flex flex-row-reverse align-items-center">
             <button class="dropbtn ">
                 <div class="profile-pic">
-                    <img src="<c:url value='/resources/images/profile-logo.svg' />" alt="">
+                    <c:choose>
+                        <c:when test="${riderSessionObj.profilePhoto eq 1}">
+                            <img src="<c:url value='${riderSessionObj.profileLoc}' />" alt="">
+                        </c:when>
+                        <c:otherwise>
+                            <img src="<c:url value='/resources/images/profile-logo.svg' />" alt="">
+                        </c:otherwise>
+                    </c:choose>
                 </div>
                 <div class="profile-pic-side-dropdown">
                     <img src="<c:url value='/resources/images/down-arrow.svg' />" alt="">

@@ -81,4 +81,6 @@
 </div>
 
 </body>
+<script src="<c:url value="/resources/js/riderNotifications.js"/>"></script>
+
 </html>

@@ -64,7 +64,7 @@ public class RiderController {
     @ResponseBody
     @PostMapping("/rider-normal-ride-submit")
     public ResponseEntity<String> riderNormalRideSubmit(@Valid @RequestBody RiderNormalRideDto riderNormalRideDto) {
-        String toasterMsg = cabBookingService.generalRide(riderNormalRideDto );
+        String toasterMsg = cabBookingService.generalRide(riderNormalRideDto);
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
@@ -107,12 +107,23 @@ public class RiderController {
     }
 
 
+    //    @ResponseBody
+//    @PostMapping("/package-ride-submit")
+//    public ResponseEntity<String> packageRideSubmit(@Valid @RequestBody PackageServiceDto packageServiceDto) {
+//        String toasterMsg = cabBookingService.savePackageTripDetails(packageServiceDto);
+//        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
+//    }
     @ResponseBody
     @PostMapping("/package-ride-submit")
     public ResponseEntity<String> packageRideSubmit(@Valid @RequestBody PackageServiceDto packageServiceDto) {
-        String toasterMsg = cabBookingService.savePackageTripDetails(packageServiceDto);
-        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
+        try {
+            String toasterMsg = cabBookingService.savePackageTripDetails(packageServiceDto);
+            return ResponseEntity.ok(toasterMsg);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
+
 
     @RequestMapping("/rider-notifications")
     public String riderNotifications(Model model) {
@@ -141,17 +152,24 @@ public class RiderController {
     }
 
     @RequestMapping("/rider-my-trip")
-    public String riderMyTrip(HttpServletRequest request, Model model) {
-        List<RiderMyTripDataDto> listOfRiderTripDetails = riderOtherService.getTripDetails(request);
-        model.addAttribute("tripDetails", listOfRiderTripDetails);
+    public String riderMyTrip() {
         return "rider/riderMyTrips";
     }
 
+
+    @ResponseBody
+    @RequestMapping("/rider-my-trip-details")
+    public List<RiderMyTripDataDto> getRiderMyTrip() {
+        List<RiderMyTripDataDto> listOfRiderTripDetails = riderOtherService.getTripDetails();
+        return listOfRiderTripDetails;
+    }
+
+
     @RequestMapping("/rider-wallet")
-    public String riderWallet(Model model, HttpServletRequest req) {
+    public String riderWallet(Model model) {
 
 
-        double walletAMount = riderOtherService.getAmount(req);
+        double walletAMount = riderOtherService.getAmount();
         model.addAttribute("walletAmount", walletAMount);
         return "rider/riderWallet";
     }
@@ -182,7 +200,7 @@ public class RiderController {
     @ResponseBody
     @RequestMapping("/rider-usermanagement-details")
     public UserManagementDataDto userManagementDetails(HttpServletRequest req) {
-        UserManagementDataDto userManagementDataDto = riderOtherService.getUserManagementDetails(req);
+        UserManagementDataDto userManagementDataDto = riderOtherService.getUserManagementDetails();
         return userManagementDataDto;
     }
 

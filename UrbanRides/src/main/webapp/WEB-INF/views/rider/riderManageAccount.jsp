@@ -102,7 +102,7 @@
 
                 <div class="personal-details-cont hide-this d-none position-relative">
                     <div class="personal-details-title">Current Password</div>
-                    <input type="password" class="personal-details-data login-details" id="current-password"
+                    <input type="password" class="personal-details-data-login login-details" id="current-password"
                            name="currentPassword">
                     <div style="float: right; position: relative;">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>"
@@ -113,7 +113,7 @@
 
                 <div class="personal-details-cont hide-this d-none position-relative">
                     <div class="personal-details-title">New Password</div>
-                    <input type="password" class="personal-details-data login-details" id="new-password"
+                    <input type="password" class="personal-details-data-login login-details" id="new-password"
                            name="newPassword">
                     <div style="float: right; position: relative;">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>" id="togglePassword2"
@@ -122,7 +122,7 @@
                 </div>
                 <div class="personal-details-cont hide-this d-none position-relative">
                     <div class="personal-details-title">Confirm New Password</div>
-                    <input type="password" class="personal-details-data login-details" id="conf-new-password"
+                    <input type="password" class="personal-details-data-login login-details" id="conf-new-password"
                            name="confNewPassword">
                     <div style="float: right; position: relative;">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>" id="togglePassword3"

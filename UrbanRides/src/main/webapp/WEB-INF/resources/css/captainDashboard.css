@@ -217,11 +217,13 @@ body {
 .show-mobile {
     display: none;
 }
+
 .nati-cont {
     /*background-color: #0D63A5;*/
     padding: 8px;
     border-radius: 12px;
 }
+
 /*---------------------common buttons-----------------------------*/
 
 .common-btn-color7-theme {
@@ -235,6 +237,35 @@ body {
     background-color: #0D63A5;
     padding: 8px;
     border-radius: 12px;
+}
+
+.acceptTripBtn {
+    color: white;
+    transition: background-color 0.3s ease;
+    border: 0px solid black;
+    background-color: #0D63A5;
+    padding: 5px 14px;
+    border-radius: 10px;
+    width: 100%;
+}
+.acceptTripBtn:hover{
+    background-color: #0D63A5;
+    color: #FFD717;
+}
+
+.captain-accept-btn {
+    color: white;
+    transition: background-color 0.3s ease;
+    border: 0px solid black;
+    background-color: #0D63A5;
+    padding: 5px 14px;
+    border-radius: 10px;
+    width: 100%;
+}
+
+.captain-accept-btn:hover {
+    background-color: #0D63A5;
+    color: #FFD717;
 }
 
 .common-btn-color7-theme:hover {
@@ -258,19 +289,26 @@ body {
 #captain-dash-main-cont {
     /*background: red;*/
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
+
     height: calc(100vh - 55px);
     margin-top: -5px;
 }
 
 .captain-dash-upper {
-    background: yellow;
-    height: calc(60vh - 55px);
+    background: gray;
+    height: 100%;
+    width: 50%;
+}
+
+#dash-first-ui {
+    padding: 5px 20px;
 }
 
 #captain-dash-lower {
     /*background: green;*/
-    height: 40vh;
+    height: 100%;
+    width: 50%;
     overflow-y: auto;
     padding: 12px 0px 0px 0px;
 }
@@ -293,8 +331,8 @@ body {
 #captain-rider-info-cont {
     border-radius: 15px;
     border: 3px solid #e4e4e4;
-    min-width: 746px;
-    max-width: 900px;
+    min-width: 384px;
+    max-width: 746px;
     margin: auto;
     margin-top: 12px;
     margin-bottom: 12px;
@@ -431,6 +469,29 @@ body {
         display: none;
     }
 
+    #captain-dash-main-cont {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 55px);
+        margin-top: -5px;
+    }
+
+    .captain-dash-upper {
+        width: 100%;
+
+        background: yellow;
+        height: calc(60vh - 55px);
+    }
+
+    #captain-dash-lower {
+        width: 100%;
+
+        /*background: green;*/
+        height: 40vh;
+        overflow-y: auto;
+        padding: 12px 0px 0px 0px;
+    }
 
     .dropbtn {
         border: 0px;
@@ -569,7 +630,7 @@ body {
     transform: translateX(-50%);
 }
 
-#pickupLocation-error, #numDays-error, ickupLocation-error, #drofOffTime-error, #numPassengers-error, #dropoffLocation-error, #pickupDate-error, #pickupTime-error, #vehicleType-error, #emergencyContact-error, #charges-error, numPassengers-error {
+#pickupLocation-error,#otp-error ,  #numDays-error, ickupLocation-error, #drofOffTime-error, #numPassengers-error, #dropoffLocation-error, #pickupDate-error, #pickupTime-error, #vehicleType-error, #emergencyContact-error, #charges-error, numPassengers-error {
     color: red;
     font-size: 12px;
     font-weight: 500;

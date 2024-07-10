@@ -232,7 +232,7 @@ $(document).ready(function () {
                     // Update the profile photo in the UI
                     var relativePath = response; // Assuming the response contains the relative path
                     $('.manage-account-profile-photo img').attr('src', relativePath);
-                },
+                    window.location.reload();                },
                 error: function (xhr, textStatus, errorThrown) {
                     console.error('Error updating profile photo:', xhr, textStatus, errorThrown);
                     showErrorMsg('Failed to update profile photo. Please try again later.');

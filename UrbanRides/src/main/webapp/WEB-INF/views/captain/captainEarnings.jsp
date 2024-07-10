@@ -63,7 +63,7 @@
         </div>
         <div class="input-container" id="inputContainer">
             <input type="number" id="depositAmount" placeholder="Enter amount">
-            <button class="add-money" id="deposit-money" onclick="addMoney()">Add Money</button>
+            <button class="add-money" id="deposit-money" onclick="withdrawMoney()">Withdraw</button>
         </div>
     </div>
 
@@ -75,7 +75,7 @@
     <div class="container">
 
         <div class="wallet-subheading">
-            Paid By Wallet
+            Paid By Cash
         </div>
         <div id="transaction-container1">
             <div class="noti-container mt-2 mb-2">
@@ -95,7 +95,7 @@
         </div>
 
         <div class="wallet-subheading">
-            Paid By Cash
+            Paid By Wallet
         </div>
         <div id="transaction-container2">
 
@@ -123,6 +123,6 @@
 
 <%------------------------------------jquerry  validation--%>
 
-<script src="<c:url value="/resources/js/riderWallet.js"/>"></script>
+<script src="<c:url value="/resources/js/captainEarnings.js"/>"></script>
 </body>
 </html>

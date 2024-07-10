@@ -73,11 +73,11 @@
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Last Name</div>
-                    <input type="text" class="personal-details-data" name="lastName" value="">
+                    <input type="text" class="personal-details-data" name="lastName" value="" readonly>
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Phone</div>
-                    <input type="text" class="personal-details-data" name="phone" value="">
+                    <input type="text" class="personal-details-data" name="phone" value="" readonly>
                 </div>
                 <div class="edit-btn-cont mt-4">
                     <button class="edit-button first-button common-btn-color3-theme" type="button">
@@ -102,7 +102,7 @@
 
                 <div class="personal-details-cont hide-this d-none position-relative">
                     <div class="personal-details-title">Current Password</div>
-                    <input type="password" class="personal-details-data login-details" id="current-password"
+                    <input type="password" class="personal-details-data-login login-details" id="current-password"
                            name="currentPassword">
                     <div style="float: right; position: relative;">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>"
@@ -113,7 +113,7 @@
 
                 <div class="personal-details-cont hide-this d-none position-relative">
                     <div class="personal-details-title">New Password</div>
-                    <input type="password" class="personal-details-data login-details" id="new-password"
+                    <input type="password" class="personal-details-data-login login-details" id="new-password"
                            name="newPassword">
                     <div style="float: right; position: relative;">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>" id="togglePassword2"
@@ -122,7 +122,7 @@
                 </div>
                 <div class="personal-details-cont hide-this d-none position-relative">
                     <div class="personal-details-title">Confirm New Password</div>
-                    <input type="password" class="personal-details-data login-details" id="conf-new-password"
+                    <input type="password" class="personal-details-data-login login-details" id="conf-new-password"
                            name="confNewPassword">
                     <div style="float: right; position: relative;">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>" id="togglePassword3"
@@ -154,6 +154,11 @@
                     Document Status
                 </div>
                 <div class="aprroved-status">Approved</div>
+                <div class="mt-3">
+                    We are pleased to inform you that your documents have been successfully verified. As a crucial part
+                    of our service, ensuring that all captains have their documents approved helps us maintain the
+                    highest standards of safety and reliability.
+                </div>
             </div>
             <hr>
 
@@ -165,7 +170,8 @@
             <div class="mang-acc-heading mt-2">
                 <h3>Vehicle Details</h3>
             </div>
-            <p>If you need to change your vehicle, please send a request to the admin for approval.</p>
+            <p>If you need to change your vehicle, please send a request to the admin for approval. Once you send the
+                request, you won't be able to log in again until your documents are verified.</p>
 
             <div class="mt-3">
                 <button type="button" class="btn btn-warning" data-bs-toggle="modal"

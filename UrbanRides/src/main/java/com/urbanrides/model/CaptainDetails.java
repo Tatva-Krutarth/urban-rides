@@ -73,6 +73,9 @@ public class CaptainDetails {
     @Column(name = "profile_photo_extension")
     private String profilePhotoExtension;
 
+    @Column(name = "captain_location")
+    private String captainLocatation;
+
     @NotNull(message = "Number plate is required")
     @Column(name = "number_plate")
     private String numberPlate;

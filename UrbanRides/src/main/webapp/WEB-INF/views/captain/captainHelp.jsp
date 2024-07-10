@@ -73,7 +73,7 @@
 
 <%------------------------------------jquerry  validation--%>
 
-<script src="<c:url value="/resources/js/riderHelp.js"/>"></script>
+<script src="<c:url value="/resources/js/captainHelp.js"/>"></script>
 
 </body>
 </html>

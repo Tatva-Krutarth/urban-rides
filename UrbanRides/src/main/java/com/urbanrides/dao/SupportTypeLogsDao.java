@@ -2,12 +2,16 @@ package com.urbanrides.dao;
 
 import com.urbanrides.model.CaptainDetails;
 import com.urbanrides.model.SupportTypeLogs;
+import com.urbanrides.model.Trip;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 
@@ -22,6 +26,16 @@ public class SupportTypeLogsDao {
     @Transactional
     public void saveSupportLogs(SupportTypeLogs supportTypeLogs) {
         this.hibernateTemplate.save(supportTypeLogs);
+    }
+
+    @Transactional
+    public SupportTypeLogs getSupportByUserId(int userId) {
+        Session s = sessionFactory.openSession();
+        String queryString = "FROM SupportTypeLogs WHERE userObj.userId = :userId AND isSolved = true ORDER BY createdDate DESC";
+        Query<SupportTypeLogs> query = s.createQuery(queryString, SupportTypeLogs.class);
+        query.setParameter("userId", userId);
+        List<SupportTypeLogs> results = query.getResultList();
+        return results.isEmpty() ? null : results.get(0);
     }
 
 }

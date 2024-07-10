@@ -9,5 +9,6 @@ public class UserSessionObj {
     private int userId;
     private int accountTypeId;
     private int accountStatus;
+    private int profilePhoto;
     private String profileLoc;
 }

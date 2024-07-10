@@ -340,6 +340,7 @@ public class LoginServices {
             Boolean verified = passwordToHash.checkPassword(userLoginDto.getPassword(), user.getSalt(), user.getPasswordHash());
             if (verified) {
 
+                UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
 
                 if (user.getAccountType() == 3) {
                     HttpSession session = request.getSession();
@@ -347,6 +348,12 @@ public class LoginServices {
                     userSessionObj.setUserId(user.getUserId());
                     userSessionObj.setAccountStatus(user.getAccountStatus());
                     userSessionObj.setAccountTypeId(user.getAccountType());
+                    if (userDetails.isProfilePhoto()) {
+                        userSessionObj.setProfilePhoto(1);
+                        userSessionObj.setProfileLoc("/resources/uploads/riderDocuments/riderProfilePics" + user.getUserId() + "/riderProfile" + user.getUserId() + userDetails.getProfilePhotoExtention());
+                    } else {
+                        userSessionObj.setProfilePhoto(0);
+                    }
                     session.setAttribute("riderSessionObj", userSessionObj);
                     return "Login successful + " + user.getAccountType();
                 } else {
@@ -355,6 +362,12 @@ public class LoginServices {
                     userSessionObj.setUserId(user.getUserId());
                     userSessionObj.setAccountStatus(user.getAccountStatus());
                     userSessionObj.setAccountTypeId(user.getAccountType());
+                    if (userDetails.isProfilePhoto()) {
+                        userSessionObj.setProfilePhoto(1);
+                        userSessionObj.setProfileLoc("/resources/uploads/captainDocuments/captain" + user.getUserId() + "/profilePhoto" + userDetails.getProfilePhotoExtention());
+                    } else {
+                        userSessionObj.setProfilePhoto(0);
+                    }
                     session.setAttribute("captainSessionObj", userSessionObj);
                     return "Login successful + " + user.getAccountType();
                 }
@@ -639,9 +652,6 @@ public class LoginServices {
         }
         return i;
     }
-
-
-
 
 
 }

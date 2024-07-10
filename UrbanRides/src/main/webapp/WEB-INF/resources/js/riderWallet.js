@@ -43,7 +43,7 @@ function addMoney() {
             }
         });
     } else {
-        alert('Please enter a valid amount up to 5000.');
+        showErrorMsg('Please enter a valid amount up to 5000.');
     }
 }
 
@@ -58,7 +58,15 @@ $(document).ready(function () {
         },
         error: function (xhr, textStatus, errorThrown) {
             console.error('Error fetching transaction details:', xhr, textStatus, errorThrown);
-            alert('Failed to fetch transaction details. Please try again later.');
+            showErrorMsg('Failed to fetch transaction details. Please try again later.');
+            var container1 = $('#transaction-container1'); // Adjust the selector to match your container
+            var container2 = $('#transaction-container2'); // Adjust the selector to match your container
+            container1.empty(); // Clear any existing content
+            container2.empty(); // Clear any existing content
+            container1.append('<div class="no-records">Failed to fetch transaction details Or there is no data</div>');
+            container2.append('<div class="no-records">Failed to fetch transaction details Or there is no data</div>');
+
+
         }
     });
 });
@@ -70,14 +78,15 @@ function populateTransactionDetails(data) {
     container1.empty(); // Clear any existing content
     container2.empty(); // Clear any existing content
 
-
     var hasMethod1 = false;
     var hasOtherMethods = false;
 
     data.forEach(function (transaction) {
+        var imgSrc = transaction.paymentMethod == 1 ? getContextPath() + '/resources/images/wallet-white.svg' : getContextPath() + '/resources/images/cash.svg';
+
         var html = '<div class="noti-container mt-2 mb-2">' +
             '<div class="noti-img-cont">' +
-            '<img src="' + getContextPath() + '/resources/images/wallet-white.svg" />' +
+            '<img src="' + imgSrc + '" />' +
             '</div>' +
             '<div class="noti-righ-cont">' +
             '<div class="noti-header">' + transaction.walletHeader + '</div>' +
@@ -85,16 +94,16 @@ function populateTransactionDetails(data) {
             '</div>' +
             '<div class="amount-paid"> Rs.' + transaction.paidAmount + '</div>' +
             '</div>';
+
         if (transaction.paymentMethod == 1) {
             container1.append(html); // Append to container1 for payment method 1
             hasMethod1 = true;
         } else {
             container2.append(html); // Append to container2 for other payment methods
             hasOtherMethods = true;
-
         }
-
     });
+
     if (!hasMethod1) {
         container1.append('<div class="no-records">You have no record paid by wallet.</div>');
     }

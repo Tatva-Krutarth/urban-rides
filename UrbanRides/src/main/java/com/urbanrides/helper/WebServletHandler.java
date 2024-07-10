@@ -18,7 +18,7 @@ public class WebServletHandler extends TextWebSocketHandler {
         // Handle incoming messages from the captain
         String rideId = message.getPayload();
         // Notify the rider using the RiderController
-        cabBookingService.acceptRide(Integer.parseInt(rideId));
+        cabBookingService.acceptRideRiderSide(Integer.parseInt(rideId));
     }
 
 }

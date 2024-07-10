@@ -10,6 +10,8 @@ import com.urbanrides.helper.DateTimeConverter;
 import com.urbanrides.helper.NotificationTypeEnum;
 import com.urbanrides.helper.OtpGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -49,6 +51,8 @@ public class CabBookingService {
     @Autowired
     private HttpSession httpSession;
 
+    @Autowired
+    DateTimeConverter dateTimeConverter;
 
     private List<double[]> coordinates = Arrays.asList(
             new double[]{23.033983, 72.509583},
@@ -72,6 +76,8 @@ public class CabBookingService {
     private PackageTripDao packageTripDao;
     @Autowired
     private CaptainDetailsDao captainDetailsDao;
+    @Autowired
+    NotificationLogsDao notificationLogsDao;
 
     public String generalRide(RiderNormalRideDto riderNormalRideDto) {
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
@@ -109,7 +115,8 @@ public class CabBookingService {
     }
 
 
-    public String acceptRide(int tripId) {
+    //this is the captain side service(send captain data to the rider side
+    public String acceptRideRiderSide(int tripId) {
 
 
 //        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
@@ -167,6 +174,63 @@ public class CabBookingService {
         return "Done";
     }
 
+
+    //this is the captain side service(send rider data to the captain side
+
+    public RiderInfoDto acceptRideCaptainSide(int tripId) {
+
+
+//        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+//        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+        User riderUser = usersDao.getUserByUserId(43);
+//        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(44);
+//        UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+        Trip trip = tripDao.getTipById(tripId);
+        trip.setAccepted(true);
+        trip.setCaptainUserObj(riderUser);
+        tripDao.updateTrip(trip);
+
+//        String folderName = "captain" + user.getUserId();
+        String folderName = "riderProfilePics" + 43;
+        String folderPath = httpSession.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "riderDocuments" + File.separator + folderName;
+//        String extension = captainDetails.getProfilePhotoExtension();
+        String extension = ".jpg";
+        String fileNameProfile = "riderProfile43" + extension;
+//        String filePathProfile = folderPath + File.separator + fileNameProfile;
+
+        RiderInfoDto riderInfoDto = new RiderInfoDto();
+//        captainInfoDto.setCaptainId(userSessionObj.getUserId());
+        riderInfoDto.setRiderId(43);
+//        captainInfoDto.setCaptainName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+        riderInfoDto.setRiderName("Jambudo");
+//        captainInfoDto.setCaptainContact(userDetails.getPhone());
+        riderInfoDto.setRiderContact("12345678");
+
+
+//        OtpLogs otpLogs = setOtpLogData(trip.getTripUserId().getEmail());
+
+
+//        riderInfoDto.setOtp(otpLogs.getGeneratedOtp());
+        riderInfoDto.setPhotoLocation("/UrbanRides/resources/uploads/riderDocuments/" + folderName + "/" + fileNameProfile);
+        riderInfoDto.setTripId(tripId);
+        riderInfoDto.setCharges(String.valueOf(trip.getCharges()));
+        riderInfoDto.setRiderPickupLocation(trip.getPickupAddress());
+        riderInfoDto.setCaptainLocation(captainDetails.getCaptainLocatation());
+        riderInfoDto.setRiderDropOffLocation(trip.getDropoffAddress());
+//        ObjectMapper mapper = new ObjectMapper();
+//        String riderInfoJson;
+//        try {
+//            riderInfoJson = mapper.writeValueAsString(riderInfoDto);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//            return "Error converting CaptainInfoDto to JSON";
+//        }
+//
+//        notifyRider(tripId, "You have confirmed the ride.", riderInfoJson);
+        return riderInfoDto;
+    }
+
     private void notifyRider(int rideId, String message, String captainInfoJson) {
         System.out.println("Notification fired for ride: " + rideId);
         simpMessagingTemplate.convertAndSend("/topic/rideConfirmed", message + ":" + captainInfoJson);
@@ -201,10 +265,17 @@ public class CabBookingService {
         }
     }
 
-    public String captainOtp(int otp) {
-        //varify the otp
+    public String captainOtp(int otp, int tripId) {
+        Trip trip = tripDao.getTipById(tripId);
+        OtpLogs otpLogs = userRegistrationDao.getOtpLogsByEmail(trip.getTripUserId().getEmail());
+        if (otpLogs.getGeneratedOtp() != otp) {
+            throw new IllegalArgumentException("Invalid OTP");
+        }
 
-        //live ride with the rider
+        GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripByTripId(tripId);
+        generalTripDetails.setIsOtpValidated(true);
+        generalTripDetailsDao.updateGeneralTripDetails(generalTripDetails);
+        // live ride with the rider
         captainReached();
         return "Done";
     }
@@ -320,35 +391,43 @@ public class CabBookingService {
 
 
     public void saveRattingInfo(RiderRattingConclude riderRattingConclude) {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        User riderUser = usersDao.getUserByUserId(userSessionObj.getUserId());
+
         GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripDetailsById(riderRattingConclude.getTripId());
+        Trip trip = tripDao.getTipById(generalTripDetails.getTripObj().getTripId());
+        UserDetails capUserDetails = userDetailsDao.getUserDetailsByUserId(trip.getCaptainUserObj().getUserId());
+
         generalTripDetails.setTripEndTime(LocalDateTime.now());
         generalTripDetails.setFeedback(riderRattingConclude.getFeedback());
+        generalTripDetails.setIsTripCompleted(true);
+        generalTripDetails.setCaptainRatting(riderRattingConclude.getRattings());
         UserDetails userDetails = userDetailsDao.getUserDetailsById(32);
 //        GeneralTrip generalTrip = generalTripDao.getTipById(generalTripDetails.getGeneralTripId().getTripId());
         Trip tripp = tripDao.getTipById(generalTripDetails.getTripObj().getTripId());
         BigDecimal tripCharge = BigDecimal.valueOf(tripp.getCharges());
-        if ("Pay with cash".equals(riderRattingConclude.getPayMethod())) {
+        if ("Pay with cash".equalsIgnoreCase(riderRattingConclude.getPayMethod())) {
+            userDetails.setSuccessTripCount(userDetails.getSuccessTripCount() + 1);
+            tripp.setPaymentMethod(riderRattingConclude.getPayMethod());
+            userDetailsDao.updateUserDetails(userDetails); // Update user details in DAO
+            tripDao.updateTrip(tripp);
 
-            System.out.println("paid with cash");
         } else {
             BigDecimal wallet = userDetails.getWallet();
             BigDecimal updatedWallet = wallet.subtract(tripCharge);
+            userDetails.setSuccessTripCount(userDetails.getSuccessTripCount() + 1);
             userDetails.setWallet(updatedWallet);
             userDetailsDao.updateUserDetails(userDetails); // Update user details in DAO
             tripp.setPaymentMethod(riderRattingConclude.getPayMethod());
             tripDao.updateTrip(tripp);
         }
 
-        //session user
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
-        User riderUser = usersDao.getUserByUserId(userSessionObj.getUserId());
-        Trip trip = tripDao.getTipById(generalTripDetails.getTripObj().getTripId());
-        UserDetails capUserDetails = userDetailsDao.getUserDetailsByUserId(trip.getCaptainUserObj().getUserId());
 
         NotificationLogs notificationLogs = new NotificationLogs();
         notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID3"));
         notificationLogs.setNotificationMsg("You have paid " + trip.getCharges() + " to " + capUserDetails.getFirstName() + " , " + capUserDetails.getLastName() + " with " + riderRattingConclude.getPayMethod());
         notificationLogs.setUser(riderUser);
+        notificationLogsDao.saveNotificationLog(notificationLogs);
         generalTripDetailsDao.updateGeneralTripDetails(generalTripDetails);
     }
 
@@ -361,18 +440,16 @@ public class CabBookingService {
         } else if (packageServiceDto.getServiceType().equals("Daily pick up")) {
             errormsg = saveValidateDailyPickup(packageServiceDto);
         } else {
-            errormsg = "Service type is not specified";
+            throw new IllegalArgumentException("Service type is not specified");
         }
         return errormsg;
     }
 
     public String savePackageRentATaxi(PackageServiceDto packageServiceDto) {
         String errormsg = validateRentATaxi(packageServiceDto);
-        return errormsg;
+        return "Not implemented for Rent a taxi";
     }
 
-    @Autowired
-    DateTimeConverter dateTimeConverter;
 
     public String validateRentATaxi(PackageServiceDto packageServiceDto) {
         String errorInInput = "";
@@ -423,53 +500,39 @@ public class CabBookingService {
     }
 
 
-//    -----------validate lugguage servide3--------------------------
+//    -----------validate daily pickup--------------------------
 
 
-    public String saveValidateDailyPickup(PackageServiceDto packageServiceDto) {
-        String errormsg = validateDailyPickup(packageServiceDto);
-        System.out.println(errormsg);
-        return errormsg;
-    }
+    private String saveValidateDailyPickup(PackageServiceDto packageServiceDto) {
+        String errorInInput = validateDailyPickup(packageServiceDto);
 
-    public String validateDailyPickup(PackageServiceDto packageServiceDto) {
-        String errorInInput = "";
-        errorInInput = validateDailyPickup(packageServiceDto.getNumbOfDays(), dateTimeConverter.stringToLocalDate(packageServiceDto.getPickUpDate()), packageServiceDto.getDailyPickUp());
-        if (errorInInput != "Done") {
-            return errorInInput;
+        if (!errorInInput.equals("Done")) {
+            throw new IllegalArgumentException(errorInInput);
         }
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
-        User userObj = usersDao.getUserByUserId(userSessionObj.getUserId());
-        Trip trip = new Trip();
-        trip.setTripCode(generateTripId(userSessionObj.getUserId()));
-        trip.setTripUserId(userObj);
-        VehicleType vehicleTypeObj = vehicleTypeDao.getVehicaleId(Integer.parseInt(packageServiceDto.getVehicleId()));
-        trip.setVehicleId(vehicleTypeObj);
-        trip.setPickupAddress(packageServiceDto.getPickup());
-        trip.setDropoffAddress(packageServiceDto.getPickup());
-        ServiceType serviceType = serviceTypeDao.getServiceType(4);
-        trip.setServiceType(serviceType);
-        trip.setDistance(packageServiceDto.getDistance());
-        trip.setCharges(packageServiceDto.getCharges());
-        int tripId = tripDao.saveGeneralTrip(trip);
-        trip.setTripId(tripId);
-        PackageTrip packageTripe = new PackageTrip();
-        packageTripe.setTripId(trip);
-        packageTripe.setPickupDate(dateTimeConverter.stringToLocalDate(packageServiceDto.getPickUpDate()));
-        packageTripe.setPickupTime(convertStringToLocalTime(packageServiceDto.getPickUpTime()));
-        packageTripe.setDropoffTime(convertStringToLocalTime(packageServiceDto.getDropoffTime()));
-        packageTripe.setNumPassengers(packageServiceDto.getNumberOfPassengers());
-        packageTripe.setEmergencyContact(packageServiceDto.getEmergencyContact());
-        packageTripe.setSpecialInstructions(packageServiceDto.getSpecialInstructions());
-        packageTripe.setNumOfDays(packageServiceDto.getNumbOfDays());
-        packageTripe.setDailyPickUp(packageServiceDto.getDailyPickUp());
-        packageTripe.setNumOfDays(packageServiceDto.getNumbOfDays());
-        packageTripDao.savePackageTrip(packageTripe);
+
+        saveTripAndPackage(packageServiceDto);
+
         return errorInInput;
     }
 
+
+    private String validateDailyPickup(PackageServiceDto packageServiceDto) {
+        int numDays = packageServiceDto.getNumbOfDays();
+        LocalDate tripStartDate = dateTimeConverter.stringToLocalDate(packageServiceDto.getPickUpDate());
+        String dailyPickupDays = packageServiceDto.getDailyPickUp();
+
+        String errorInInput = validateDailyPickup(numDays, tripStartDate, dailyPickupDays);
+
+        if (!errorInInput.equals("Done")) {
+            return errorInInput;
+        }
+
+
+        return "Done";
+    }
+
     public static String validateDailyPickup(int numDays, LocalDate tripStartDate, String dailyPickupDays) {
-        // Calculate trip end date by adding numDays to start date
+        // Calculate end date by adding numDays to start date
         LocalDate endDate = tripStartDate.plusDays(numDays);
 
         // Convert daily pickup days string to a list of integers
@@ -512,6 +575,48 @@ public class CabBookingService {
         return tripUniqueCode;
     }
 
+    private void saveTripAndPackage(PackageServiceDto packageServiceDto) {
+        Trip trip = buildTripObject(packageServiceDto);
+        int tripId = tripDao.saveGeneralTrip(trip);
+
+        PackageTrip packageTrip = buildPackageTripObject(packageServiceDto, tripId);
+        packageTripDao.savePackageTrip(packageTrip);
+    }
+
+    private Trip buildTripObject(PackageServiceDto packageServiceDto) {
+        Trip trip = new Trip();
+
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        User userObj = usersDao.getUserByUserId(userSessionObj.getUserId());
+
+        trip.setTripCode(generateTripId(userSessionObj.getUserId()));
+        trip.setTripUserId(userObj);
+        VehicleType vehicleTypeObj = vehicleTypeDao.getVehicaleId(Integer.parseInt(packageServiceDto.getVehicleId()));
+        trip.setVehicleId(vehicleTypeObj);
+        trip.setPickupAddress(packageServiceDto.getPickup());
+        trip.setDropoffAddress(packageServiceDto.getPickup());
+        ServiceType serviceType = serviceTypeDao.getServiceType(3);
+        trip.setServiceType(serviceType);
+        trip.setDistance(packageServiceDto.getDistance());
+        trip.setCharges(packageServiceDto.getCharges());
+        return trip;
+    }
+
+    private PackageTrip buildPackageTripObject(PackageServiceDto packageServiceDto, int tripId) {
+        PackageTrip packageTrip = new PackageTrip();
+
+        packageTrip.setTripId(tripDao.getTipById(tripId));
+        packageTrip.setPickupDate(dateTimeConverter.stringToLocalDate(packageServiceDto.getPickUpDate()));
+        packageTrip.setPickupTime(convertStringToLocalTime(packageServiceDto.getPickUpTime()));
+        packageTrip.setDropoffTime(convertStringToLocalTime(packageServiceDto.getDropoffTime()));
+        packageTrip.setNumPassengers(packageServiceDto.getNumberOfPassengers());
+        packageTrip.setEmergencyContact(packageServiceDto.getEmergencyContact());
+        packageTrip.setSpecialInstructions(packageServiceDto.getSpecialInstructions());
+        packageTrip.setNumOfDays(packageServiceDto.getNumbOfDays());
+        packageTrip.setDailyPickUp(packageServiceDto.getDailyPickUp());
+
+        return packageTrip;
+    }
 
 }
 

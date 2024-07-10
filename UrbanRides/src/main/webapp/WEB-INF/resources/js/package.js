@@ -296,31 +296,18 @@ $(document).ready(function () {
                 error: function (xhr, textStatus, errorThrown) {
                     console.error("Error:", xhr, textStatus, errorThrown);
                     $(".loader").hide();
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        if (Array.isArray(errorResponse.errors)) {
-                            const errorMessage = errorResponse.errors[0];
-                            showErrorMsg(errorMessage);
-                            console.log("Backend try1:", errorMessage);
-                        } else {
-                            // handle non-array error response
-                            showErrorMsg(errorResponse);
-                            console.log("Backend try2:", errorResponse);
-                        }
-                    } catch (e) {
-                        // Handle non-JSON response
-                        if (typeof xhr.responseText === 'string') {
-                            // handle string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch1:", xhr.responseText);
-                        } else {
-                            // handle non-string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch2:", xhr.responseText);
+
+                    let errorMessage = "Unknown error occurred.";
+                    if (xhr.responseText) {
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            errorMessage = Array.isArray(errorResponse.errors) ? errorResponse.errors[0] : errorResponse;
+                        } catch (e) {
+                            errorMessage = xhr.responseText;
                         }
                     }
+                    showErrorMsg(errorMessage);
                 }
-
             });
             return false;
         }

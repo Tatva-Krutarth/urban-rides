@@ -1075,7 +1075,7 @@ $('#rating-modal-form-id').submit(function (event) {
         tripId: tripId,
         feedback: feedback,
         payMethod: payMethod,
-        ratingValue: ratingValue
+        rattings: ratingValue
     };
     // Ajax call to submit data
     $.ajax({

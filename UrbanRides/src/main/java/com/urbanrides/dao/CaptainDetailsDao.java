@@ -46,6 +46,10 @@ public class CaptainDetailsDao {
             return result.get(0);
         }
     }
+    @Transactional
+    public void updateCaptainDetail(CaptainDetails captainDetails) {
+        this.hibernateTemplate.update(captainDetails);
+    }
 }
 
 

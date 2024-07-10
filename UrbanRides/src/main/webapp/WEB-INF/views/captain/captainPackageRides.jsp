@@ -224,89 +224,89 @@
 
 
 
-    <div class="service-trip-text-sub">
-        Lugguage service
-    </div>
-    <div class="accordion" id="lugguageService">
-        <div class="card p-0 mt-2 mb-2">
-            <div class="card-header noti-container p-0" id="headingThree">
-                <div class="noti-img-cont">
-                    <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">
-                </div>
-                <div class="my-trip-accor-details-cont mt-2 mb-3">
-                    <%--                    <div class="service-type-text">Service Type :- <span class="my-trip-serviceType">Taxi Booking</span></div>--%>
-                    <%--                    <hr class="hr-accor">--%>
-                    <div class="my-trip-accor-details">
-                        <div class="my-trip-accor-details-resp-cont">
-                            <span class="my-trip-accor-details-resp">Pick up location : &nbsp; </span><span
-                                class="my-trip-pickup">Mota Mavva</span>
-                        </div>
-                        <div class="my-trip-accor-details-resp-cont">
-                            <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span
-                                class="my-trip-pickup">Mota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota Mavva</span>
-                        </div>
+<%--    <div class="service-trip-text-sub">--%>
+<%--        Lugguage service--%>
+<%--    </div>--%>
+<%--    <div class="accordion" id="lugguageService">--%>
+<%--        <div class="card p-0 mt-2 mb-2">--%>
+<%--            <div class="card-header noti-container p-0" id="headingThree">--%>
+<%--                <div class="noti-img-cont">--%>
+<%--                    <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">--%>
+<%--                </div>--%>
+<%--                <div class="my-trip-accor-details-cont mt-2 mb-3">--%>
+<%--                    &lt;%&ndash;                    <div class="service-type-text">Service Type :- <span class="my-trip-serviceType">Taxi Booking</span></div>&ndash;%&gt;--%>
+<%--                    &lt;%&ndash;                    <hr class="hr-accor">&ndash;%&gt;--%>
+<%--                    <div class="my-trip-accor-details">--%>
+<%--                        <div class="my-trip-accor-details-resp-cont">--%>
+<%--                            <span class="my-trip-accor-details-resp">Pick up location : &nbsp; </span><span--%>
+<%--                                class="my-trip-pickup">Mota Mavva</span>--%>
+<%--                        </div>--%>
+<%--                        <div class="my-trip-accor-details-resp-cont">--%>
+<%--                            <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span--%>
+<%--                                class="my-trip-pickup">Mota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota Mavva</span>--%>
+<%--                        </div>--%>
 
-                    </div>
+<%--                    </div>--%>
 
-                </div>
-                <div class="my-trip-time">
-                    22:204 22/07/2023
-                </div>
-                <%--                <div class="my-trip-status">--%>
-                <%--                    Status : <span class="my-trip-status-value">Cancelled</span>--%>
-                <%--                </div>--%>
-                <button class="accordion-button" onclick="toggleAccordion(event, 'collapseThree')">
-                    View More
-                </button>
-            </div>
+<%--                </div>--%>
+<%--                <div class="my-trip-time">--%>
+<%--                    22:204 22/07/2023--%>
+<%--                </div>--%>
+<%--                &lt;%&ndash;                <div class="my-trip-status">&ndash;%&gt;--%>
+<%--                &lt;%&ndash;                    Status : <span class="my-trip-status-value">Cancelled</span>&ndash;%&gt;--%>
+<%--                &lt;%&ndash;                </div>&ndash;%&gt;--%>
+<%--                <button class="accordion-button" onclick="toggleAccordion(event, 'collapseThree')">--%>
+<%--                    View More--%>
+<%--                </button>--%>
+<%--            </div>--%>
 
-            <div id="collapseThree" class="collapse" aria-labelledby="headingOne" data-parent="#lugguageService">
-                <div class="card-body p-0">
-                    <div class="captain-info-nav">
-                        <div class="captain-info-profile">
-                            <img src="<c:url value='/resources/images/profile-logo.svg' />" alt="">
-                        </div>
-                        <div class="captain-info-discription">
-                            <div class="ratings-star">
-                                <div class="captain-org-name">
-                                    Ramesh Singh
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<%--            <div id="collapseThree" class="collapse" aria-labelledby="headingOne" data-parent="#lugguageService">--%>
+<%--                <div class="card-body p-0">--%>
+<%--                    <div class="captain-info-nav">--%>
+<%--                        <div class="captain-info-profile">--%>
+<%--                            <img src="<c:url value='/resources/images/profile-logo.svg' />" alt="">--%>
+<%--                        </div>--%>
+<%--                        <div class="captain-info-discription">--%>
+<%--                            <div class="ratings-star">--%>
+<%--                                <div class="captain-org-name">--%>
+<%--                                    Ramesh Singh--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
 
 
-                    <div class="trip-details-bottom-cont">
-                        <div class="left-part">
-                            <div>
-                                <span>Distance : -</span>
-                                <span>25 Km</span>
-                            </div>
-                            <div>
-                                <span>   Charges  :-     </span>
-                                <span>   45 rs</span>
-                            </div>
-                        </div>
+<%--                    <div class="trip-details-bottom-cont">--%>
+<%--                        <div class="left-part">--%>
+<%--                            <div>--%>
+<%--                                <span>Distance : -</span>--%>
+<%--                                <span>25 Km</span>--%>
+<%--                            </div>--%>
+<%--                            <div>--%>
+<%--                                <span>   Charges  :-     </span>--%>
+<%--                                <span>   45 rs</span>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
 
-                        <div class="right-part">
-                            <div>
-                                <span>Duration  :-</span>
-                                <span>25 Mins </span>
-                            </div>
-                            <div>
-                                <span>Trip Id  :-</span>
-                                <span>25</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="cancelation-reason">Cancelation Reason :- The ride is cancelled due to no avability of
-                        the captain..
-                    </div>
-                    <button type="submit" class="captain-accept-btn mt-2 mb-2">Accept Ride</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<%--                        <div class="right-part">--%>
+<%--                            <div>--%>
+<%--                                <span>Duration  :-</span>--%>
+<%--                                <span>25 Mins </span>--%>
+<%--                            </div>--%>
+<%--                            <div>--%>
+<%--                                <span>Trip Id  :-</span>--%>
+<%--                                <span>25</span>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                    <div class="cancelation-reason">Cancelation Reason :- The ride is cancelled due to no avability of--%>
+<%--                        the captain..--%>
+<%--                    </div>--%>
+<%--                    <button type="submit" class="captain-accept-btn mt-2 mb-2">Accept Ride</button>--%>
+<%--                </div>--%>
+<%--            </div>--%>
+<%--        </div>--%>
+<%--    </div>--%>
 
 
 
@@ -405,6 +405,6 @@
 </body>
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-<script src="<c:url value="/resources/js/captainMyTrips.js"/>"></script>
+<script src="<c:url value="/resources/js/captainPackageRides.js"/>"></script>
 
 </html>
