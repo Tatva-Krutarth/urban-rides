@@ -32,6 +32,8 @@ function addMoney() {
                     walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
                     document.getElementById('depositAmount').value = '';
                     showSuccesstMsg('Money added successfully.');
+                    var inputContainer = document.getElementById('inputContainer');
+                    inputContainer.style.display = 'none';
                 } else {
                     showErrorMsg('Failed to add money. Please try again later.');
                 }
@@ -57,8 +59,8 @@ $(document).ready(function () {
             populateTransactionDetails(data);
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.error('Error fetching transaction details:', xhr, textStatus, errorThrown);
-            showErrorMsg('Failed to fetch transaction details. Please try again later.');
+            console.error('Error fetching transaction details: possible there is no data', xhr, textStatus, errorThrown);
+            // showErrorMsg('Failed to fetch transaction details. Please try again later.');
             var container1 = $('#transaction-container1'); // Adjust the selector to match your container
             var container2 = $('#transaction-container2'); // Adjust the selector to match your container
             container1.empty(); // Clear any existing content

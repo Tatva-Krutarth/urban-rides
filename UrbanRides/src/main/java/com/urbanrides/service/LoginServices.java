@@ -45,7 +45,8 @@ public class LoginServices {
 
     @Autowired
     private DateTimeConverter dateTimeConverter;
-
+    @Autowired
+    NotificationLogsDao notificationLogsDao;
     @Autowired
     private CaptainDetailsDao captainDetailsDao;
 
@@ -342,13 +343,14 @@ public class LoginServices {
 
                 UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
 
+
                 if (user.getAccountType() == 3) {
                     HttpSession session = request.getSession();
                     UserSessionObj userSessionObj = new UserSessionObj();
                     userSessionObj.setUserId(user.getUserId());
                     userSessionObj.setAccountStatus(user.getAccountStatus());
                     userSessionObj.setAccountTypeId(user.getAccountType());
-                    if (userDetails.isProfilePhoto()) {
+                    if (userDetails != null && userDetails.isProfilePhoto()) {
                         userSessionObj.setProfilePhoto(1);
                         userSessionObj.setProfileLoc("/resources/uploads/riderDocuments/riderProfilePics" + user.getUserId() + "/riderProfile" + user.getUserId() + userDetails.getProfilePhotoExtention());
                     } else {
@@ -362,7 +364,7 @@ public class LoginServices {
                     userSessionObj.setUserId(user.getUserId());
                     userSessionObj.setAccountStatus(user.getAccountStatus());
                     userSessionObj.setAccountTypeId(user.getAccountType());
-                    if (userDetails.isProfilePhoto()) {
+                    if (userDetails != null && userDetails.isProfilePhoto()) {
                         userSessionObj.setProfilePhoto(1);
                         userSessionObj.setProfileLoc("/resources/uploads/captainDocuments/captain" + user.getUserId() + "/profilePhoto" + userDetails.getProfilePhotoExtention());
                     } else {
@@ -502,6 +504,13 @@ public class LoginServices {
             //User Not Found
             return "User Not Found";
         } else {
+
+
+            NotificationLogs notificationLogs = new NotificationLogs();
+            notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID4"));
+            notificationLogs.setNotificationMsg("The password has been changed using the forgot password option.");
+            notificationLogs.setUser(user);
+            notificationLogsDao.saveNotificationLog(notificationLogs);
             //update the user
             updatePassword(user, forgetPassDto);
             return "Password updated successfully";

@@ -31,6 +31,8 @@ import java.util.UUID;
 
 @Service
 public class RiderOtherService {
+    @Autowired
+    private HttpSession session;
 
     @Autowired
     UsersDao usersDao;
@@ -75,8 +77,6 @@ public class RiderOtherService {
         return dateTime.format(formatter);
     }
 
-    @Autowired
-    private HttpSession session;
 
 //    --------wallet--------------
 
@@ -91,6 +91,7 @@ public class RiderOtherService {
 
 
     public ResponseEntity<?> validateAndDepositAmount(double amount) {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
         try {
             // Validate the amount
             if (amount <= 0 || amount > 5000) {
@@ -99,6 +100,7 @@ public class RiderOtherService {
 
             // Process the deposit
             double updatedBalance = depositAmount(amount);
+
 
             // Return success response with updated balance
             return ResponseEntity.ok(updatedBalance);
@@ -119,14 +121,18 @@ public class RiderOtherService {
 
             userDetails.setWallet(newAmount);
             userdetailsdao.updateUserDetails(userDetails);
-
+            NotificationLogs notificationLogs = new NotificationLogs();
+            notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID1"));
+            notificationLogs.setNotificationMsg("You have deposited " + amount + " to your wallet");
+            User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+            notificationLogs.setUser(user);
+            notificationLogsDao.saveNotificationLog(notificationLogs);
             return newAmount.setScale(2, RoundingMode.HALF_UP).doubleValue();
         } catch (Exception e) {
             // Handle exceptions and errors
             throw new RuntimeException("Failed to deposit amount into wallet.", e);
         }
     }
-
 
 
     //    -----payment data-----------------
@@ -243,6 +249,12 @@ public class RiderOtherService {
             user.setSalt(saltString);
             user.setPasswordHash(hashedPasswordString);
             usersDao.updateUser(user);
+
+            NotificationLogs notificationLogs = new NotificationLogs();
+            notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID4"));
+            notificationLogs.setNotificationMsg("The password has been changed from the user's My Profile section.");
+            notificationLogs.setUser(user);
+            notificationLogsDao.saveNotificationLog(notificationLogs);
             return user;
         } catch (Exception e) {
             throw new Exception("Error updating password: " + e.getMessage());
@@ -481,6 +493,11 @@ public class RiderOtherService {
         // Generate support case ID
         supportTypeLogs.setSupportCaseId(generateSupportCaseId());
 
+        NotificationLogs notificationLogs = new NotificationLogs();
+        notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID5"));
+        notificationLogs.setNotificationMsg("You have raised a " + supportTypeLogs.getSupportType());
+        notificationLogs.setUser(user);
+        notificationLogsDao.saveNotificationLog(notificationLogs);
         // Save to database
         supportTypeLogsDao.saveSupportLogs(supportTypeLogs);
     }
@@ -491,5 +508,24 @@ public class RiderOtherService {
         return UUID.randomUUID().toString();
     }
 
+
+    public SupportRequestDataDto findSupportRequestById(String id) {
+        SupportTypeLogs supportTypeLogs = supportTypeLogsDao.getSupportPerData(id);
+
+        SupportRequestDataDto supportRequestDataDto = new SupportRequestDataDto();
+        supportRequestDataDto.setId(supportTypeLogs.getSupportCaseId());
+        supportRequestDataDto.setType(supportTypeLogs.getSupportType());
+        supportRequestDataDto.setDescription(supportTypeLogs.getDescription());
+        if (supportTypeLogs.getAdminObj() == null) {
+            supportRequestDataDto.setStatus("Pending");
+        } else if (supportTypeLogs.getAdminObj() != null && !supportTypeLogs.isSolved()) {
+            supportRequestDataDto.setStatus("Active");
+        } else {
+            supportRequestDataDto.setStatus("Completed");
+        }
+
+
+        return supportRequestDataDto;
+    }
 }
 

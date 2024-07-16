@@ -5,7 +5,7 @@ package com.urbanrides.helper;
 public enum NotificationTypeEnum {
     // Rider side
     ID1("Deposit successful"),
-    ID2("Captain is on the way"),
+    ID2("Ride accepted"),
     ID3("Payment Done"),
 
     // Commons

@@ -418,7 +418,7 @@ function theFinalRide(originAddress, destinationAddress) {
                                         }
                                         console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
-                                        setTimeout(moveNextStep, 3000); // Simulate delay between steps
+                                        setTimeout(moveNextStep, 2000); // Simulate delay between steps
                                     }
 
                                     moveNextStep();

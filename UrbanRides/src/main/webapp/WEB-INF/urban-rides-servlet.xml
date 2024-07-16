@@ -26,10 +26,14 @@
                 <mvc:mapping path="/rider/**" />
                 <bean class="com.urbanrides.interceptor.RiderInterceptor"></bean>
             </mvc:interceptor>
-<!--            <mvc:interceptor>-->
-<!--                <mvc:mapping path="/captain/**" />-->
-<!--                <bean class="com.urbanrides.interceptor.CaptainInterceptor"></bean>-->
-<!--            </mvc:interceptor>-->
+            <mvc:interceptor>
+                <mvc:mapping path="/captain/**" />
+                <bean class="com.urbanrides.interceptor.CaptainInterceptor"></bean>
+            </mvc:interceptor>
+            <mvc:interceptor>
+                <mvc:mapping path="/admin/**"/>
+                <bean class="com.urbanrides.interceptor.AdminInterceptor"></bean>
+            </mvc:interceptor>
         </mvc:interceptors>
 
 

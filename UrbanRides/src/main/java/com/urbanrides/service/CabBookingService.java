@@ -165,7 +165,13 @@ public class CabBookingService {
             e.printStackTrace();
             return "Error converting CaptainInfoDto to JSON";
         }
+        NotificationLogs notificationLogs = new NotificationLogs();
+        notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID2"));
+        notificationLogs.setNotificationMsg("Captain jambudo is on the way , comming from " + captainInfoDto.getLocation());
+        User user = usersDao.getUserByUserId(trip.getTripUserId().getUserId());
+        notificationLogs.setUser(user);
 
+        notificationLogsDao.saveNotificationLog(notificationLogs);
         notifyRider(tripId, "Your ride has been confirmed.", captainInfoJson);
 
         // Start sending location updates

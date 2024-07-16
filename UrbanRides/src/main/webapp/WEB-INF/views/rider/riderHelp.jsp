@@ -42,6 +42,8 @@
     <p>If you have any queries, requests, or complaints, please use the form below to get in touch with us. Our support
         team is here to assist you.</p>
 
+
+    <!-- Form to submit support requests -->
     <form id="supportForm" action="support-request" method="post" enctype="multipart/form-data" class="mt-4">
         <div class="mb-3">
             <label for="supportType" class="form-label">Type of Support</label>
@@ -63,8 +65,40 @@
         </div>
         <button type="submit" id="submitBtn" class="submit-btn">Submit</button>
     </form>
-
+    <hr>
+    <!-- Search Field for Querying Support Requests -->
+    <div class="mb-3">
+        <label for="queryId" class="form-label">Enter Support Request ID</label>
+        <input type="text" class="form-control" id="queryId" placeholder="Support Request ID">
+        <button id="search-btn-help" class="btn btn-primary mt-2">Search</button>
+    </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="supportRequestModal" tabindex="-1" aria-labelledby="supportRequestModalLabel"
+     aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #0D63A5; color: white;">
+                <h5 class="modal-title" id="supportRequestModalLabel">Support Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Support request details will be dynamically populated here -->
+                <p><strong>ID:</strong> <span id="requestId"></span></p>
+                <p><strong>Type:</strong> <span id="requestType"></span></p>
+                <p><strong>Description:</strong> <span id="requestDescription"></span></p>
+                <p><strong>Status:</strong> <span id="requestStatus"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="submit-btn" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supportRequestModal">--%>
+<%--    Open Support Request Modal--%>
+<%--</button>--%>
 
 
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
@@ -72,6 +106,9 @@
 
 
 <%------------------------------------jquerry  validation--%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
+
 
 <script src="<c:url value="/resources/js/riderHelp.js"/>"></script>
 

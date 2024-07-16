@@ -2,9 +2,13 @@
     box-sizing: border-box;
 }
 
+
 body {
-    margin: 0;
-    font-family: Roboto;
+    height: 100vh;
+    background-color: floralwhite !important;
+
+    font-family: 'Roboto', sans-serif;
+    overflow-x: hidden;
 }
 
 .nav {
@@ -139,14 +143,6 @@ body {
 }
 
 
-body {
-    height: 100vh;
-    background-color: floralwhite;
-    /*padding-top: 45px; !* adjust the value to match the height of your nav bar *!*/
-
-    font-family: 'Roboto', sans-serif;
-    overflow-x: hidden;
-}
 
 .outer-cont {
     display: flex;

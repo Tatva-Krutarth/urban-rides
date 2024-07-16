@@ -80,62 +80,71 @@
     </div>
     <div id="ad-dash-support-requests-cont" class="mt-3">
         <div id="transaction-container1">
-            <div class="noti-container mt-2 mb-2">
-                <div class="noti-img-cont">
-                    <img src="<c:url value='/resources/images/wallet-white.svg'/>">
-                </div>
-                <div class="noti-righ-cont">
-                    <div class="noti-header">
-                        Querry raised by ramesh parameter (Not form this planet)
-                    </div>
-                    <hr class="hr-in-admin-dash">
+            <div class="parent-container">
 
-                    <div class="user-id">
+                <div class="noti-container mt-2 mb-2">
+                    <div class="noti-img-cont">
+                        <img src="<c:url value='/resources/images/wallet-white.svg'/>">
+                    </div>
+                    <div class="noti-righ-cont">
+                        <div class="noti-header">
+                            Querry raised by ramesh parameter (Not form this planet)
+                        </div>
+                        <hr class="hr-in-admin-dash">
+
+                        <div class="user-id">
                         <span>
                             User id :-
                         </span>
-                        <span>45</span>
-                    </div>
-                    <div class="contact-detail">
+                            <span>45</span>
+                        </div>
+                        <div class="contact-detail">
                         <span>
                             Contact details :-
                         </span>
-                        <span>+91 8849430122</span>
-                    </div>
-                    <div class="querry-type">
+                            <span>+91 8849430122</span>
+                        </div>
+                        <div class="querry-type">
                         <span>
                             Support type :-
                         </span>
-                        <span>Request</span>
-                    </div>
-                    <div class="accoutn-type">
+                            <span>Request</span>
+                        </div>
+                        <div class="accoutn-type">
                         <span>
                             Account type :-
                         </span>
-                        <span>Captain</span>
-                    </div>
-                    <div class="noti-msg">
+                            <span>Captain</span>
+                        </div>
+                        <div class="noti-msg">
                         <span>
                             Message :-
                         </span>
-                        I am tryping to do somthingin my dash board bu fsflk sfasfs fsadfsd fdaf afad sfdasfs df asff
-                        sdf af afadf adfa fddaf daf d fs afa fafas fsad
-                    </div>
+                            I am tryping to do somthingin my dash board bu fsflk sfasfs fsadfsd fdaf afad sfdasfs df
+                            asff
+                            sdf af afadf adfa fddaf daf d fs afa fafas fsad
+                        </div>
 
-                    <div class="noti-time mt-2  ">
-                        2:23 23/1/24
+                        <div class="noti-time mt-2  ">
+                            2:23 23/1/24
+                        </div>
                     </div>
-                </div>
-                <div class="amount-paid">
-                    <button>
-                        Aquire
-                    </button>
+                    <div class="amount-paid">
+                        <button>
+                            Aquire
+                        </button>
+                    </div>
                 </div>
             </div>
+
+
         </div>
     </div>
 </div>
 </body>
+
+<div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
+<script src="<c:url value="/resources/js/toaster.js"/>"></script>
 <script src="<c:url value="/resources/js/adminDashboard.js"/>"></script>
 
 </html>

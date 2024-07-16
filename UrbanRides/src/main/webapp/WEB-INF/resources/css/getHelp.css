@@ -217,11 +217,13 @@ body {
 .show-mobile {
     display: none;
 }
+
 .nati-cont {
     /*background-color: #0D63A5;*/
     padding: 8px;
     border-radius: 12px;
 }
+
 /*---------------------common buttons-----------------------------*/
 
 .common-btn-color7-theme {
@@ -588,4 +590,31 @@ body {
         padding-right: 12px;
         width: 190px;
     }
+}
+
+#supportType-error, #description-error {
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    /*position: absolute;*/
+    width: 170px;
+    /*left: 50%;*/
+    /*transform: translateX(-50%);*/
+}
+
+#search-btn-help {
+    background-color: #0D63A5;
+    color: white;
+    border: 0px solid #ffffff;
+    padding: 6px 25px;
+    border-radius: 12px;
+    transition: background-color 0.3s ease;
+    margin: auto; /* Center horizontally */
+    display: block; /* Ensure block-level display to use margin: auto */
+
+}
+
+#search-btn-help:hover {
+    background-color: #083358;
+    color: #FFD717;
 }

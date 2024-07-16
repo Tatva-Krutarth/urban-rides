@@ -106,5 +106,31 @@ public class TripDao {
         return result.isEmpty() ? null : result;
     }
 
+    @Transactional
+    public int getCountOfGeneralBooking() {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "SELECT COUNT(*) FROM Trip  WHERE ServiceType.serviceTypeId = 1";
+        Query<Long> query = session.createQuery(hql, Long.class);
+        Long count = query.uniqueResult();
+        return count.intValue();
+    }
+
+    @Transactional
+    public int getCountOfServiceBooking() {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "SELECT COUNT(*) FROM Trip  WHERE ServiceType.serviceTypeId IN (2, 3)";
+        Query<Long> query = session.createQuery(hql, Long.class);
+        Long count = query.uniqueResult();
+        return count.intValue();
+    }
+
+    @Transactional
+    public int getSuccessTripCount() {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "SELECT COUNT(*) FROM Trip WHERE isAccepted = TRUE AND paymentMethod IS NOT NULL";
+        Query<Long> query = session.createQuery(hql, Long.class);
+        Long count = query.uniqueResult();
+        return count.intValue();
+    }
 }
 

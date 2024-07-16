@@ -1,6 +1,7 @@
 package com.urbanrides.controller;
 
 
+import com.urbanrides.dao.SupportTypeLogsDao;
 import com.urbanrides.dtos.*;
 import com.urbanrides.model.SupportTypeLogs;
 import com.urbanrides.service.CabBookingService;
@@ -41,6 +42,7 @@ public class RiderController {
     private RiderOtherService riderOtherService;
     @Autowired
     private LoginServices loginServices;
+
 
     @RequestMapping("/rider-personal-details")
     public String riderPersonalDetails() {
@@ -243,6 +245,7 @@ public class RiderController {
         }
     }
 
+
     @RequestMapping("/rider-logout")
     public String riderLogout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -251,5 +254,18 @@ public class RiderController {
         }
         return "landingPage/landingPage";
     }
+
+    @RequestMapping(value = "/search-support-request", method = RequestMethod.GET)
+    public ResponseEntity<?> getSupportRequestById(@RequestParam String id) {
+        SupportRequestDataDto supportRequestData = riderOtherService.findSupportRequestById(id);
+
+        if (supportRequestData != null) {
+            return ResponseEntity.ok(supportRequestData);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
 }

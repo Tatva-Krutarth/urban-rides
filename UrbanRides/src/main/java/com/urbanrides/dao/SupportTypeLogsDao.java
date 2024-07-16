@@ -38,6 +38,26 @@ public class SupportTypeLogsDao {
         return results.isEmpty() ? null : results.get(0);
     }
 
+    @Transactional
+    public SupportTypeLogs getSupportPerData(String supportCaseId) {
+        Session s = sessionFactory.openSession();
+        String queryString = "FROM SupportTypeLogs WHERE supportCaseId = : supportCaseId";
+        Query<SupportTypeLogs> query = s.createQuery(queryString, SupportTypeLogs.class);
+        query.setParameter("supportCaseId", supportCaseId);
+        List<SupportTypeLogs> results = query.getResultList();
+        return results.isEmpty() ? null : results.get(0);
+    }
+
+    @Transactional
+    public List<SupportTypeLogs> getAllLogsData() {
+        Session s = sessionFactory.openSession();
+        String queryString = "FROM SupportTypeLogs";
+        Query<SupportTypeLogs> query = s.createQuery(queryString, SupportTypeLogs.class);
+        List<SupportTypeLogs> results = query.getResultList();
+        return results;
+    }
+
+
 }
 
 

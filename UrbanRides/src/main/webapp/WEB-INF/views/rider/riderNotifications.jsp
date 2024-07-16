@@ -62,8 +62,11 @@
                     <c:when test="${notification.notificationType eq 'Deposit successful'}">
                         <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">
                     </c:when>
+                    <c:when test="${notification.notificationType eq 'Payment Done'}">
+                        <img src="<c:url value='/resources/images/cash.svg'/>" id="noti-img">
+                    </c:when>
                     <c:otherwise>
-                        <img src="<c:url value='/resources/images/default-icon.svg'/>" id="noti-img">
+                        <img src="<c:url value='/resources/images/taxi-rent-car.png'/>" id="Ride accepted">
                     </c:otherwise>
                 </c:choose>
             </div>

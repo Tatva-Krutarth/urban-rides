@@ -57,8 +57,8 @@ public class CaptainController {
     @RequestMapping("/captain-document-details")
     public String captainPersonalDetails(HttpServletRequest req, Model m) {
 
-        String captainName = loginServices.getCapatainName(req);
-        m.addAttribute("captainName", captainName);
+//        String captainName = loginServices.getCapatainName(req);
+//        m.addAttribute("captainName", captainName);
         return "captain/captainDocumentDetails";
     }
 

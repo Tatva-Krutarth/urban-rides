@@ -83,4 +83,13 @@ public class UsersDao {
         session.close();
     }
 
+    @Transactional
+    public int totalCount() {
+        Session session = sessionFactory.getCurrentSession();
+        String hql = "SELECT COUNT(*) FROM User";
+        Query<Long> query = session.createQuery(hql, Long.class);
+        int count = query.uniqueResult().intValue();
+        return count;
+    }
+
 }

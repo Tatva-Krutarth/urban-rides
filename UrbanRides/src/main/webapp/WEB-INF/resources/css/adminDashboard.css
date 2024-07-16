@@ -4,7 +4,13 @@
 
 body {
     margin: 0;
+    background-color: floralwhite;
+
     font-family: Roboto;
+}
+
+div.default-bg {
+    background-color: initial !important; /* Reset to the default background color */
 }
 
 .nav {
@@ -193,6 +199,7 @@ body {
     align-items: center;
     border: 0px solid transparent;
     border-radius: 15px;
+    justify-content: space-around;
     padding: 5px 0px 5px 10px;
     box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px -2px;
 }
@@ -366,6 +373,7 @@ body {
         padding: 0px 15px 0px 15px;
         max-width: 100px;
     }
+
     .ad-dash-upper-per-cont {
         /* background-color: yellow; */
         width: 400px;
@@ -468,6 +476,46 @@ body {
         max-width: 210px;
     }
 
+    .noti-img-cont {
+        display: none;
+    }
+
+
+}
+
+@media only screen and (min-width: 360px) and (max-width: 435px) {
+
+    #ad-dash-upper {
+        /*background-color: red;*/
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0px 20px;
+        /*margin: ;*/
+    }
+
+    .noti-img-cont {
+        display: none;
+    }
+
+    .ad-dash-upper-per-cont {
+        width: 360px;
+        margin: 10px 10px;
+        justify-content: flex-start;
+    }
+
+    .counter-part-one {
+        width: 70px;
+        height: 70px;
+        font-size: 22px;
+    }
+
+    .counter-part-two {
+        font-size: 19px;
+        padding: 0px 15px 0px 15px;
+        max-width: 210px;
+    }
 
 
 }

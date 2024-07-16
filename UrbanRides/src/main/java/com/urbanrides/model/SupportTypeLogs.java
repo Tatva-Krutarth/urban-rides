@@ -43,12 +43,14 @@ public class SupportTypeLogs {
 
     @Column(name = "support_case_id")
     private String supportCaseId;
+
     @Column(name = "file_extention")
     private String fileExtention;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "admin_id")
     private User adminObj;
+
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDate createdDate;
