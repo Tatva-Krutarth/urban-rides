@@ -15,7 +15,6 @@ $(document).ready(function () {
                 populateUserManagementDetails(data);
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.error('Error fetching user management details:', xhr, textStatus, errorThrown);
                 showErrorMsg('Failed to fetch user management details. Please try again later.');
             }
         });
@@ -50,17 +49,21 @@ $(document).ready(function () {
             $('#user-management-form').submit();
         }
     });
-
-    // Initialize form validation for user details form
     $('#user-management-form').validate({
         rules: {
             firstName: {
                 required: true,
-                maxlength: 20
+                minlength: 1,
+                maxlength: 10,
+                lettersOnly: true, // Assuming you have a custom method for letters only
+                notSameValue: '#last-Name'
             },
             lastName: {
                 required: true,
-                maxlength: 20
+                minlength: 1,
+                maxlength: 10,
+                lettersOnly: true, // Assuming you have a custom method for letters only
+                notSameValue: '#first-Name'
             },
             phone: {
                 required: true,
@@ -71,12 +74,16 @@ $(document).ready(function () {
         },
         messages: {
             firstName: {
-                required: "First name is required",
-                maxlength: "First name cannot exceed 20 characters"
+                required: "Please enter your first name",
+                minlength: "Please enter at least one character",
+                maxlength: "The length of the last name must be below 10",
+                notSameValue: "The values must be different"
             },
             lastName: {
-                required: "Last name is required",
-                maxlength: "Last name cannot exceed 20 characters"
+                required: "Please enter your last name",
+                minlength: "Please enter at least one character",
+                maxlength: "The length of the last name must be below 10",
+                notSameValue: "The values must be different"
             },
             phone: {
                 required: "Phone number is required",
@@ -86,8 +93,8 @@ $(document).ready(function () {
             }
         },
 
+
         submitHandler: function (form) {
-            // Save changes button click handler
             var updatedData = {
                 firstName: $('.personal-details-data[name="firstName"]').val(),
                 lastName: $('.personal-details-data[name="lastName"]').val(),
@@ -99,23 +106,45 @@ $(document).ready(function () {
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(updatedData),
+                dataType: 'json', // Ensure this is a string
                 success: function (response) {
-                    // Show success alert
                     showSuccesstMsg('User data updated successfully.');
 
-                    // Lock the fields again
+                    function capitalizeFirstLetter(string) {
+                        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+                    }
+
+                    var formattedFirstName = capitalizeFirstLetter(updatedData.firstName);
+                    var formattedLastName = capitalizeFirstLetter(updatedData.lastName);
+                    $('.personal-details-data[name="firstName"]').val(formattedFirstName);
+                    $('.personal-details-data[name="lastName"]').val(formattedLastName);
                     $('.personal-details-data').prop('readonly', true);
                     $('.edit-button.first-button').removeClass('d-none');
                     $('.edit-button.second-button').addClass('d-none');
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error('Error updating user data:', xhr, textStatus, errorThrown);
-                    showErrorMsg('Failed to update user data. Please try again later.');
+                    console.error('Error updating personal details:', xhr, textStatus, errorThrown);
+                    let errorMessage = "An error occurred while updating personal details.";
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = xhr.responseJSON.errors;
+                    } else if (xhr.responseText) {
+                        try {
+                            let jsonResponse = JSON.parse(xhr.responseText);
+                            if (jsonResponse.message) {
+                                errorMessage = jsonResponse.message;
+                            }
+                        } catch (e) {
+                            errorMessage = xhr.responseText;
+                        }
+                    }
+
+                    showErrorMsg(errorMessage);
                 }
+
             });
         }
     });
-
     // // Edit button click handler for login details form
     // $('.edit-button-login-details').click(function () {
     //     // Toggle visibility of password fields and buttons
@@ -143,27 +172,51 @@ $(document).ready(function () {
         rules: {
             currentPassword: {
                 required: true,
-                minlength: 8
+                minlength: 8,
+                maxlength: 16,
+                strongPass: true, // Use custom validator for strong
+                notSameValue: '#new-password'
+
+
             }, newPassword: {
                 required: true,
-                minlength: 8
+                minlength: 8,
+                maxlength: 16,
+                strongPass: true,// Use custom validator for strong
+                notSameValue: '#current-password'
+
+
             },
             confNewPassword: {
                 required: true,
-                equalTo: "#new-password"
+                equalTo: "#new-password",
+                minlength: 8,
+                maxlength: 16
             }
         },
         messages: {
             currentPassword: {
-                required: "Password is required",
-                minlength: "Password must be at least 8 characters long"
+                required: "Please enter your password",
+                minlength: "Password must be at least 8 characters long",
+                maxlength: "Password cannot exceed 16 characters",
+                strongPass: "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+                notSameValue: "The old password cannot be same as new password"
+
+
             }, newPassword: {
-                required: "New password is required",
-                minlength: "Password must be at least 8 characters long"
+                required: "Please enter your password",
+                minlength: "Password must be at least 8 characters long",
+                maxlength: "Password cannot exceed 16 characters",
+                strongPass: "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+                notSameValue: "The new password cannot be same as old password"
+
+
             },
             confNewPassword: {
                 required: "Please confirm your password",
-                equalTo: "Passwords do not match"
+                equalTo: "Passwords do not match",
+                minlength: "Password must be at least 8 characters long",
+                maxlength: "Password cannot exceed 16 characters"
             }
         },
         submitHandler: function (form) {
@@ -173,12 +226,14 @@ $(document).ready(function () {
                 newPassword: $('#new-password').val(),
                 confirmPassword: $('#conf-new-password').val()
             };
-
+            $(".loader").css("display", "flex");
             $.ajax({
                 url: 'update-login-details',
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(loginDetails),
+                dataType: 'json', // Ensure this is a string
+
                 success: function (response) {
                     // Show success message
                     showSuccesstMsg('Login details updated successfully.');
@@ -190,11 +245,28 @@ $(document).ready(function () {
                     // $('.login-second').add('d-none');
                     $('#unhide-btn').addClass('d-none');
                     $('#hide-btn').removeClass('d-none');
+                    $(".loader").hide();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    let errorMessage = xhr.responseText; // Assuming your backend sends the error message in the response body
+                    console.error('Error updating login details:', xhr, textStatus, errorThrown);
+                    let errorMessage = "An error occurred while updating login details.";
+
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseText) {
+                        try {
+                            let jsonResponse = JSON.parse(xhr.responseText);
+                            if (jsonResponse.message) {
+                                errorMessage = jsonResponse.message;
+                            }
+                        } catch (e) {
+                            errorMessage = xhr.responseText;
+                        }
+                    }
+                    $(".loader").hide();
                     showErrorMsg(errorMessage);
                 }
+
 
             });
         }
@@ -219,6 +291,7 @@ $(document).ready(function () {
 
             var formData = new FormData();
             formData.append('profilePhoto', profilePhoto);
+            $(".loader").css("display", "flex");
 
             $.ajax({
                 url: 'update-profile-photo',
@@ -226,20 +299,58 @@ $(document).ready(function () {
                 data: formData,
                 processData: false,
                 contentType: false,
+                dataType: 'json', // Ensure this is a string
+
                 success: function (response) {
                     // Show success message
                     showSuccesstMsg('Profile photo updated successfully.');
                     // Update the profile photo in the UI
                     var relativePath = response; // Assuming the response contains the relative path
                     $('.manage-account-profile-photo img').attr('src', relativePath);
-                    window.location.reload();                },
+                    $('#profile-photo-input').val(''); // Reset the file input
+
+                    setTimeout(function () {
+                        $(".loader").hide();
+                        window.location.reload();
+                    }, 2000);
+                },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error('Error updating profile photo:', xhr, textStatus, errorThrown);
-                    showErrorMsg('Failed to update profile photo. Please try again later.');
+                    $(".loader").hide();
+                    console.log(xhr)
+                    $('#profile-photo-input').val(''); // Reset the file input
+
+                    try {
+                        let response = JSON.parse(xhr.responseText); // Parse the JSON response
+                        if (response.errors && response.errors.length > 0) {
+                            let errorMessage = response.errors.join('<br>'); // Join the errors with line breaks
+                            showErrorMsg(errorMessage); // Display the error message
+                        } else {
+                            showErrorMsg("Only JPG and PNG files are allowed of size less than 1 mb"); // Fallback for unknown error structure
+                        }
+                    } catch (e) {
+                        showErrorMsg("Only JPG and PNG files are allowed of size less than 1 mb"); // Fallback for JSON parsing errors
+                    }
                 }
+
             });
         }
-    });
+    })
+    $.validator.addMethod("strongPass", function (value, element) {
+        return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(value);
+    }, "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+
+    jQuery.validator.addMethod("lettersOnly", function (value, element) {
+        return this.optional(element) || /^[a-zA-Z]+$/.test(value);
+    }, "Please enter only letters");
+
+    $.validator.addMethod("notSameValue", function (value, element, param) {
+        var valOne = value.toLowerCase(); // Convert the first value to lowercase
+        var valTwo = $(param).val().toLowerCase(); // Convert the second value to lowercase
+
+        return this.optional(element) || valOne !== valTwo;
+    }, "The values must be different.");
+
+    ;
 });
 
 const togglePassword2 = document.querySelector('#togglePassword2');

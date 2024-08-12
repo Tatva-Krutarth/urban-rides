@@ -26,7 +26,13 @@
     <%--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>--%>
     <%--    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>--%>
     <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
-
+    <%--//web socket------%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+            integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
 
     <link rel="stylesheet" href="<c:url value="/resources/css/riderManageAccount.css" />">
@@ -69,11 +75,11 @@
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">First Name</div>
-                    <input type="text" class="personal-details-data" name="firstName" value="" readonly>
+                    <input type="text" class="personal-details-data" name="firstName" id="first-Name" value="" readonly>
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Last Name</div>
-                    <input type="text" class="personal-details-data" name="lastName" value="" readonly>
+                    <input type="text" class="personal-details-data" name="lastName" id="last-Name" value="" readonly>
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Phone</div>
@@ -162,27 +168,22 @@
             </div>
             <hr>
 
-
             <%--            <div class="mang-acc-heading mt-2">--%>
-            <%--                Vehicle details--%>
+            <%--                <h3>Vehicle Details</h3>--%>
             <%--            </div>--%>
-            <%--            Request to chagne the vehicle.?--%>
-            <div class="mang-acc-heading mt-2">
-                <h3>Vehicle Details</h3>
-            </div>
-            <p>If you need to change your vehicle, please send a request to the admin for approval. Once you send the
-                request, you won't be able to log in again until your documents are verified.</p>
+            <%--            <p>If you need to change your vehicle, please send a request to the admin for approval. Once you send the--%>
+            <%--                request, you won't be able to log in again until your documents are verified.</p>--%>
 
-            <div class="mt-3">
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                        data-bs-target="#vehicleChangeRequestModal">Request Vehicle Change
-                </button>
-            </div>
+            <%--            <div class="mt-3">--%>
+            <%--                <button type="button" class="btn btn-warning" data-bs-toggle="modal"--%>
+            <%--                        data-bs-target="#vehicleChangeRequestModal">Request Vehicle Change--%>
+            <%--                </button>--%>
+            <%--            </div>--%>
 
-            <div class="alert alert-info mt-3" role="alert">
-                <strong>Note:</strong> If your request is approved, you will need to re-upload all the documents for the
-                new vehicle.
-            </div>
+            <%--            <div class="alert alert-info mt-3" role="alert">--%>
+            <%--                <strong>Note:</strong> If your request is approved, you will need to re-upload all the documents for the--%>
+            <%--                new vehicle.--%>
+            <%--            </div>--%>
 
 
             <div class="modal fade" id="vehicleChangeRequestModal" tabindex="-1"
@@ -218,6 +219,7 @@
 
 <%------------------------------------jquerry  validation--%>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
+<script src="<c:url value="/resources/js/captain-web-socket.js"/>"></script>
 
 <script src="<c:url value="/resources/js/captainManageAccount.js"/>"></script>
 </html>

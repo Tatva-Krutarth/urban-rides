@@ -35,6 +35,7 @@
           rel="stylesheet">
 <body>
 <%@include file="../admin/adminNavbar.jsp" %>
+<%@include file="../commonImports/loader.jsp" %>
 
 <div id="ad-dash-upper" class="">
     <div class="ad-dash-upper-per-cont">
@@ -74,20 +75,19 @@
 
 <div id="ad-dash-lower" class="container">
     <div id="ad-dash-support-types">
-        <div id="querry" class="querry-active">Querries</div>
+        <div id="querry" class="querry-active" onclick="allRequestData(0,10)">Querries</div>
         <div id="running">Running</div>
         <div id="completed">Completed</div>
     </div>
     <div id="ad-dash-support-requests-cont" class="mt-3">
         <div id="transaction-container1">
             <div class="parent-container">
-
                 <div class="noti-container mt-2 mb-2">
                     <div class="noti-img-cont">
                         <img src="<c:url value='/resources/images/wallet-white.svg'/>">
                     </div>
                     <div class="noti-righ-cont">
-                        <div class="noti-header">
+                        <div class="noti-header" id="admin-req-header-name">
                             Querry raised by ramesh parameter (Not form this planet)
                         </div>
                         <hr class="hr-in-admin-dash">
@@ -131,12 +131,24 @@
                     </div>
                     <div class="amount-paid">
                         <button>
-                            Aquire
+                            Accept
                         </button>
                     </div>
                 </div>
             </div>
 
+
+            <div id="pagination-cont">
+                <div class="pagination-class">
+                    <%--                    <button class="previous">Previous</button>--%>
+                    <%--                    <button class="number">1</button>--%>
+                    <%--                    <button class="number">2</button>--%>
+                    <%--                    <button class="number">3</button>--%>
+                    <%--                    <button class="number">4</button>--%>
+                    <%--                    <button class="number">5</button>--%>
+                    <%--                    <button class="next">Next</button>--%>
+                </div>
+            </div>
 
         </div>
     </div>

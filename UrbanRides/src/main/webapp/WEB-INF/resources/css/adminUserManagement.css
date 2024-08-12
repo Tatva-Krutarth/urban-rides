@@ -201,7 +201,22 @@ div.default-bg {
     color: white;
     font-weight: 500;
 }
+.verificatoin-failed{
+    background-color: #640000;
+    padding: 5px 12px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    text-wrap: nowrap;
+}
 
+.unverified-btn {
+    background-color: #969696;
+    padding: 5px 12px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+}
 .unblock-btn {
     background-color: #5b7e96;
     padding: 5px 12px;

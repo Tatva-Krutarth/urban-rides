@@ -220,19 +220,19 @@ body {
 
 /*---------------------common buttons-----------------------------*/
 
-.captain-accept-btn{
+.captain-accept-btn, .captain-conclude-btn {
     background-color: #0D63A5;
     color: white;
     transition: background-color 0.3s ease;
     border: 0px solid black;
-    border-radius: 12px;
+    border-radius: 10px;
     padding: 6px 35px;
     display: block;
     margin: auto;
 }
 
-.captain-accept-btn:hover {
-    background-color: #0D63A5;
+.captain-accept-btn:hover, .captain-conclude-btn:hover {
+    background-color: #083358;
     color: #FFD717;
 }
 
@@ -248,21 +248,23 @@ body {
 }
 
 /*------------------------------------package trips------------------------------------*/
-.service-trip-text{
+.service-trip-text {
     font-size: 24px;
     font-weight: 500;
     color: #001F3F;
     margin-top: 20px;
     /*margin-bottom: 12px;*/
 }
+
 /*-----back button---------*/
 
-.service-trip-text-sub{
+.service-trip-text-sub {
     font-size: 18px;
     font-weight: 500;
     color: #0D63A5;
     margin-top: 20px;
 }
+
 .back-button {
     margin-right: 15px;
     border-radius: 50%;
@@ -347,4 +349,20 @@ body {
         height: 45px;
         padding: 0px;
     }
+}
+
+
+#conclusionNoteRentTaxi-error , #conclusionNoteDailyPickup-error{
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center /*transform: translateX(-50%);*/
+}
+#distanceRentTaxi-error , #chargesRentTaxi-error {
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    width: 100%;
+    text-align: center /*transform: translateX(-50%);*/
 }

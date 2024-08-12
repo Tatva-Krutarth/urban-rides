@@ -28,7 +28,13 @@
     <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
 
     <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
+    <%--//web socket------%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+            integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="<c:url value="/resources/css/captainMyTrips.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
 
@@ -65,11 +71,11 @@
                     <div class="my-trip-accor-details">
                         <div class="my-trip-accor-details-resp-cont">
                             <span class="my-trip-accor-details-resp">Pick up location : &nbsp; </span><span
-                                class="my-trip-pickup">Mota Mavva</span>
+                                class="my-trip-pickup">--</span>
                         </div>
                         <div class="my-trip-accor-details-resp-cont">
                             <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span
-                                class="my-trip-pickup">Mota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota MavvaMota Mavva</span>
+                                class="my-trip-pickup">--</span>
                         </div>
 
                     </div>
@@ -102,39 +108,39 @@
                                 </div>
 
 
-                                <div id="rating-system">
-                                    <!-- Display Stars -->
-                                    <div class="d-flex gap-1">
-                                        <svg class="star" data-index="0" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                        </svg>
-                                        <svg class="star" data-index="1" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                        </svg>
-                                        <svg class="star" data-index="2" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                        </svg>
-                                        <svg class="star" data-index="3" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                        </svg>
-                                        <svg class="star" data-index="4" xmlns="http://www.w3.org/2000/svg"
-                                             viewBox="0 0 24 24">
-                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                                        </svg>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
-                                            <defs>
-                                                <linearGradient id="half-filled-gradient">
-                                                    <stop offset="50%" stop-color="#f59e0b"/>
-                                                    <stop offset="50%" stop-color="gray"/>
-                                                </linearGradient>
-                                            </defs>
-                                        </svg>
-                                    </div>
-                                </div>
+<%--                                <div id="rating-system">--%>
+<%--                                    <!-- Display Stars -->--%>
+<%--                                    <div class="d-flex gap-1">--%>
+<%--                                        <svg class="star" data-index="0" xmlns="http://www.w3.org/2000/svg"--%>
+<%--                                             viewBox="0 0 24 24">--%>
+<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
+<%--                                        </svg>--%>
+<%--                                        <svg class="star" data-index="1" xmlns="http://www.w3.org/2000/svg"--%>
+<%--                                             viewBox="0 0 24 24">--%>
+<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
+<%--                                        </svg>--%>
+<%--                                        <svg class="star" data-index="2" xmlns="http://www.w3.org/2000/svg"--%>
+<%--                                             viewBox="0 0 24 24">--%>
+<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
+<%--                                        </svg>--%>
+<%--                                        <svg class="star" data-index="3" xmlns="http://www.w3.org/2000/svg"--%>
+<%--                                             viewBox="0 0 24 24">--%>
+<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
+<%--                                        </svg>--%>
+<%--                                        <svg class="star" data-index="4" xmlns="http://www.w3.org/2000/svg"--%>
+<%--                                             viewBox="0 0 24 24">--%>
+<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
+<%--                                        </svg>--%>
+<%--                                        <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">--%>
+<%--                                            <defs>--%>
+<%--                                                <linearGradient id="half-filled-gradient">--%>
+<%--                                                    <stop offset="50%" stop-color="#f59e0b"/>--%>
+<%--                                                    <stop offset="50%" stop-color="gray"/>--%>
+<%--                                                </linearGradient>--%>
+<%--                                            </defs>--%>
+<%--                                        </svg>--%>
+<%--                                    </div>--%>
+<%--                                </div>--%>
                             </div>
                         </div>
                     </div>
@@ -178,6 +184,7 @@
 
 
 <%------------------------------------jquerry  validation--%>
+<script src="<c:url value="/resources/js/captain-web-socket.js"/>"></script>
 
 <script src="<c:url value="/resources/js/captainMyTrips.js"/>"></script>
 

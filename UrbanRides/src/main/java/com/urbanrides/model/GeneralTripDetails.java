@@ -64,18 +64,5 @@ public class GeneralTripDetails  {
     private float captainRatting = 0.0f;
 
 
-    public GeneralTripDetails(int generalTripDetailId, Trip tripObj, LocalDateTime captainEstimatedReachTime, String captainAway, LocalDateTime captainActualReachTime, Boolean isOtpValidated, Boolean isCaptainReached, LocalDateTime tripStartTime, LocalDateTime tripEndTime, Boolean isTripCompleted, String feedback, float captainRatting) {
-        this.generalTripDetailId = generalTripDetailId;
-        this.tripObj = tripObj;
-        this.captainEstimatedReachTime = captainEstimatedReachTime;
-        this.captainAway = captainAway;
-        this.captainActualReachTime = captainActualReachTime;
-        this.isOtpValidated = isOtpValidated;
-        this.isCaptainReached = isCaptainReached;
-        this.tripStartTime = tripStartTime;
-        this.tripEndTime = tripEndTime;
-        this.isTripCompleted = isTripCompleted;
-        this.feedback = feedback;
-        this.captainRatting = captainRatting;
-    }
+
 }

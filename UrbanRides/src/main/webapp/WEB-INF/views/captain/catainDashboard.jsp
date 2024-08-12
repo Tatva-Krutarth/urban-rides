@@ -22,7 +22,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
+    <%--//web socket------%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+            integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="<c:url value="/resources/css/captainDashboard.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
 
@@ -44,11 +50,12 @@
 
     </div>
     <div id="captain-dash-lower">
-        <button id="getLocationBtn">Give Live Location Permission</button>
-
+        <input type="hidden" id="refresh-trip-id" value="no-data">
+        <input type="hidden" id="refresh-again" value="no-active-ride">
         <div id="dash-first-ui">
 
             <div class="dashboard-label">Welcome, Captain!</div>
+
             <p>
                 As a captain, your role is to provide safe and reliable rides to our passengers. Here's how you can get
                 started:
@@ -73,6 +80,9 @@
             <p>
                 If you have any questions or need assistance, please contact support.
             </p>
+
+            <button id="getLocationBtn">Give Live Location Permission</button>
+
         </div>
 
 
@@ -176,7 +186,8 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Rider has to pay you <span id="charges-in-pop-up"> 43 Rs</span> for the ride. Please ensure the payment is collected before concluding
+                    <p>Rider has to pay you <span id="charges-in-pop-up"> 43 Rs</span> for the ride. Please ensure the
+                        payment is collected before concluding
                         the ride.</p>
                 </div>
                 <div class="modal-footer">
@@ -203,6 +214,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
 <script src="<c:url value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDCIb4xyEV8ok30VlxsidKGHw1NAlrfFM&libraries=places"/>"></script>
+<script src="<c:url value="/resources/js/captain-web-socket.js"/>"></script>
 
 <script src="<c:url value="/resources/js/captainDashboard.js"/>"></script>
 

@@ -1,22 +1,28 @@
+// Custom validator to ensure two values are not the same
+
 $("#myForm").validate({
+
     rules: {
         riderFirstName: {
             required: true,
             minlength: 1,
             maxlength: 10,
-            lettersOnly: true // Assuming you have a custom method for letters only
+            lettersOnly: true ,// Assuming you have a custom method for letters only
+            notSameValue: '#lName'
+
         },
         riderLastName: {
             required: true,
             minlength: 1,
             maxlength: 10,
-            lettersOnly: true
+            lettersOnly: true,
+            notSameValue: '#fName'
         },
         phone: {
             required: true,
             digits: true,
             minlength: 10,
-            maxlength: 13
+            maxlength: 10,
         },
         age: {
             required: true,
@@ -33,19 +39,23 @@ $("#myForm").validate({
         riderFirstName: {
             required: "Please enter your first name",
             minlength: "Please enter at least one character",
-            maxlength: "The length of the last name must be below 10"
+            maxlength: "The length of the last name must be below 10",
+            notSameValue: "The first name cannot be same as second name"
+
 
         },
         riderLastName: {
             required: "Please enter your last name",
             minlength: "Please enter at least one character",
-            maxlength: "The length of the last name must be below 10"
+            maxlength: "The length of the last name must be below 10",
+            notSameValue: "The second name cannot be same as first name"
+
         },
         phone: {
             required: "Please enter a phone number",
             digits: "Phone number must contain only digits",
             minlength: "Phone number must be at least 10 digits long",
-            maxlength: "Phone number must be no longer than 13 digits"
+            maxlength: "Phone number must be no longer than 10 digits"
         },
         age: {
             required: "Please enter your age",
@@ -138,3 +148,9 @@ jQuery.validator.addMethod("lettersOnly", function (value, element) {
 document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });
+$.validator.addMethod("notSameValue", function (value, element, param) {
+    var valOne = value.toLowerCase(); // Convert the first value to lowercase
+    var valTwo = $(param).val().toLowerCase(); // Convert the second value to lowercase
+
+    return this.optional(element) || valOne !== valTwo;
+}, "The values must be different.");

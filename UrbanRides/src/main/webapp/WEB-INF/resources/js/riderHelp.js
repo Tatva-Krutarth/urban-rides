@@ -2,8 +2,8 @@ $(document).ready(function () {
     // jQuery Validation for the form
     $.validator.addMethod("fileType", function (value, element) {
         var fileType = value.split('.').pop().toLowerCase();
-        return this.optional(element) || $.inArray(fileType, ['pdf', 'jpg', 'jpeg', 'png']) !== -1;
-    }, "Only PDF, JPG, and PNG formats are allowed.");
+        return this.optional(element) || $.inArray(fileType, ['pdf']) !== -1;
+    }, "Only PDF formats are allowed.");
 
     $('#supportForm').validate({
         rules: {
@@ -25,39 +25,73 @@ $(document).ready(function () {
                 required: "Please provide a description."
             },
             uploadFile: {
-                fileType: "Only PDF, JPG, and PNG formats are allowed."
+                fileType: "Only PDF format is allowed."
             }
         },
         submitHandler: function (form) {
-            var formData = new FormData(form);
+            var formData = new FormData();
+
+            // Append other form fields
+            formData.append('supportType', form.supportType.value);
+            formData.append('description', form.description.value);
+
+            // Handle file input
+            var fileInput = form.uploadFile;
+            if (fileInput.files.length > 0) {
+                formData.append('uploadFile', fileInput.files[0]);
+            }
+            // else {
+            //     formData.append('uploadFile', null); // or you can choose not to append anything
+            // }
+            $(".loader").css("display", "flex");
 
             $.ajax({
                 type: 'POST',
-                enctype: 'multipart/form-data',
-                url: 'support-request', // Adjust URL to your endpoint
+                url: 'rider-get-support', // Adjust URL to your endpoint
                 data: formData,
                 processData: false,
                 contentType: false,
                 cache: false,
-                timeout: 600000,
+                dataType: 'json',
                 success: function (data) {
                     // Handle success response
-                    alert('Support request submitted successfully.');
+                    showSuccesstMsg('Support request submitted successfully.');
 
                     // Reset the form
                     $('#supportForm')[0].reset();
-                },
-                error: function (e) {
-                    // Handle error response
-                    alert('Error occurred while submitting the support request.');
-                }
-            });
+                    $(".loader").hide();
 
-            return false; // Prevent default form submission
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR);
+                    $(".loader").hide();
+
+                    var responseText = jqXHR.responseText;
+
+                    // Attempt to parse the response text as JSON
+                    try {
+                        responseText = JSON.parse(responseText);
+                    } catch (e) {
+                        // Handle cases where response is not valid JSON
+                        showErrorMsg(jqXHR.responseText);
+                        return;
+                    }
+
+                    // Check if the response is a map with keys and values
+                    if (typeof responseText === 'object' && !Array.isArray(responseText)) {
+                        var messages = Object.values(responseText).join(', ');
+                        showErrorMsg(messages);
+                    } else {
+                        // Handle generic or unexpected errors
+                        showErrorMsg("An unexpected error occurred: " + jqXHR.responseText);
+                    }
+                }
+
+            });
+            return false;
         }
     });
 
-    // Function to search support requests by ID
     $('#search-btn-help').click(function () {
         var queryId = $('#queryId').val().trim();
         console.log(queryId)
@@ -68,7 +102,7 @@ $(document).ready(function () {
 
         $.ajax({
             type: 'GET',
-            url: 'search-support-request', // Ensure correct endpoint URL
+            url: 'search-support-request',
             data: {id: queryId},
             success: function (data) {
                 if (data && data.id) {
@@ -85,6 +119,6 @@ $(document).ready(function () {
                 showErrorMsg('Error occurred while searching for the support request.');
             }
         });
-
     });
 });
+

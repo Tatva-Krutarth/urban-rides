@@ -63,23 +63,11 @@
 
 
             <div class="dropdown d-flex flex-row-reverse align-items-center">
-                <button class="dropbtn common-btn-color7-theme">Get help</button>
-                <div class="dropdown-content">
-                    <a href="captain-support" class="dropdown-list " style="text-decoration: none">
-                        <img src="<c:url value='/resources/images/help.svg' />" alt="">    </span>
-                        Get help with your account</a>
-                    <div>
-                        <hr class="hr-setting">
-                    </div>
-                    <a href="captain-logout" class="dropdown-list ">
-                        <img src="<c:url value='/resources/images/sign-out.svg' />" alt=""></span>
-                        Sign out
-                    </a>
-                </div>
+                <a href="captain-logout" style="text-decoration: none">  <span class="dropbtn common-btn-color7-theme">Sign out</span></a>
             </div>
 
         </nav>
-        <div class="land-sub-heading-t6 ">Welcome , ${captainName}</div>
+        <div class="land-sub-heading-t6 ">Welcome  ${captainName}</div>
         <div class="container">
 
             <div class="captain-details-sub mb-2 mt-2">Here's what you need to do to set up your account</div>
@@ -132,10 +120,9 @@
                         </div>
                     </button>
                 </div>
+
                 <div class="upload-file-sub-heading mt-4 mb-2">
                     <span>Driving Licence </span>
-                    <span class="i-class">
-                <img src="<c:url value='/resources/images/info-circle.svg' />" alt=""></span>
                 </div>
                 <div class="col-12 mt-1 upload-view-flex d-flex">
                     <div class="input-group">
@@ -159,6 +146,7 @@
                         </div>
                     </button>
                 </div>
+
                 <div class="upload-file-sub-heading mt-4 ">Registration Certificate (RC)</div>
                 <div class="col-12 mt-1 upload-view-flex d-flex">
                     <div class="input-group">
@@ -236,6 +224,7 @@
 
 
 <%--<!-- Include GSAP library -->--%>
+
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js'/>"></script>
 <script src="<c:url value="/resources/js/userRegistrationBackground.js"/>"></script>
 </body>

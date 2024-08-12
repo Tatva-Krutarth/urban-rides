@@ -36,12 +36,22 @@ public class GlobalExceptionHandler {
     private Map<String, List<String>> getErrorsMap(List<String> errors) {
         Map<String, List<String>> errorResponse = new HashMap<>();
         errorResponse.put("errors", errors);
+        System.out.println("Gccccclobal Exception");
+
         return errorResponse;
+    }
+    @ExceptionHandler(CustomValidationException.class)
+    public ResponseEntity<Map<String, String>> handleCustomValidationException(CustomValidationException ex) {
+        System.out.println("Global Excddddeption");
+
+        return new ResponseEntity<>(ex.getErrors(), HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(UnexpectedTypeException.class)
     public ResponseEntity<Map<String, String>> unexpectedTypeException(UnexpectedTypeException ex) {
         Map<String, String> responseMap = new HashMap<>();
         responseMap.put("errors", "Data invalid. Please provide valid data");
+        System.out.println("Global dfdfdfException");
+
         return new ResponseEntity<>(responseMap, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 

@@ -28,7 +28,13 @@
     <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
 
     <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
+    <%--//web socket------%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+            integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="<c:url value="/resources/css/riderWallet.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
 
@@ -73,7 +79,7 @@
     <div class="container">
 
         <div class="wallet-subheading">
-            Paid By Wallet
+            Paid By Cash
         </div>
         <div id="transaction-container1">
             <div class="noti-container mt-2 mb-2">
@@ -93,7 +99,7 @@
         </div>
 
         <div class="wallet-subheading">
-            Paid By Cash
+            Paid By Wallet
         </div>
         <div id="transaction-container2">
 
@@ -118,6 +124,13 @@
 
 </div>
 
+<%--//web socket------%>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+        integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+        integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
 
@@ -125,5 +138,6 @@
 <%------------------------------------jquerry  validation--%>
 
 <script src="<c:url value="/resources/js/riderWallet.js"/>"></script>
+<script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
 </body>
 </html>

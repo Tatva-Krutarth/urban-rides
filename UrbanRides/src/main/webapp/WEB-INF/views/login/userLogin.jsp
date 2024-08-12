@@ -86,7 +86,7 @@
                     <input type="password" class="form-control taskName" autocomplete="off" id="pass" autofocus
                            name="password" required/>
                     <label class="floating-label place-holder">Password</label>
-                    <div style="float: right; position: relative;">
+                    <div style="float: right; position: absolute;top: 49px; right: 0px">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>"
                              id="togglePassword"
                              style="position: absolute; right: 17px; top: -35px; width: 21px; height: 21px;">

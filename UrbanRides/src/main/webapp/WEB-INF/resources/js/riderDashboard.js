@@ -5,9 +5,10 @@ $(document).ready(function () {
 
         if ($(this).attr('id') === 'ride') {
             $('#rider-form').show();
+            $('#rider-form')[0].reset();
             $('#package-form').hide();
             $('.package-submit').addClass('d-none'); // Hide the "Book Now" button
-            initMap();
+            getCaptainsDetails();
 
         } else {
             $('#rider-form').hide();
@@ -84,7 +85,15 @@ $(document).ready(function () {
                         $('#waitTingModal').modal('show');
                         var id = response.split(" ").pop(); // Extract the last part which is the ID
                         $('#general-trip-id').val(id);
+
+                        // Remove all captain markers from the map
+                        captainMarkers.forEach((marker) => {
+                            marker.setMap(null);
+                        });
+                        captainMarkers = [];
+
                         showSuccesstMsg("Ride Registered")
+                        disableNavbarLinks();
                         connectToBackend();
                     } else {
                         showErrorMsg(response);
@@ -95,30 +104,30 @@ $(document).ready(function () {
                 error: function (xhr, textStatus, errorThrown) {
                     console.error("Error:", xhr, textStatus, errorThrown);
                     $(".loader").hide();
-                    try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        if (Array.isArray(errorResponse.errors)) {
-                            // handle error response in the format {"errors":["Phone number must be between 10 and 13 characters"]}
-                            const errorMessage = errorResponse.errors[0];
-                            showErrorMsg(errorMessage);
-                            console.log("Backend try:", errorMessage);
-                        } else {
-                            // handle non-array error response
-                            showErrorMsg(errorResponse);
-                            console.log("Backend try:", errorResponse);
-                        }
-                    } catch (e) {
-                        // Handle non-JSON response
-                        if (typeof xhr.responseText === 'string') {
-                            // handle string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch:", xhr.responseText);
-                        } else {
-                            // handle non-string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch:", xhr.responseText);
+
+                    let errorMessage = "Unknown error occurred.";
+                    if (xhr.responseText) {
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            if (errorResponse.errors) {
+                                // If errors is an array, join them into a single message
+                                if (Array.isArray(errorResponse.errors)) {
+                                    errorMessage = errorResponse.errors.join(", ");
+                                } else {
+                                    errorMessage = errorResponse.errors;
+                                }
+                            } else if (errorResponse.error) {
+                                // Handle the single error message
+                                errorMessage = errorResponse.error;
+                            } else {
+                                // Handle other cases if response structure changes
+                                errorMessage = xhr.responseText;
+                            }
+                        } catch (e) {
+                            errorMessage = xhr.responseText;
                         }
                     }
+                    showErrorMsg(errorMessage);
                 }
             });
         }
@@ -163,59 +172,87 @@ let userMarker;
 let captainMarkers = [];
 let distanceService;
 let directionsDisplay;
-const captains = [{id: 1, name: "Captain A", lat: 22.470701, lng: 70.057732}, {
-    id: 2, name: "Captain B", lat: 22.3039, lng: 70.8022
-}, {id: 3, name: "Captain C", lat: 22.8252, lng: 70.8491}];
 
-window.onload = initMap;
+window.onload = getCaptainsDetails;
 
-function initMap() {
+function getCaptainsDetails() {
+    $.ajax({
+        url: 'get-captain-details', // Update this with your actual backend endpoint
+        method: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            console.log(response);
+            initMap(response);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.error('Error fetching captain details:', xhr, textStatus, errorThrown);
+            showErrorMsg('Failed to fetch captain details. Please try again later.');
+        }
+    });
+}
 
-    //initializing the map and setting the center portion of the map
+function initMap(captains) {
+    // initializing the map and setting the center portion of the map
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 22.470701, lng: 70.057732}, zoom: 12
+        center: {lat: 22.470701, lng: 70.057732},
+        zoom: 12
     });
-    console.log("previsious click");
+
     distanceService = new google.maps.DistanceMatrixService();
-    service = new google.maps.DistanceMatrixService();
-    directionsDisplay = new google.maps.DirectionsRenderer({
-        map: map,
-    });
-    console.log(navigator.geolocation)
+    directionsDisplay = new google.maps.DirectionsRenderer({map: map});
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
             const pos = {
-                lat: position.coords.latitude, lng: position.coords.longitude
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
             };
 
             userMarker = new google.maps.Marker({
-                position: pos, map: map, title: 'Your Location'
+                position: pos,
+                map: map,
+                title: 'Your Location'
             });
 
-            //setting up the user marker (position)
+            // setting up the user marker (position)
             map.setCenter(pos);
 
-            //captain market
-            captains.forEach(captain => {
-                const marker = new google.maps.Marker({
-                    position: {lat: captain.lat, lng: captain.lng}, map: map, title: captain.name
+            if (captains && captains.length > 0) {
+                captains.forEach(captain => {
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({address: captain.captainLocation}, (results, status) => {
+                        if (status === 'OK') {
+                            const lat = results[0].geometry.location.lat();
+                            const lng = results[0].geometry.location.lng();
+
+                            const marker = new google.maps.Marker({
+                                position: {lat: lat, lng: lng},
+                                map: map,
+                                title: captain.captainName
+                            });
+
+                            marker.addListener('click', () => {
+                                new google.maps.InfoWindow({
+                                    content: `<h2>${captain.captainName}</h2>`
+                                }).open(map, marker);
+                                calculateDistancee(userMarker.getPosition(), marker.getPosition());
+                            });
+
+                            captainMarkers.push(marker);
+                        } else {
+                            console.error('Error geocoding captain location:', status);
+                        }
+                    });
                 });
-
-                marker.addListener('click', () => {
-                    new google.maps.InfoWindow({
-                        content: `<h2>${captain.name}</h2><p>Details about the captain...</p>`
-                    }).open(map, marker);
-                    calculateDistance(userMarker.getPosition(), marker.getPosition());
-                });
-
-                captainMarkers.push(marker);
-            });
-
+            } else {
+                console.log('No captain details available.');
+            }
 
             // Watch for changes in the user's position
             navigator.geolocation.watchPosition(position => {
                 const newPos = {
-                    lat: position.coords.latitude, lng: position.coords.longitude
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
                 };
 
                 userMarker.setPosition(newPos);
@@ -224,21 +261,33 @@ function initMap() {
                 console.error('Error watching position:', error);
             });
 
-
         }, error => {
             console.error('Error getting current position:', error);
             elseCondition();
-
         });
     } else {
-
         console.log("Browser does not support geolocation");
-
         elseCondition();
-
-
     }
 }
+
+function calculateDistancee(userPosition, captainPosition) {
+    const request = {
+        origins: [userPosition],
+        destinations: [captainPosition],
+        travelMode: 'DRIVING'
+    };
+
+    distanceService.getDistanceMatrix(request, (response, status) => {
+        if (status === 'OK') {
+            const distance = response.rows[0].elements[0].distance.text;
+            console.log(`Distance to captain: ${distance}`);
+        } else {
+            console.error('Error calculating distance:', status);
+        }
+    });
+}
+
 
 function getTimeWeightage() {
     const now = new Date();
@@ -297,8 +346,8 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                             // Convert distance to km
                             const distanceInKm = distanceValue / 1000;
 
-                            if (distanceInKm < 0.1 || distanceInKm > 50) {
-                                showErrorMsg('The distance should not be more than 50 km.');
+                            if (distanceInKm < 1 || distanceInKm > 50) {
+                                showErrorMsg('The distance should be between 1 than 50 km.');
                                 document.getElementById('submitBtn').disabled = true;
                                 return;
                             }
@@ -374,11 +423,12 @@ function isWithinAhmedabad(bounds) {
 }
 
 
-// function initDirectionsDisplay() {
-//     directionsDisplay = new google.maps.DirectionsRenderer({
-//         map: map,
-//     });
-// }
+function disableNavbarLinks() {
+    $('nav a').each(function() {
+        $(this).addClass('disabled-link'); // Add a class to visually indicate disabled state
+        $(this).attr('href', '#'); // Override href to prevent navigation
+    });
+}
 
 
 //calculate distance between two markers by using coordinates
@@ -444,6 +494,9 @@ autocompleteDropoff = new google.maps.places.Autocomplete(document.getElementByI
 
 // -------------setting up the live location ---------------------
 function setLiveLocation() {
+    $(".loader").css("display", "flex");
+
+
 
     // Check if the user has granted access to their location
     if (navigator.geolocation) {
@@ -451,54 +504,86 @@ function setLiveLocation() {
         $(".pickup-placeholder-img").css("display", "none");
         $(".search-loader").css("display", "initial");
         $("#pickup").val('');
+        $("#pickup").prop("readonly", true);
 
-        navigator.geolocation.getCurrentPosition(function (position) {
+        // Create a promise for geolocation with a timeout
+        const geolocationPromise = new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('Geolocation request timed out'));
+            }, 5000); // 5 seconds timeout
+
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    clearTimeout(timeout);
+                    resolve(position);
+                },
+                error => {
+                    clearTimeout(timeout);
+                    reject(error);
+                }
+            );
+        });
+
+        // Handle the geolocation response or timeout
+        geolocationPromise.then(position => {
             // Get the latitude and longitude from the position object
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
-            const defaultLocation = {lat, lng};
+            const defaultLocation = { lat, lng };
 
             userMarker = new google.maps.Marker({
-                position: defaultLocation, map: map, title: 'Default Location'
+                position: defaultLocation,
+                map: map,
+                title: 'Default Location'
             });
-
-            map.setCenter(defaultLocation);
-
 
             // Use the Google Maps API to reverse geocode the coordinates
             var apiUrl = "https://maps.googleapis.com/maps/api/geocode/json";
             var apiKey = "AIzaSyDDCIb4xyEV8ok30VlxsidKGHw1NAlrfFM";
             var params = {
-                latlng: lat + "," + lng, key: apiKey
+                latlng: lat + "," + lng,
+                key: apiKey
             };
 
-
             $.ajax({
-                url: apiUrl, data: params, dataType: "json", success: function (data) {
+                url: apiUrl,
+                data: params,
+                dataType: "json",
+                success: function (data) {
                     var address = data.results[0].formatted_address;
                     $("#pickup").val(address);
                     // Set the value of the input field with id "pickup"
                     $(".pickup-placeholder").css("display", "initial");
                     $(".search-loader").css("display", "none");
                     $(".pickup-placeholder-img").css("display", "initial");
-
+                    $("#pickup").prop("readonly", false);
+                    $(".loader").hide();
+                },
+                error: function() {
+                    showErrorMsg("Error: Unable to retrieve address from coordinates.");
+                    elseConditionLiveLocation();
                 }
             });
-        }, function (error) {
+        }).catch(error => {
+            showErrorMsg("Getting live location timeout");
+
             elseConditionLiveLocation();
         });
     } else {
+        showErrorMsg("Error: Geolocation is not supported by this browser.");
         elseConditionLiveLocation();
     }
 }
 
 
 function elseConditionLiveLocation() {
-    showErrorMsg("Geolocation is not supported by this browser. Please allow access to your location or enter your location manually.");
     $(".pickup-placeholder").css("display", "initial");
     $(".search-loader").css("display", "none");
     $(".pickup-placeholder-img").css("display", "initial");
     $("#pickup").focus();
+    $("#pickup").prop("readonly", false);
+    $(".loader").hide();
+
 }
 
 
@@ -572,6 +657,7 @@ $(document).ready(function () {
                 $('#rider-form')[0].reset(); // Reset form fields
                 $(".dynamic-time").html('--')
                 $(".dynamic-distance").html('--')
+                location.reload();
             }, error: function (xhr, status, error) {
                 console.error("Error submitting form:", error);
                 $(".loader").hide();
@@ -593,13 +679,13 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'A', // Label for captain's location
+        map: map, label: 'C', // Label for captain's location
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'B', // Label for pickup point
+        map: map, label: 'O', // Label for pickup point
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'c', // Label for dropoff point
+        map: map, label: 'D', // Label for dropoff point
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -642,10 +728,8 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
                             };
 
                             $.ajax({
-                                type: "POST",
-                                url: "/UrbanRides/rider/rider-reach-info",  // Adjust URL as per your actual endpoint
-                                contentType: "application/json",
-                                data: JSON.stringify(data),  // Convert data object to JSON string
+                                type: "POST", url: "/UrbanRides/rider/rider-reach-info",  // Adjust URL as per your actual endpoint
+                                contentType: "application/json", data: JSON.stringify(data),  // Convert data object to JSON string
                                 success: function (response) {
                                     $("#general-tripdetails-id").val(response)
                                     console.log("AJAX request successful!");
@@ -719,13 +803,13 @@ function richToDestination(originAddress, destinationAddress) {
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'A', // Label for captain's location
+        map: map, label: 'C', // Label for captain's location
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'B', // Label for pickup point
+        map: map, label: 'O', // Label for pickup point
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'c', // Label for dropoff point
+        map: map, label: 'D', // Label for dropoff point
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -783,7 +867,7 @@ function richToDestination(originAddress, destinationAddress) {
                                         }
                                         console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
-                                        setTimeout(moveNextStep, 1000); // Simulate delay between steps
+                                        setTimeout(moveNextStep, 3000); // Simulate delay between steps
                                     }
 
                                     moveNextStep();
@@ -845,7 +929,7 @@ var stompClient;
 var marker;
 
 function connectToBackend() {
-    var socket = new SockJS('/UrbanRides/mywebsockets');
+    var socket = new SockJS('/UrbanRides/rider-cabooking');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log("Connected to Stomp broker: " + frame);
@@ -891,9 +975,11 @@ function connectToBackend() {
 }
 
 function captainReached() {
-    stompClient.subscribe('/topic/captainReached', function (message) {
+    console.log("we tre donnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+    stompClient.subscribe('/topic/captain-reached', function (message) {
         console.log('captain reached: ' + message.body);
         // showSuccessMsg("Captain reached, Enjoy the ride");
+
         try {
 
             $(".captain-info-name").html('Enjoy the ride');
@@ -912,6 +998,8 @@ function captainReached() {
 
 
         } catch (e) {
+            console.log("we tre notttttttdddddddddddddddddddddddddddddddddddddddddddddddddddddttttttttttttttttttttttt")
+
             console.error("Error parsing reached update message:", e);
         }
     });
@@ -1072,17 +1160,12 @@ $('#rating-modal-form-id').submit(function (event) {
 
 
     let data = {
-        tripId: tripId,
-        feedback: feedback,
-        payMethod: payMethod,
-        rattings: ratingValue
+        tripId: tripId, feedback: feedback, payMethod: payMethod, rattings: ratingValue
     };
     // Ajax call to submit data
     $.ajax({
-        type: "POST",
-        url: "/UrbanRides/rider/ride-ratting-submit",  // Adjust URL as per your actual endpoint
-        contentType: "application/json",
-        data: JSON.stringify(data),
+        type: "POST", url: "/UrbanRides/rider/ride-ratting-submit",  // Adjust URL as per your actual endpoint
+        contentType: "application/json", data: JSON.stringify(data),
 
 
         success: function (response) {
@@ -1097,10 +1180,48 @@ $('#rating-modal-form-id').submit(function (event) {
             }, 3000); // 2000 milliseconds = 2 seconds
         },
 
-        error: function (error) {
-            // Handle any errors
-            console.error('Error:', error);
-            showErrorMsg('An error occurred while submitting your feedback.');
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.log(jqXHR);
+            var responseText = jqXHR.responseText;
+
+            // Attempt to parse the response text as JSON
+            try {
+                responseText = JSON.parse(responseText);
+            } catch (e) {
+                // Handle cases where response is not valid JSON
+                showErrorMsg(jqXHR.responseText);
+                return;
+            }
+
+            // Check if the response is a map with keys and values
+            if (typeof responseText === 'object' && !Array.isArray(responseText)) {
+                var messages = Object.values(responseText).join(', ');
+                showErrorMsg(messages);
+            } else {
+                // Handle generic or unexpected errors
+                showErrorMsg("An unexpected error occurred: " + jqXHR.responseText);
+            }
         }
     });
 });
+// ]});
+//
+// function notificationConnect() {
+//     var socket = new SockJS('/UrbanRides/rider-notification');
+//     stompClient = Stomp.over(socket);
+//     stompClient.connect({}, function (frame) {
+//         console.log("Connected to Stomp broker: " + frame);
+//         stompClient.subscribe('/topic/rider-incoming-notifications', function (message) {
+//             console.log("The message has been received");
+//             console.log(message);
+//
+//             // Parse the message body and call showSuccesstMsg with the actual message
+//             var messageBody = JSON.parse(message.body);
+//             var notificationMessage = messageBody.message || "No Message"; // Default to "No Message" if message is undefined
+//             showSuccesstMsg(notificationMessage);
+//         });
+//     });
+// }
+// $(document).ready(function () {
+//     notificationConnect();
+// });

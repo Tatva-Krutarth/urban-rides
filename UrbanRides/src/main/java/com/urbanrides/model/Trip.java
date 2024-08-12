@@ -39,7 +39,7 @@ public class Trip {
     private ServiceType ServiceType;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vehicle_id", nullable = false)
     private VehicleType vehicleId;
 

@@ -18,10 +18,10 @@ public class CaptainInterceptor extends HandlerInterceptorAdapter {
         HttpSession session = request.getSession();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
         System.out.println(userSessionObj);
-        if (userSessionObj == null) {
-            response.sendRedirect(request.getContextPath() + "/no-session");
-            return false;
-        }
+            if (userSessionObj == null) {
+                response.sendRedirect(request.getContextPath() + "/no-session");
+                return false;
+            }
 
         int accountStatus = userSessionObj.getAccountStatus();
         String currentUri = request.getRequestURI();
@@ -32,7 +32,15 @@ public class CaptainInterceptor extends HandlerInterceptorAdapter {
         if (currentUri.equals(request.getContextPath() + "/captain/captain-document-details-submit")) {
             return true; // Proceed with form submission
         }
-
+        if (currentUri.equals(request.getContextPath() + "/captain/captain-reupload-document-details-submit")) {
+            return true; // Proceed with form submission
+        }
+        if (currentUri.equals(request.getContextPath() + "/captain/get-captain-document-reupload-details")) {
+            return true; // Proceed with form submission
+        }
+        if (currentUri.equals(request.getContextPath() + "/captain/captain-logout")) {
+            return true; // Proceed with form submission
+        }
         switch (accountStatus) {
             case 1:
                 if (!currentUri.equals(request.getContextPath() + "/captain/captain-personal-details")) {

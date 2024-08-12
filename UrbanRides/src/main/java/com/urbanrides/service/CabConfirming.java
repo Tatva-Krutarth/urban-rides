@@ -1,11 +1,11 @@
 package com.urbanrides.service;
 
-import com.urbanrides.dao.TripDao;
-import com.urbanrides.dao.UserDetailsDao;
-import com.urbanrides.dao.UsersDao;
-import com.urbanrides.dao.VehicleTypeDao;
+import com.urbanrides.dao.*;
 import com.urbanrides.dtos.CaptainAllTripsData;
+import com.urbanrides.dtos.UserSessionObj;
+import com.urbanrides.model.CaptainDetails;
 import com.urbanrides.model.Trip;
+import com.urbanrides.model.User;
 import com.urbanrides.model.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,6 +25,8 @@ public class CabConfirming {
     @Autowired
     TripDao tripDao;
     @Autowired
+    CaptainDetailsDao captainDetailsDao;
+    @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
     @Autowired
     VehicleTypeDao vehicleTypeDao;
@@ -34,19 +36,25 @@ public class CabConfirming {
 
     public List<CaptainAllTripsData> getTripsData() {
 
+        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
 
-        List<Trip> trips = tripDao.getAllTripOfCaptain();
+        List<Trip> trips = tripDao.getAllTripOfCaptainDashboard(captainDetails.getVehicleType().getVehicleId());
         List<CaptainAllTripsData> captainDataList = new ArrayList<>();
-        for (Trip trip : trips) {
-            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(trip.getTripUserId().getUserId());
-            CaptainAllTripsData captainData = new CaptainAllTripsData();
-            captainData.setTripId(trip.getTripId());
-            captainData.setPassengerName(userDetails.getFirstName() + " , " + userDetails.getLastName());
-            captainData.setPickUpLocation(trip.getPickupAddress());
-            captainData.setCharges(trip.getCharges());
-            captainData.setDropLocation(trip.getDropoffAddress());
-            captainDataList.add(captainData);
+
+        if (trips != null) {
+            for (Trip trip : trips) {
+                UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(trip.getTripUserId().getUserId());
+                CaptainAllTripsData captainData = new CaptainAllTripsData();
+                captainData.setTripId(trip.getTripId());
+                captainData.setPassengerName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+                captainData.setPickUpLocation(trip.getPickupAddress());
+                captainData.setCharges(trip.getCharges());
+                captainData.setDropLocation(trip.getDropoffAddress());
+                captainDataList.add(captainData);
+            }
         }
+
         return captainDataList;
 
     }

@@ -301,7 +301,7 @@ margin-right: 15px;
 }
 
 
-#registration-certificate-upload-error, #adhar-card-file-uplaod-error , #profile-photo-upload-error ,  #driving-license-file-upload-error {
+#registration-certificate-upload-error, #adhar-card-file-uplaod-error ,#adhar-card-file-upload-error,  #profile-photo-upload-error ,  #driving-license-file-upload-error {
     color: red;
     position: absolute;
     top: 51px;

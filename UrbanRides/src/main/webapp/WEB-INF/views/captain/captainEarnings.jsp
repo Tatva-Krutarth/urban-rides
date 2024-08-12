@@ -122,6 +122,7 @@
 
 
 <%------------------------------------jquerry  validation--%>
+<script src="<c:url value="/resources/js/captain-web-socket.js"/>"></script>
 
 <script src="<c:url value="/resources/js/captainEarnings.js"/>"></script>
 </body>

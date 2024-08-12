@@ -15,9 +15,37 @@ function initMap(latitude, longitude) {
         map: map,
         title: 'Your Location'
     });
+    getAddressFromCoordinates(latitude, longitude);
+}
 
-    // Load trips data from backend
-    loadTripsData();
+
+// Start the interval for refreshing the data every 10 seconds
+function startRefreshingTripsData() {
+    refreshInterval = setInterval(loadTripsData, 10000);
+}
+
+// Stop the interval when the ride is accepted
+function stopRefreshingTripsData() {
+    clearInterval(refreshInterval);
+}
+
+
+function clearMarkers() {
+    console.log("clearMarkers function called"); // Debugging log
+
+    if (markersArray.length === 0) {
+        console.log("No markers to clear");
+        return; // Exit if there are no markers
+    }
+
+    markersArray.forEach(function (marker, index) {
+        console.log("Clearing marker", index, marker); // Debugging log
+        if (marker) {
+            marker.setMap(null);
+        }
+    });
+
+    markersArray = []; // Reset the markers array
 }
 
 function loadTripsData() {
@@ -25,8 +53,17 @@ function loadTripsData() {
         url: 'get-all-trips-data', // Replace with your actual backend endpoint
         method: 'GET',
         success: function (data) {
+            console.log("Data fetched:", data); // Debugging log
+            clearMarkers(); // Ensure this is called
+
+            if (!data || data.length === 0) {
+                console.log("No trips available"); // Debugging log
+                return; // Exit if no trips are found
+            }
+
+            showSuccesstMsg("Fired");
+
             data.forEach(function (trip) {
-                // Geocode the pickup location address to get coordinates
                 geocodeAddress(trip.pickUpLocation, function (results, status) {
                     if (status === 'OK') {
                         var pickupLocation = results[0].geometry.location;
@@ -49,28 +86,30 @@ function loadTripsData() {
                             title: 'Pick Up Location'
                         });
 
-                        // Show info window on marker click
+                        // Add marker to the array
+                        markersArray.push(tripMarker);
+                        console.log("Marker added:", tripMarker); // Debugging log
+
                         tripMarker.addListener('click', function () {
                             infoWindow.open(map, tripMarker);
                         });
 
-                        // Add click event listener to the accept button
                         google.maps.event.addListener(infoWindow, 'domready', function () {
                             document.querySelectorAll('.acceptTripBtn').forEach(function (button) {
                                 button.addEventListener('click', function () {
                                     var tripId = this.getAttribute('data-tripid');
-                                    // Perform AJAX call to backend to accept the trip
                                     $.ajax({
                                         url: 'accept-ride', // Replace with your actual backend endpoint
                                         method: 'POST',
-                                        data: {
-                                            tripId: tripId
-                                        },
+                                        data: {tripId: tripId},
+                                        dataType: 'json',
                                         success: function (data) {
+                                            $("#refresh-trip-id").val("dont-refresh");
+                                            stopRefreshingTripsData();
                                             $('#dash-first-ui').hide();
                                             $('#rider-location-text').removeClass('d-none');
                                             $('#captain-rider-info-cont').removeClass('d-none');
-                                            $('#rider-info-details-charges').html(data.charges + ' Rs' );
+                                            $('#rider-info-details-charges').html(data.charges + ' Rs');
                                             $('.rider-name').text(data.riderName);
                                             $('#rider-info-details-pickUp').html(data.riderPickupLocation);
                                             $('#riderPickup').val(data.riderPickupLocation);
@@ -79,15 +118,20 @@ function loadTripsData() {
                                             $('.rider-phone').text(data.riderContact);
                                             $('#tripIdForOtp').val(data.tripId);
                                             var imgElement = document.querySelector('.rider-info-img img');
-                                            if (imgElement) {
+                                            if (imgElement && data.photoLocation) {
                                                 imgElement.src = data.photoLocation;
                                             }
-                                            setDataForRiderAway(data.captainLocation, data.riderPickupLocation)
                                             showSuccesstMsg('Trip accepted successfully.');
+                                            disableNavbarLinks();
+                                            setDataForRiderAway(data.captainLocation, data.riderPickupLocation);
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {
-                                            console.error('AJAX Error: ', textStatus, errorThrown);
-                                            showErrorMsg('Error accepting trip.');
+                                            console.error('AJAX Error:', textStatus, errorThrown);
+                                            if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+                                                showErrorMsg(jqXHR.responseJSON.message);
+                                            } else {
+                                                showErrorMsg("An unexpected error occurred.");
+                                            }
                                         }
                                     });
                                 });
@@ -100,58 +144,15 @@ function loadTripsData() {
             });
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.error('AJAX Error: ', textStatus, errorThrown);
+            console.error('AJAX Error:', textStatus, errorThrown);
             showErrorMsg('Error fetching location information.');
         }
     });
 }
 
-//
-// // Function to calculate distance and time between two locations
-// function setDataForRiderAway(riderLocation, captainLocation) {
-//     var service = new google.maps.DistanceMatrixService();
-//     service.getDistanceMatrix({
-//         origins: [captainLocation],
-//         destinations: [riderLocation],
-//         travelMode: 'DRIVING',
-//         unitSystem: google.maps.UnitSystem.METRIC,
-//         avoidHighways: false,
-//         avoidTolls: false
-//     }, function (response, status) {
-//         if (status === 'OK') {
-//             var distance = response.rows[0].elements[0].distance.text;
-//             var duration = response.rows[0].elements[0].duration.text;
-//
-//             // Example: Update UI elements with distance and duration
-//             // Replace '#distanceElementId' and '#durationElementId' with your actual HTML element IDs
-//             $('#rider-distance-info').text(distance);
-//             $('#rider-time-info').text(duration);
-//
-//             // Example: Update DTO or any other data structure with distance and duration
-//             // Replace 'yourDto.distance' and 'yourDto.duration' with your actual data structure
-//             // yourDto.distance = distance;
-//             // yourDto.duration = duration;
-//         } else {
-//             console.error('Error calculating distance: ', status);
-//             // Handle error case, such as displaying an error message or fallback value
-//         }
-//     });
-// }
+let markersArray = []; // Ensure this is global and accessible
+let refreshInterval;
 
-
-// Function to handle geolocation
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-            initMap(position.coords.latitude, position.coords.longitude);
-        }, function (error) {
-            console.error('Geolocation Error: ', error);
-            document.getElementById('getLocationBtn').style.display = 'block';
-        });
-    } else {
-        showErrorMsg('Error: Your browser doesn\'t support geolocation.');
-    }
-}
 
 // Function to geocode address
 function geocodeAddress(address, callback) {
@@ -159,6 +160,74 @@ function geocodeAddress(address, callback) {
         callback(results, status);
     });
 }
+
+function disableNavbarLinks() {
+    $('nav a').each(function () {
+        console.log("all links disabled")
+        $(this).addClass('disabled-link'); // Add a class to visually indicate disabled state
+        $(this).attr('href', '#'); // Override href to prevent navigation
+    });
+}
+
+// Function to handle geolocation
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+
+            initMap(position.coords.latitude, position.coords.longitude);
+
+        }, function (error) {
+
+            $("#getLocationBtn").css("display", "block");
+            showErrorMsg("Please allow the live location")
+            initDefaultMap()
+            console.error('Geolocation Error: ', error);
+        });
+    } else {
+        showErrorMsg('Error: Your browser doesn\'t support geolocation.');
+    }
+}
+
+
+// Function to get address from coordinates
+function getAddressFromCoordinates(latitude, longitude) {
+    var geocoder = new google.maps.Geocoder();
+    var latlng = {lat: parseFloat(latitude), lng: parseFloat(longitude)};
+    geocoder.geocode({'location': latlng}, function (results, status) {
+        if (status === 'OK') {
+            if (results[0]) {
+                var address = results[0].formatted_address;
+                console.log('Address:', address);
+                saveAddressToBackend(address);
+            } else {
+                showErrorMsg('No results found');
+            }
+        } else {
+            showErrorMsg('Geocoder failed due to: ' + status);
+        }
+    });
+}
+
+// Function to save address to the backend
+function saveAddressToBackend(address) {
+    $.ajax({
+        url: 'save-captain-location', // Replace with your actual backend endpoint
+        method: 'POST',
+        data: {
+            address: address
+        },
+        success: function (response) {
+            console.log('Address saved successfully:', response);
+
+            // Load trips data from backend
+            startRefreshingTripsData();
+        },
+        error: function (xhr, status, error) {
+            console.error('Error saving address:', error);
+        }
+    });
+}
+
 
 // Event listener for button click to get location
 document.getElementById('getLocationBtn').addEventListener('click', getLocation);
@@ -172,6 +241,8 @@ function initDefaultMap() {
 
 // Wait until the Google Maps script is fully loaded
 $(document).ready(function () {
+    $("#getLocationBtn").hide();
+
     getLocation();
 });
 
@@ -188,13 +259,13 @@ function setDataForRiderAway(originAddress, destinationAddress) {
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'A', // Label for captain's location
+        map: map, label: 'C', // Label for captain's location
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'B', // Label for pickup point
+        map: map, label: 'O', // Label for pickup point
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'c', // Label for dropoff point
+        map: map, label: 'D', // Label for dropoff point
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -323,6 +394,8 @@ $(document).ready(function () {
                 data: JSON.stringify(payload), // Convert payload to JSON string
                 success: function (response) {
                     // Handle success response
+                    $('#otp-form-id').addClass('d-none');
+
                     let origin = $('#riderPickup').val();
                     let destination = $('#riderDropOff').val();
                     console.log(response);
@@ -330,9 +403,10 @@ $(document).ready(function () {
                     showSuccesstMsg('OTP verified successfully.');
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    // Handle error
-                    console.error('AJAX Error: ', textStatus, errorThrown);
-                    showErrorMsg(errorThrown);
+                    // Log full error response
+                    console.error('AJAX Error: ', jqXHR, textStatus, errorThrown);
+                    console.log('Response Text: ', jqXHR.responseText);
+                    showErrorMsg(jqXHR.responseText || errorThrown);
                 }
             });
 
@@ -399,7 +473,7 @@ function theFinalRide(originAddress, destinationAddress) {
 
                                     function moveNextStep() {
                                         if (stepIndex >= steps.length) {
-                                            showSuccesstMsg('Confirm the riders otp.');
+                                            showSuccesstMsg('You have reached your destination.');
                                             // $('#otp-form-id').removeClass('d-none');
 
                                             $('#completionModal').modal('show');
@@ -418,7 +492,7 @@ function theFinalRide(originAddress, destinationAddress) {
                                         }
                                         console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
-                                        setTimeout(moveNextStep, 2000); // Simulate delay between steps
+                                        setTimeout(moveNextStep, 3000); // Simulate delay between steps
                                     }
 
                                     moveNextStep();
@@ -444,15 +518,21 @@ function theFinalRide(originAddress, destinationAddress) {
         }
     });
 }
+
+
 $(document).ready(function () {
     // Event listener for the "Conclude Ride" button
     $('#concludeRideBtn').on('click', function () {
         // Close the modal
         $('#completionModal').modal('hide');
+
+        // Show success message
         showSuccesstMsg('Ride completed successfully');
 
+        // Reload the page after 3 seconds
         setTimeout(function () {
             location.reload();
-        }, 2000);
+        }, 3000); // 3000 milliseconds = 3 seconds
     });
 });
+

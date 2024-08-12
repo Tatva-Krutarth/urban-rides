@@ -390,7 +390,7 @@ body {
     top: 45px;
 }
 
-#accordion-button {
+.accordion-button-btn {
     cursor: pointer;
     position: absolute;
     right: 2%;
@@ -414,7 +414,7 @@ body {
     justify-content: center; /* Ensures content is centered vertically */
 }
 
-#accordion-button:focus {
+.accordion-button-btn:focus {
     z-index: 3;
     outline: 0;
     box-shadow: none !important;
@@ -559,7 +559,7 @@ body {
     }
 
 
-    #accordion-button {
+    .accordion-button-btn {
         cursor: pointer;
         position: absolute;
         right: 2%;

@@ -16,9 +16,10 @@ public class MultipartFileValidator implements ConstraintValidator<ValidMultipar
     @Override
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
         if (file == null) {
+
             return true; // or false, depending on your requirements
         }
-
+        System.out.println("we ar eint eh coustonm vaidaiotn ");
         String fileName = file.getOriginalFilename();
         String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
         if (!fileExtension.equalsIgnoreCase("jpg") &&!fileExtension.equalsIgnoreCase("png")) {

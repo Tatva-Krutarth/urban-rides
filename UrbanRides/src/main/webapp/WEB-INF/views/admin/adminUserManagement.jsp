@@ -35,13 +35,15 @@
           rel="stylesheet">
 <body>
 <%@include file="../admin/adminNavbar.jsp" %>
+<%@include file="../commonImports/loader.jsp" %>
+
 <div class="container mt-4">
     <div id="ad-dash-support-types">
-        <div id="all" class="user-active">All</div>
-        <div id="rider">Rider</div>
-        <div id="captain">Captain</div>
-        <div id="admin">Admin</div>
-        <div id="blocked">Blocked</div>
+        <div id="all" class="user-active" onclick="userManAll()">All</div>
+        <div id="rider" onclick="userManRider()">Rider</div>
+        <div id="captain" onclick="userManCaptain()">Captain</div>
+<%--        <div id="admin" onclick="userManAdmin()">Admin</div>--%>
+        <div id="blocked" onclick="userManBlocked()">Blocked</div>
     </div>
 </div>
 <div class="container mt-5">
@@ -83,7 +85,7 @@
                 <td>johndoe@example.com</td>
                 <td>123-456-7890</td>
                 <td>John Doe</td>
-                <td class="align-middle text-center"><span class=" block-btn">Block</span></td>
+                <td class="align-middle text-center"><div class=" block-btn">Block</div></td>
                 <td class="align-middle text-center"> <!-- Added Bootstrap classes -->
                     <button class="btn user-manage-view-mote-btn accordion-btn"
                             data-bs-toggle="collapse"
@@ -126,6 +128,9 @@
         </table>
     </div>
 </div>
+
+<div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
+<script src="<c:url value="/resources/js/toaster.js"/>"></script>
 
 </body>
 <script src="<c:url value="/resources/js/adminUserManagement.js"/>"></script>

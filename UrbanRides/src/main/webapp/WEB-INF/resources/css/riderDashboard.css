@@ -440,7 +440,8 @@ body {
     visibility: hidden;
     position: absolute;
 }
-#valid-location-package {
+
+#valid-location-package , #numberOfDays{
     visibility: hidden;
     position: absolute;
     /*display: none;*/
@@ -455,7 +456,7 @@ body {
     transform: translateX(-50%);
 }
 
-#pickupLocation-error, #numDays-error, ickupLocation-error, #drofOffTime-error, #numPassengers-error, #dropoffLocation-error, #pickupDate-error, #pickupTime-error, #vehicleType-error, #emergencyContact-error, #charges-error, numPassengers-error {
+#pickupLocation-error, #floatingTextarea-error, #dropoffDate-error, #vehicle-count-error, #uploadFile-error, #pickupLocation-error, #drofOffTime-error, #numPassengers-error, #dropoffLocation-error, #pickupDate-error, #pickupTime-error, #vehicleType-error, #emergencyContact-error, #charges-error, numPassengers-error {
     color: red;
     font-size: 12px;
     font-weight: 500;
@@ -560,6 +561,17 @@ body {
     bottom: -3%;
 }
 
+#numberOfDays-error {
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    /*left: 50%;*/
+    /*position: absolute;*/
+    /*transform: translateX(-50%);*/
+    /*bottom: -51%;*/
+    /*z-index: 100;*/
+}
 #valid-location-package-error {
     color: red;
     font-size: 12px;
@@ -926,9 +938,10 @@ input:not(:focus):valid ~ .floating-label {
     font-size: 20px;
 }
 
-#otpForm{
+#otpForm {
     position: relative;
 }
+
 /*-----otp fields in captain info-----------*/
 
 .captain-info-cont {
@@ -989,6 +1002,15 @@ input:not(:focus):valid ~ .floating-label {
     font-family: 'Roboto', sans-serif;
     padding: 0px 0px 0px 12px;
 }
+.charges-notes{
+    font-size: 14px;
+    color: rgb(63, 63, 63);
+    display: flex;
+    font-weight: 500;
+    justify-content: flex-start;
+    font-family: 'Roboto', sans-serif;
+    padding: 0px 0px 0px 2px;
+}
 
 /*------------------*/
 
@@ -1033,9 +1055,6 @@ input:not(:focus):valid ~ .floating-label {
 .star-half-filled {
     fill: url(#half-filled-gradient);
 }
-
-
-
 
 
 /*---------ratting modal --------------*/
@@ -1266,9 +1285,11 @@ input:not(:focus):valid ~ .floating-label {
     text-align: center;
 
 }
-#dailyPickup , #selectedService{
+
+#dailyPickup, #selectedService {
     align-items: center;
 }
+
 .dropdown-content-package a:hover {
     background-color: #f1f1f1;
 }

@@ -179,7 +179,7 @@
                 <p class="carousel-caption2">Get in gear and join the ride! Login now to revoutionize your cab
                     management experience.</p>
 
-                <p><a class="btn btn-primary" href="#" role="button">Join Now</a></p>
+                <p><a class="btn btn-primary" href="user-registration/3" role="button">Join Now</a></p>
             </div>
         </div>
         <!-- Slide 2 -->
@@ -198,7 +198,7 @@
             <div class="carousel-caption ">
                 <h5 class="carousel-caption1">Welcome</h5>
                 <h2 class="carousel-caption2">
-                    " Experience Reliability , Convinience , and comfort withour cab management system. Login Now to
+                    " Experience Reliability , Convinience , and comfort with our cab management system. Login Now to
                     begin your journey."
                 </h2>
                 <a href="#land-partner" class="btn common-btn-color4-theme mt-3">Our Partner</a></div>

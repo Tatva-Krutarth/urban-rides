@@ -63,13 +63,12 @@
                     <label class="floating-label place-holder">Email</label>
                     <span id="emailError" class="error">Please enter a valid Email.</span>
                 </div>
-                <div class="floating-label-group mt-2">
+                <div class="floating-label-group mt-2" style="position: relative">
                     <input type="password" class="form-control taskName" autocomplete="off" id="pass" autofocus
                            name="password" required/>
                     <label class="floating-label place-holder">Password</label>
                     <span id="passError" class="error">Password length should be between 8 and 16 characters.</span>
-                    <%--                <span class="confPass"> Password and Confirmed doesn't matched.</span>--%>
-                    <div style="float: right; position: relative;">
+                    <div style="position: absolute; right: 0px ; top: 50px">
                         <img src="<c:url value='/resources/images/password-eye.svg'/>"
                              id="togglePassword2"
                              style="position: absolute; right: 17px; bottom: 15px; width: 21px; height: 21px;">

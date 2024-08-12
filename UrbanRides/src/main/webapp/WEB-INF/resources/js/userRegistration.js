@@ -42,9 +42,15 @@ function validateEmail() {
 
 function validatePass() {
     const pass = passInput.value;
-    const isValidPassLength = pass.length >= 0 && pass.length >= 8 && pass.length <= 16;
+    const isValidPassLength = pass.length >= 8 && pass.length <= 16;
+    const isStrongPass = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(pass);
 
     if (!isValidPassLength) {
+        passError.innerHTML = 'Password must be between 8 and 16 characters.';
+        passError.style.display = 'initial';
+        i = 0;
+    } else if (!isStrongPass) {
+        passError.innerHTML = 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.';
         passError.style.display = 'initial';
         i = 0;
     } else {
@@ -138,9 +144,6 @@ function updateOtpButton() {
     }
 }
 
-function demo() {
-    console.log("demo");
-}
 
 function getOtp() {
 
@@ -288,14 +291,13 @@ $(document).ready(function () {
             data: JSON.stringify(formData), // Serialized form data
             contentType: 'application/json',
             dataType: 'text',
-
             success: function (response) {
-// Handle successful response
                 if (typeof response === 'string') {
                     if (response === "Rider Registered" || response === "Captain Registered") {
                         $(".loader").hide();
 
                         showSuccesstMsg(response);
+                        disableAllElements();
                         setTimeout(function () {
                             const redirectUrl = response === "Rider Registered" ? "../rider/rider-personal-details" : "../captain/captain-personal-details";
                             window.location.href = redirectUrl;
@@ -349,3 +351,19 @@ $(document).ready(function () {
 document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });
+
+function disableAllElements() {
+    // Disable all buttons
+    var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+    buttons.forEach(function (button) {
+        button.disabled = true;
+    });
+
+    // Disable all links
+    var links = document.querySelectorAll('a');
+    links.forEach(function (link) {
+        link.style.pointerEvents = 'none'; // Prevents clicking
+        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
+        link.removeAttribute('href'); // Optionally remove the href attribute
+    });
+}

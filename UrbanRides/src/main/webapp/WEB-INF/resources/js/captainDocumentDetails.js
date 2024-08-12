@@ -127,12 +127,46 @@ $(".navigation li").hover(function () {
     }
 });
 
-$.validator.addMethod("vehicleNumberPlate", function(value, element) {
-    // Define your regex pattern for number plate validation
-    var pattern = /^[A-Z]{2}[ -]?[0-9]{2}[ -]?[A-Z]{1,2}[ -]?[0-9]{4}$/;
-    return this.optional(element) || pattern.test(value);
-}, "Please enter a valid vehicle number plate (e.g., GJ 03 AY 1097)");
+function isValidDateRange(date) {
+    const currentDate = new Date();
+
+    // Calculate the future date that is 6 months from today
+    const futureDate = new Date(currentDate);
+    futureDate.setMonth(currentDate.getMonth() + 6);
+
+    // Calculate the maximum date that is 10 years from today
+    const maxDate = new Date(currentDate);
+    maxDate.setFullYear(currentDate.getFullYear() + 10);
+
+    const inputDate = new Date(date);
+
+    // Check if the date is at least 6 months in the future and at most 10 years in the future
+    return inputDate >= futureDate && inputDate <= maxDate;
+}
+
+
 $(document).ready(function () {
+
+
+    $.validator.addMethod("vehicleNumberPlate", function (value, element) {
+        // Define your regex pattern for number plate validation
+        var pattern = /^[A-Z]{2}[ -]?[0-9]{2}[ -]?[A-Z]{1,2}[ -]?[0-9]{4}$/;
+        return this.optional(element) || pattern.test(value);
+    }, "Please enter a valid vehicle number plate (e.g., GJ 03 AY 1097)");
+
+
+// Add custom validation method for checking if the date is at least 6 months in the future
+    $.validator.addMethod("futureDate", function (value, element) {
+        return new Date(value) > new Date();
+    }, "The date must be in the future.");
+
+
+
+    $.validator.addMethod("sixMonthsFuture", function (value, element) {
+        return isValidDateRange(value);
+    }, "The date must be at least 6 months in the future and within the next 10 years.");
+
+
     $.validator.addMethod("accept", function (value, element, param) {
         return value.match(new RegExp("." + param + "$"));
     });
@@ -158,14 +192,14 @@ $(document).ready(function () {
             rcExpiration: {
                 required: true,
                 date: true,
-                min: "2024-06-01",
-                max: "2040-01-01"
+                futureDate: true,  // Check if date is in the future
+                sixMonthsFuture: true
             },
             licenseExpiration: {
                 required: true,
                 date: true,
-                min: "2024-06-01",
-                max: "2040-01-01"
+                futureDate: true,  // Check if date is in the future
+                sixMonthsFuture: true
             },
             vehicleType: {
                 required: true,
@@ -195,14 +229,14 @@ $(document).ready(function () {
             rcExpiration: {
                 required: "Please enter RC Expiration Date",
                 date: "Invalid date format",
-                min: "Date must be after 2024-06-01",
-                max: "Date must be before 2040-01-01"
+                futureDate: "Date must be in the future",
+                sixMonthsFuture: "Date must be at least 6 months in the future and no more than 10 years ahead."
             },
             licenseExpiration: {
                 required: "Please enter License Expiration Date",
                 date: "Invalid date format",
-                min: "Date must be after 01-06-2024",
-                max: "Date must be before 01-01-2040"
+                futureDate: "Date must be in the future",
+                sixMonthsFuture: "Date must be at least 6 months in the future and no more than 10 years ahead."
             },
             vehicleType: {
                 required: "Please select a vehicle type.",
@@ -238,62 +272,49 @@ $(document).ready(function () {
             formData.append("numberPlate", vehicleNumber)
 
 
+
             $.ajax({
                 url: form.action,
                 method: form.method,
                 processData: false,
                 contentType: false,
-                dataType: 'text',
+                dataType: 'json',
                 enctype: 'multipart/form-data',
                 data: formData,
                 success: function (response) {
                     console.log(response)
                     // Handle successful response
 
-                    if (response.startsWith("Data")) {
-                        showSuccesstMsg(response);
-                        console.log("fsadffdaf fthis dis fdsfsdfds")
+                        console.log(response);
                         setTimeout(function () {
                             $(".loader").hide();
                             window.location.href = "/UrbanRides/captain/captain-waiting-page";
                         }, 3000); // 3000ms = 3 seconds
-                    } else {
-                        showErrorMsg(response)
+                        showSuccesstMsg("Document submitted successfully")
                         $(".loader").hide();
-                    }
 
-                    console.log("Form submitted successfully:", response);
-                    $(".loader").hide();
 
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error("Error:", xhr, textStatus, errorThrown);
                     $(".loader").hide();
+                    console.log("Error:", xhr);
+
                     try {
-                        const errorResponse = JSON.parse(xhr.responseText);
-                        if (Array.isArray(errorResponse.errors)) {
-                            // handle error response in the format {"errors":["Phone number must be between 10 and 13 characters"]}
-                            const errorMessage = errorResponse.errors[0];
-                            showErrorMsg(errorMessage);
-                            console.log("Backend try:", errorMessage);
+                        // Check if the response contains JSON data
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            // Display the error message from responseJSON
+                            showErrorMsg(xhr.responseJSON.message);
+                        } else if (xhr.responseText) {
+                            // Fallback: display the raw response text
+                            showErrorMsg(xhr.responseText);
                         } else {
-                            // handle non-array error response
-                            showErrorMsg(errorResponse);
-                            console.log("Backend try:", errorResponse);
+                            showErrorMsg("An unexpected error occurred.");
                         }
                     } catch (e) {
-                        // Handle non-JSON response
-                        if (typeof xhr.responseText === 'string') {
-                            // handle string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch:", xhr.responseText);
-                        } else {
-                            // handle non-string error response
-                            showErrorMsg(xhr.responseText);
-                            console.log("Backend catch:", xhr.responseText);
-                        }
+                        showErrorMsg("An unexpected error occurred.");
                     }
                 }
+
             });
         }
 

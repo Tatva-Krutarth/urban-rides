@@ -11,16 +11,25 @@ import com.urbanrides.model.*;
 import com.urbanrides.model.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class LoginServices {
@@ -49,6 +58,8 @@ public class LoginServices {
     NotificationLogsDao notificationLogsDao;
     @Autowired
     private CaptainDetailsDao captainDetailsDao;
+    @Autowired
+    private HttpSession httpSession;
 
     public String otpService(UserRegistrationDto userRegistrationDto) {
 
@@ -60,6 +71,7 @@ public class LoginServices {
         }
         //checking id the otp is for first time
 
+        userRegistrationDto.setEmail(userRegistrationDto.getEmail().toLowerCase());
         OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(userRegistrationDto.getEmail());
         if (eachLog == null) {
             //first time
@@ -68,7 +80,7 @@ public class LoginServices {
 
             //save
             try {
-//                this.emailSend.userRegistrationOtp(userRegistrationDto);
+                this.emailSend.userRegistrationOtp(userRegistrationDto, otpLogs.getGeneratedOtp());
             } catch (Exception e) {
                 System.out.println("Email not send");
                 return "Email not send";
@@ -89,7 +101,7 @@ public class LoginServices {
                     userRegistrationDao.deleteOtpLogsByEmail(userRegistrationDto.getEmail());
                     OtpLogs otpLogs = setOtpLogData(userRegistrationDto);
                     try {
-//                        this.emailSend.userRegistrationOtp(userRegistrationDto);
+                        this.emailSend.userRegistrationOtp(userRegistrationDto, otpLogs.getGeneratedOtp());
                     } catch (Exception e) {
                         System.out.println("Email not send");
                         return "Email not send";
@@ -102,7 +114,7 @@ public class LoginServices {
                 OtpLogs otpLogs = setOtpLogData(userRegistrationDto);
                 userRegistrationDao.deleteOtpLogsByEmail(userRegistrationDto.getEmail());
                 try {
-//                    this.emailSend.userRegistrationOtp(userRegistrationDto);
+                    this.emailSend.userRegistrationOtp(userRegistrationDto, eachLog.getGeneratedOtp());
                 } catch (Exception e) {
                     System.out.println("Email not send");
                     return "Email not send";
@@ -117,7 +129,6 @@ public class LoginServices {
         OtpLogs otpLogs = new OtpLogs();
         otpLogs.setEmail(userRegistrationDto.getEmail());
         otpLogs.setOptReqSendTime(LocalTime.now());
-//        otpLogs.setAttempt(1);
         otpLogs.setGeneratedOtp(otpGenerator.generateOTP());
         otpLogs.setOtpPassed(false);
         return otpLogs;
@@ -127,7 +138,6 @@ public class LoginServices {
         OtpLogs otpLogs = new OtpLogs();
         otpLogs.setEmail(email);
         otpLogs.setOptReqSendTime(LocalTime.now());
-//        otpLogs.setAttempt(1);
         otpLogs.setGeneratedOtp(otpGenerator.generateOTP());
         otpLogs.setOtpPassed(false);
         return otpLogs;
@@ -157,6 +167,9 @@ public class LoginServices {
     public String submitRegistration(UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
         //validate data here
         OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(userRegistrationDto.getEmail());
+
+        userRegistrationDto.setEmail(userRegistrationDto.getEmail().toLowerCase());
+
         if (eachLog == null) {
             //first time
             System.out.println("First Time");
@@ -238,7 +251,9 @@ public class LoginServices {
 
     public int setUserData(UserRegistrationDto userRegistrationDto) {
         User user = new User();
-        user.setEmail(userRegistrationDto.getEmail());
+        String email = userRegistrationDto.getEmail().toLowerCase();
+
+        user.setEmail(email);
         user.setAccountType(userRegistrationDto.getAcccoutTypeId());
 
 
@@ -247,6 +262,7 @@ public class LoginServices {
 
 
         user.setSalt(saltString);
+
         user.setPasswordHash(hashedPasswordString);
         int userId = usersDao.saveUser(user);
         return userId;
@@ -255,32 +271,40 @@ public class LoginServices {
 
     public String riderPersonalDetailSubmit(RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
         UserDetails userDetails = new UserDetails();
-        userDetails.setFirstName(riderPersonalDetailsDto.getRiderFirstName());
-        userDetails.setLastName(riderPersonalDetailsDto.getRiderLastName());
+
+        // Capitalize the first letter of the first name and last name
+        String firstName = capitalizeFirstLetter(riderPersonalDetailsDto.getRiderFirstName());
+        String lastName = capitalizeFirstLetter(riderPersonalDetailsDto.getRiderLastName());
+
+        // Convert email to lowercase
+//        String email = riderPersonalDetailsDto.getEmail().toLowerCase();
+
+        userDetails.setFirstName(firstName);
+        userDetails.setLastName(lastName);
         userDetails.setPhone(riderPersonalDetailsDto.getPhone());
         userDetails.setAge(riderPersonalDetailsDto.getAge());
-
+//        userDetails.setEmail(email);
 
         HttpSession session = request.getSession();
-
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
 
         if (user == null) {
             return "User not found";
         }
-        //checking if the userdetails are already filled
-        user.setAccountStatus(2);
 
+        // Checking if the user details are already filled
+        user.setAccountStatus(5);
 
-        UserDetails userDetailsChekcing = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+        UserDetails userDetailsChecking = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
 
-        if (userDetailsChekcing != null) {
+        if (userDetailsChecking != null) {
             return "User details already filled, please login";
         }
+
         userDetails.setUser(user);
         System.out.println(userDetails);
-        userSessionObj.setAccountStatus(2);
+        userSessionObj.setAccountStatus(5);
         session.setAttribute("riderSessionObj", userSessionObj);
         usersDao.updateUser(user);
 
@@ -288,10 +312,20 @@ public class LoginServices {
         return "Login successful";
     }
 
+    private String capitalizeFirstLetter(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+
     public String captainPersonalDetailSubmit(RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
         UserDetails userDetails = new UserDetails();
-        userDetails.setFirstName(riderPersonalDetailsDto.getRiderFirstName());
-        userDetails.setLastName(riderPersonalDetailsDto.getRiderLastName());
+        String firstName = capitalizeFirstLetter(riderPersonalDetailsDto.getRiderFirstName());
+        String lastName = capitalizeFirstLetter(riderPersonalDetailsDto.getRiderLastName());
+        userDetails.setFirstName(firstName);
+        userDetails.setLastName(lastName);
         userDetails.setPhone(riderPersonalDetailsDto.getPhone());
         userDetails.setAge(riderPersonalDetailsDto.getAge());
 
@@ -322,13 +356,47 @@ public class LoginServices {
         return "Login successful";
     }
 
+    public String adminPersonalDetailSubmit(RiderPersonalDetailsDto riderPersonalDetailsDto, HttpServletRequest request) {
+        UserDetails userDetails = new UserDetails();
+        String firstName = capitalizeFirstLetter(riderPersonalDetailsDto.getRiderFirstName());
+        String lastName = capitalizeFirstLetter(riderPersonalDetailsDto.getRiderLastName());
+        userDetails.setFirstName(firstName);
+        userDetails.setLastName(lastName);
+        userDetails.setFirstName(riderPersonalDetailsDto.getRiderFirstName());
+        userDetails.setLastName(riderPersonalDetailsDto.getRiderLastName());
+        userDetails.setPhone(riderPersonalDetailsDto.getPhone());
+        userDetails.setAge(riderPersonalDetailsDto.getAge());
+        HttpSession session = request.getSession();
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("adminSessionObj");
+        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+        if (user == null) {
+            return "User not found";
+        }
+        //checking if the userdetails are already filled
+
+        UserDetails userDetailsChekcing = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+
+        if (userDetailsChekcing != null) {
+            return "User details already filled, please login";
+        }
+        user.setAccountStatus(2);
+        userSessionObj.setAccountStatus(2);
+        session.setAttribute("adminSessionObj", userSessionObj);
+
+        usersDao.updateUser(user);
+        userDetails.setUser(user);
+        System.out.println(userDetails);
+        userDetailsDao.saveUserDetails(userDetails);
+        return "Login successful";
+    }
+
     public String getCapatainName(HttpServletRequest req) {
 
         HttpSession session = req.getSession();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
         UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
 
-        String capatainName = userDetails.getFirstName();
+        String capatainName = userDetails.getFirstName() + " , " + userDetails.getLastName();
         return capatainName;
     }
 
@@ -342,11 +410,11 @@ public class LoginServices {
             if (verified) {
 
                 UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+                UserSessionObj userSessionObj = new UserSessionObj();
 
 
                 if (user.getAccountType() == 3) {
                     HttpSession session = request.getSession();
-                    UserSessionObj userSessionObj = new UserSessionObj();
                     userSessionObj.setUserId(user.getUserId());
                     userSessionObj.setAccountStatus(user.getAccountStatus());
                     userSessionObj.setAccountTypeId(user.getAccountType());
@@ -358,9 +426,8 @@ public class LoginServices {
                     }
                     session.setAttribute("riderSessionObj", userSessionObj);
                     return "Login successful + " + user.getAccountType();
-                } else {
+                } else if (user.getAccountType() == 2) {
                     HttpSession session = request.getSession();
-                    UserSessionObj userSessionObj = new UserSessionObj();
                     userSessionObj.setUserId(user.getUserId());
                     userSessionObj.setAccountStatus(user.getAccountStatus());
                     userSessionObj.setAccountTypeId(user.getAccountType());
@@ -371,6 +438,20 @@ public class LoginServices {
                         userSessionObj.setProfilePhoto(0);
                     }
                     session.setAttribute("captainSessionObj", userSessionObj);
+                    return "Login successful + " + user.getAccountType();
+                } else {
+                    HttpSession session = request.getSession();
+                    userSessionObj.setUserId(user.getUserId());
+                    userSessionObj.setAccountStatus(user.getAccountStatus());
+                    userSessionObj.setAccountTypeId(user.getAccountType());
+                    if (userDetails != null && userDetails.isProfilePhoto()) {
+                        userSessionObj.setProfilePhoto(1);
+                        userSessionObj.setProfileLoc("/resources/uploads/adminDocuments/admin" + user.getUserId() + "/profilePhoto" + userDetails.getProfilePhotoExtention());
+                    } else {
+                        userSessionObj.setProfilePhoto(0);
+                    }
+                    System.out.println(userSessionObj);
+                    session.setAttribute("adminSessionObj", userSessionObj);
                     return "Login successful + " + user.getAccountType();
                 }
 
@@ -389,8 +470,10 @@ public class LoginServices {
         }
     }
 
-    public String forgetOtpService(String email) {
+    public String forgetOtpService(String emaile) {
         //validation
+        String email = emaile.toLowerCase();
+
         String error = emailValidation(email);
         if (error != null) {
             return error;
@@ -413,7 +496,7 @@ public class LoginServices {
 
             //save
             try {
-//                this.emailSend.userRegistrationOtp(userRegistrationDto);
+                this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());
             } catch (Exception e) {
                 System.out.println("Email not send");
                 return "Email not send";
@@ -434,7 +517,7 @@ public class LoginServices {
                     userRegistrationDao.deleteOtpLogsByEmail(email);
                     OtpLogs otpLogs = setOtpLogDataForgetData(email);
                     try {
-//                        this.emailSend.userRegistrationOtp(userRegistrationDto);
+                        this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());
                     } catch (Exception e) {
                         System.out.println("Email not send");
                         return "Email not send";
@@ -447,7 +530,7 @@ public class LoginServices {
                 OtpLogs otpLogs = setOtpLogDataForgetData(email);
                 userRegistrationDao.deleteOtpLogsByEmail(email);
                 try {
-//                    this.emailSend.userRegistrationOtp(userRegistrationDto);
+                    this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());
                 } catch (Exception e) {
                     System.out.println("Email not send");
                     return "Email not send";
@@ -466,6 +549,7 @@ public class LoginServices {
             return error;
         }
         //validate data here
+        forgetPassDto.setEmail(forgetPassDto.getEmail().toLowerCase());
         OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(forgetPassDto.getEmail());
         if (eachLog == null) {
             //first time
@@ -511,11 +595,21 @@ public class LoginServices {
             notificationLogs.setNotificationMsg("The password has been changed using the forgot password option.");
             notificationLogs.setUser(user);
             notificationLogsDao.saveNotificationLog(notificationLogs);
-            //update the user
             updatePassword(user, forgetPassDto);
+            sendNotiToRider(notificationLogs.getNotificationMsg());
             return "Password updated successfully";
         }
     }
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    public void sendNotiToRider(String notiMsg) {
+        Map<String, String> notification = new HashMap<>();
+        notification.put("message", notiMsg);
+        simpMessagingTemplate.convertAndSend("/topic/rider-incoming-notifications", notification);
+    }
+
 
     public User updatePassword(User user, ForgetPassDto forgetPassDto) {
         String saltString = passwordToHash.generateSalt();
@@ -543,37 +637,39 @@ public class LoginServices {
     }
 
 
-    public String saveCaptainPersonalDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session, HttpServletRequest request) {
+    public void saveCaptainPersonalDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session, HttpServletRequest request) throws Exception {
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
 
         if (captainDetails != null) {
-            return "User document are already filled.";
+            throw new Exception("User documents are already filled.");
         }
 
         int i = uploadDocumentCaptain(captainPersonalDetailsDto, session);
         if (i != 4) {
-            return "Error While uploading the data";
+            throw new Exception("Error while uploading the data");
         }
-        //saving the data
-        String msg = saveCaptainDetails(captainPersonalDetailsDto, request);
-        return msg;
+
+        saveCaptainDetails(captainPersonalDetailsDto, request);
     }
+
 
     @Autowired
     VehicleTypeDao vehicleTypeDao;
 
-    public String saveCaptainDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpServletRequest request) {
+    public void saveCaptainDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpServletRequest request) throws Exception {
         CaptainDetails captainDetails = new CaptainDetails();
         String originalFileName = captainPersonalDetailsDto.getProfilePhoto().getOriginalFilename();
         String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
         HttpSession session = request.getSession();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+
         user.setAccountStatus(3);
         userSessionObj.setAccountStatus(3);
         captainDetails.setProfilePhotoExtension(extension);
         captainDetails.setUser(user);
+
         VehicleType vehicleType = vehicleTypeDao.getVehicaleId(captainPersonalDetailsDto.getVehicleType());
         captainDetails.setVehicleType(vehicleType);
         captainDetails.setNumberPlate(captainPersonalDetailsDto.getNumberPlate());
@@ -583,11 +679,12 @@ public class LoginServices {
         captainDetails.setRegistrationCertificate(true);
         captainDetails.setRcExpirationDate(dateTimeConverter.stringToLocalDate(captainPersonalDetailsDto.getLicenseExpiration()));
         captainDetails.setProfilePhoto(true);
+
         captainDetailsDao.saveCaptainDetails(captainDetails);
         usersDao.updateUser(user);
         session.setAttribute("captainSessionObj", userSessionObj);
-        return "Data uploaded successfully";
     }
+
 
     public int uploadDocumentCaptain(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session) {
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
@@ -662,6 +759,157 @@ public class LoginServices {
         return i;
     }
 
+
+    public CaptainReuploadDataRendering     getCaptainReuploadData() {
+        CaptainReuploadDataRendering captainReuploadDataRendering = new CaptainReuploadDataRendering();
+
+
+        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
+
+        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+
+        UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+        captainReuploadDataRendering.setCaptainId(user.getUserId());
+        captainReuploadDataRendering.setCaptainName(userDetails.getFirstName() + " " + userDetails.getLastName());
+
+        String fileLocation = "/UrbanRides/resources/uploads/captainDocuments/captain" + user.getUserId();
+
+        captainReuploadDataRendering.setAdharApprovedApprove(captainDetails.isAdharApproved());
+        captainReuploadDataRendering.setDrivingLicenceApprove(captainDetails.isLicenseApproved());
+        captainReuploadDataRendering.setRCCertificateApprove(captainDetails.isRcApproved());
+        captainReuploadDataRendering.setRCExpirationDateApprove(captainDetails.isRcExpirationDateApproved());
+        captainReuploadDataRendering.setDrivingLicenceExpiryDateApprove(captainDetails.isLicenseExpirationDateApproved());
+        captainReuploadDataRendering.setNumberPlateApprove(captainDetails.isNumberplateApproved());
+
+
+        captainReuploadDataRendering.setAdharCard(fileLocation + "/adharcard.pdf");
+        captainReuploadDataRendering.setDrivingLicence(fileLocation + "/drivingLicense.pdf");
+        captainReuploadDataRendering.setDrivingLicenceExpiryDate(formatDateToString(captainDetails.getLicenseExpirationDate()));
+        captainReuploadDataRendering.setRCCertificate(fileLocation + "/registrationCertificate.pdf");
+        captainReuploadDataRendering.setRCExpirationDate(formatDateToString(captainDetails.getRcExpirationDate()));
+        captainReuploadDataRendering.setNumberPlate(captainDetails.getNumberPlate());
+
+
+        return captainReuploadDataRendering;
+    }
+
+    public static String formatDateToString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    public ResponseEntity<Map<String, String>> saveCaptainDocumentReupload(CaptainReuploadDataDto captainReuploadDataDto, HttpSession session, HttpServletRequest request) {
+        int expectedUploadCount = 0;
+
+        if (captainReuploadDataDto.getAdharCarde() != null && !captainReuploadDataDto.getAdharCarde().isEmpty()) {
+            expectedUploadCount++;
+        }
+        if (captainReuploadDataDto.getDrivingLicensee() != null && !captainReuploadDataDto.getDrivingLicensee().isEmpty()) {
+            expectedUploadCount++;
+        }
+        if (captainReuploadDataDto.getRegistrationCertificatee() != null && !captainReuploadDataDto.getRegistrationCertificatee().isEmpty()) {
+            expectedUploadCount++;
+        }
+
+        int actualUploadCount;
+        try {
+            actualUploadCount = uploadDocumentCaptainReupload(captainReuploadDataDto, session);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while uploading documents: " + e.getMessage(), e);
+        }
+
+        if (actualUploadCount < expectedUploadCount) {
+            throw new RuntimeException("Error while uploading some of the documents.");
+        }
+
+        return saveCaptainDetailsReupload(captainReuploadDataDto, request);
+    }
+
+    public ResponseEntity<Map<String, String>> saveCaptainDetailsReupload(CaptainReuploadDataDto captainReuploadDataDto, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
+
+        user.setAccountStatus(3);
+        userSessionObj.setAccountStatus(3);
+
+        if (captainReuploadDataDto.getNumberPlatee() != null && !captainReuploadDataDto.getNumberPlatee().isEmpty()) {
+            captainDetails.setNumberPlate(captainReuploadDataDto.getNumberPlatee());
+        }
+        if (captainReuploadDataDto.getRcExpiratione() != null && !captainReuploadDataDto.getRcExpiratione().isEmpty()) {
+            captainDetails.setRcExpirationDate(dateTimeConverter.stringToLocalDate(captainReuploadDataDto.getRcExpiratione()));
+        }
+        if (captainReuploadDataDto.getLicenseExpiratione() != null && !captainReuploadDataDto.getLicenseExpiratione().isEmpty()) {
+            captainDetails.setLicenseExpirationDate(dateTimeConverter.stringToLocalDate(captainReuploadDataDto.getLicenseExpiratione()));
+        }
+
+        captainDetailsDao.updateCaptainDetail(captainDetails);
+        usersDao.updateUser(user);
+
+        session.setAttribute("captainSessionObj", userSessionObj);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Data uploaded successfully");
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    public int uploadDocumentCaptainReupload(CaptainReuploadDataDto captainReuploadDataDto, HttpSession session) {
+        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+
+        String captainId = String.valueOf(userSessionObj.getUserId());
+        String folderName = "captain" + captainId;
+        String folderPath = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "captainDocuments" + File.separator + folderName;
+        File folder = new File(folderPath);
+
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        int uploadCount = 0;
+
+        try {
+            if (captainReuploadDataDto.getAdharCarde() != null && !captainReuploadDataDto.getAdharCarde().isEmpty()) {
+                String fileNameAdhar = "adharcard.pdf";
+                String filePathAdhar = folderPath + File.separator + fileNameAdhar;
+                try (FileOutputStream fos = new FileOutputStream(filePathAdhar)) {
+                    byte[] data = captainReuploadDataDto.getAdharCarde().getBytes();
+                    fos.write(data);
+                    uploadCount++;
+                }
+            }
+
+            if (captainReuploadDataDto.getDrivingLicensee() != null && !captainReuploadDataDto.getDrivingLicensee().isEmpty()) {
+                String fileNameLicense = "drivingLicense.pdf";
+                String filePathLicense = folderPath + File.separator + fileNameLicense;
+                try (FileOutputStream fos = new FileOutputStream(filePathLicense)) {
+                    byte[] data = captainReuploadDataDto.getDrivingLicensee().getBytes();
+                    fos.write(data);
+                    uploadCount++;
+                }
+            }
+
+            if (captainReuploadDataDto.getRegistrationCertificatee() != null && !captainReuploadDataDto.getRegistrationCertificatee().isEmpty()) {
+                String fileNameRc = "registrationCertificate.pdf";
+                String filePathRc = folderPath + File.separator + fileNameRc;
+                try (FileOutputStream fos = new FileOutputStream(filePathRc)) {
+                    byte[] data = captainReuploadDataDto.getRegistrationCertificatee().getBytes();
+                    fos.write(data);
+                    uploadCount++;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while uploading documents: " + e.getMessage(), e);
+        }
+
+        return uploadCount;
+    }
 
 }
 

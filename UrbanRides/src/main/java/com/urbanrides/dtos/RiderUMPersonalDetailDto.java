@@ -10,11 +10,11 @@ import javax.validation.constraints.Size;
 @Data
 public class RiderUMPersonalDetailDto {
     @NotBlank(message = "Pickup Address is required")
-    @Length(max = 20, message = "First-name cannot exceed 20 characters")
+    @Length(max = 10, message = "First-name cannot exceed 20 characters")
     private String firstName;
 
     @NotBlank(message = "Last name is required")
-    @Size(max = 20, message = "Last-name cannot exceed 20 characters")
+    @Size(max = 10, message = "Last-name cannot exceed 20 characters")
     private String lastName;
 
     @NotBlank(message = "Phone number is required")

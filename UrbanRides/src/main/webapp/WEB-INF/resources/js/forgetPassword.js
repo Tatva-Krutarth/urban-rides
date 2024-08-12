@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
     $("#emailForm").validate({
         rules: {
             email: {
@@ -58,8 +59,6 @@ $(document).ready(function () {
                         }
 
 
-
-
                     } else {
                         showErrorMsg(response);
                     }
@@ -71,19 +70,25 @@ $(document).ready(function () {
             });
         }
     });
+    $.validator.addMethod("strongPass", function (value, element) {
+        return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(value);
+    }, "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
 
     $("#passwordForm").validate({
         rules: {
             password: {
                 required: true,
                 minlength: 8,
-                maxlength: 16
+                maxlength: 16,
+                strongPass: true // Use custom validator for strong password
+
             },
             confPass: {
                 required: true,
                 minlength: 8,
                 maxlength: 16,
                 equalTo: "#pass"
+
             },
             otp: {
                 required: true,
@@ -97,12 +102,14 @@ $(document).ready(function () {
                 required: "OTP is required",
                 digits: "OTP must only contain digits",
                 minlength: "OTP must be 4 digits long",
-                maxlength: "OTP must be 4 digits long"
+                maxlength: "OTP must be 4 digits long",
+
             },
             password: {
                 required: "Please enter your password",
                 minlength: "Password must be at least 8 characters long",
-                maxlength: "Password cannot exceed 16 characters"
+                maxlength: "Password cannot exceed 16 characters",
+                strongPass: "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character."
             },
             confPass: {
                 required: "Please confirm your password",
@@ -138,6 +145,7 @@ $(document).ready(function () {
                     if (response === "Password updated successfully") {
                         $(".loader").hide();
                         showSuccesstMsg(response);
+                        disableAllElements();
                         setTimeout(function () {
                             $(".loader").hide();
                             window.location.href = "user-login";
@@ -194,3 +202,19 @@ $(document).ready(function () {
 document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });
+
+function disableAllElements() {
+    // Disable all buttons
+    var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+    buttons.forEach(function(button) {
+        button.disabled = true;
+    });
+
+    // Disable all links
+    var links = document.querySelectorAll('a');
+    links.forEach(function(link) {
+        link.style.pointerEvents = 'none'; // Prevents clicking
+        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
+        link.removeAttribute('href'); // Optionally remove the href attribute
+    });
+}

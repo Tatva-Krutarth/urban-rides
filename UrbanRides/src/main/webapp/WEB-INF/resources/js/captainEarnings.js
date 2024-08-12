@@ -25,21 +25,33 @@ function withdrawMoney() {
                 // Handle successful response
                 console.log('Amount successfully sent to backend:', response);
                 // Check if response is a number (indicating success)
-                if (!isNaN(response)) {
-                    var walletBalance = document.querySelector('.wallet-balance');
-                    var currentBalance = parseFloat(walletBalance.textContent.replace('Balance: ₹ ', ''));
-                    var newBalance = currentBalance - depositAmount;
-                    walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
-                    document.getElementById('depositAmount').value = '';
-                    showSuccesstMsg('Money added successfully.');
-                } else {
-                    showErrorMsg('Failed to add money. Please try again later.');
-                }
+                var walletBalance = document.querySelector('.wallet-balance');
+                var currentBalance = parseFloat(walletBalance.textContent.replace('Balance: ₹ ', ''));
+                var newBalance = currentBalance - depositAmount;
+                walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
+                document.getElementById('depositAmount').value = '';
+                // showSuccesstMsg('Money added successfully.');
+                var inputContainer = document.getElementById('inputContainer');
+                inputContainer.style.display = 'none';
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.error('Error sending amount to backend:', xhr, textStatus, errorThrown);
-                // Optionally handle error and show user-friendly message
-                showErrorMsg('Failed to add money. Please try again later.');
+                console.error('Error updating transaction details:', xhr, textStatus, errorThrown);
+                let errorMessage = "An error occurred while updating transaction details.";
+
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                } else if (xhr.responseText) {
+                    try {
+                        let jsonResponse = JSON.parse(xhr.responseText);
+                        if (jsonResponse.message) {
+                            errorMessage = jsonResponse.message;
+                        }
+                    } catch (e) {
+                        errorMessage = xhr.responseText;
+                    }
+                }
+                $(".loader").hide();
+                showErrorMsg(errorMessage);
             }
         });
     } else {
@@ -105,10 +117,10 @@ function populateTransactionDetails(data) {
     });
 
     if (!hasMethod1) {
-        container1.append('<div class="no-records">You have no record paid by wallet.</div>');
+        container1.append('<div class="no-records">You have no record paid by Cash.</div>');
     }
     if (!hasOtherMethods) {
-        container2.append('<div class="no-records">You have no record paid by Cash.</div>');
+        container2.append('<div class="no-records">You have no record paid by Wallet.</div>');
     }
 }
 

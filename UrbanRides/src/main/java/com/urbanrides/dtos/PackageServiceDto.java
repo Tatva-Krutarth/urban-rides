@@ -20,20 +20,17 @@ public class PackageServiceDto {
     @NotBlank(message = "Pickup date is required")
     private String pickUpDate;
 
+    @NotBlank(message = "DropOff date is required")
+    private String dropOffDate;
+
 
     @NotBlank(message = "Pickup time is required")
     private String pickUpTime;
-
-    //    @NotBlank(message = "DropOffTime time is required")
-    private String dropoffTime;
 
     @Min(value = 1, message = "Number of passengers must be at least 1")
     @Max(value = 30, message = "Number of passengers cannot be more than 30")
     private int numberOfPassengers;
 
-//    @Min(value = 1, message = "Number of passengers must be at least 1")
-    @Max(value = 30, message = "Number of passengers cannot be more than 30")
-    private int numbOfDays;
 
     @Pattern(regexp = "\\d+", message = "Vehicle ID should only contain digits")
     @Size(min = 1, max = 4, message = "Vehicle ID should be between 1 and 4 characters long")
@@ -43,7 +40,7 @@ public class PackageServiceDto {
     @Pattern(regexp = "^$|^([1-7](,([1-7](?!.*\\b\\1\\b)))*?)$", message = "Invalid pickup days format. Should be comma-separated numbers between 1 and 7, with each number appearing only once.")
     private String dailyPickUp;
 
-//    @Min(value = 1, message = "Charges must be at least 1")
+    //    @Min(value = 1, message = "Charges must be at least 1")
     private int charges;
 
     @NotBlank(message = "Emergency contact number is required")
@@ -58,9 +55,9 @@ public class PackageServiceDto {
     @Size(max = 20, message = "Distance cannot be more than 20 characters")
     private String distance;
 
-    //    @NotBlank(message = "Estimated time is required")
-    @Length(max = 20, message = "Estimated time cannot be more than 20 characters")
-    private String estimatedTime;
+//    //    @NotBlank(message = "Estimated time is required")
+//    @Length(max = 20, message = "Estimated time cannot be more than 20 characters")
+//    private String estimatedTime;
 
     @Size(max = 20, message = "Service type is required")
     private String serviceType;

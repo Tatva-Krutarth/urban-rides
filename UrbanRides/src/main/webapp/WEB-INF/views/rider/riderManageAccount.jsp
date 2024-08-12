@@ -28,12 +28,19 @@
     <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
 
     <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+            integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="<c:url value="/resources/css/riderManageAccount.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
+    <script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
 
     <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
+    <%--//web socket------%>
 
 
     <!-- font  -->
@@ -69,15 +76,15 @@
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">First Name</div>
-                    <input type="text" class="personal-details-data" name="firstName" value="" readonly>
+                    <input type="text" class="personal-details-data" name="firstName" id="first-Name" value="" readonly>
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Last Name</div>
-                    <input type="text" class="personal-details-data" name="lastName" value="">
+                    <input type="text" class="personal-details-data" name="lastName" id="last-Name"  value="" readonly>
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Phone</div>
-                    <input type="text" class="personal-details-data" name="phone" value="">
+                    <input type="text" class="personal-details-data" name="phone" value="" readonly>
                 </div>
                 <div class="edit-btn-cont mt-4">
                     <button class="edit-button first-button common-btn-color3-theme" type="button">
@@ -150,6 +157,7 @@
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
 
+<script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
 
 <%------------------------------------jquerry  validation--%>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>

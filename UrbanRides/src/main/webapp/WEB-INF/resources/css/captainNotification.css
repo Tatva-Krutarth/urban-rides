@@ -162,8 +162,8 @@ body {
 
 .noti-container {
     display: flex;
-    height: 100px;
-    align-items: center;
+    height: auto;
+    align-items: stretch;
     position: relative;
     border: 0px solid transparent;
     border-radius: 15px;
@@ -172,7 +172,7 @@ body {
 
 .noti-img-cont {
     width: 100px;
-    height: 100%;
+    /*height: 100%;*/
     display: flex;
     justify-content: center;
     background-color: #0D63A5;
@@ -197,16 +197,17 @@ body {
     font-weight: 500;
     font-size: 18px;
     color: black;
-    margin-bottom: 8px;
+    padding: 10px 0px 0px 0px;
 
 }
 
 .noti-desc {
     font-size: 16px;
     color: rgb(63, 63, 63);
-    display: flex;
+    /*display: flex;*/
     justify-content: flex-start;
     font-family: Roboto, sans-serif;
+    padding: 10px 5px 10px 0px;
 }
 
 .noti-time {
@@ -214,9 +215,97 @@ body {
     position: absolute;
     right: 2%;
     font-size: 14px;
-    top: 15%;
+    top:30px;
 }
 
+/*-----back button---------*/
+
+
+.back-button {
+    margin-right: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    /*position: absolute;*/
+    /*left: 5%;*/
+    /*top: 5%;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#back-button img {
+    filter: invert(100%) sepia(0%) saturate(2%) hue-rotate(304deg) brightness(110%) contrast(101%);
+}
+
+.back-button:hover {
+    background-color: #001F3F; /* darker blue background on hover */
+}
+
+#back-arrow {
+    width: 30px; /* initial image size */
+    height: 30px;
+    filter: none; /* initial filter */
+}
+
+#back-arrow:hover {
+    width: 35px; /* larger image size on hover */
+    height: 35px;
+    filter: brightness(0) invert(1); /* white filter on hover */
+}
+
+
+@media only screen and (max-width: 756px) and (min-width: 360px) {
+
+
+    .show-mobile {
+        display: initial;
+    }
+
+    .nav-my-trip-cont {
+        display: none;
+    }
+
+    .nati-cont {
+        display: none;
+    }
+
+
+    .dropbtn {
+        border: 0px;
+        background: transparent;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-left: 0px;
+        margin-right: 5px;
+    }
+
+    .profile-pic {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .profile-pic img {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        /* border: 1px solid white; */
+    }
+
+    .nav-class {
+        background-color: #001F3F;
+        height: 45px;
+        padding: 0px;
+    }
+}
 /*------------------------------------dropdown----------------------------*/
 
 

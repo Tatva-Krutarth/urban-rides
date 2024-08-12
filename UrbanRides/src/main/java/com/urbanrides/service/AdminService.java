@@ -3,21 +3,20 @@ package com.urbanrides.service;
 
 import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
-import com.urbanrides.helper.CommonValidation;
-import com.urbanrides.helper.NotificationTypeEnum;
-import com.urbanrides.helper.PasswordToHash;
-import com.urbanrides.helper.UserTypeEnum;
-import com.urbanrides.model.NotificationLogs;
-import com.urbanrides.model.SupportTypeLogs;
-import com.urbanrides.model.User;
-import com.urbanrides.model.UserDetails;
+import com.urbanrides.helper.*;
+import com.urbanrides.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,12 +24,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
     @Autowired
     CommonValidation commonValidation;
+    @Autowired
+    EmailSend emailSend;
 
     @Autowired
     private UsersDao usersDao;
@@ -48,6 +52,8 @@ public class AdminService {
     PasswordToHash passwordToHash;
     @Autowired
     NotificationLogsDao notificationLogsDao;
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     public AdminCountData getDashCount() {
         AdminCountData adminCountData = new AdminCountData();
@@ -58,29 +64,114 @@ public class AdminService {
         return adminCountData;
     }
 
-    public List<AdminQuerries> getSupportData() {
-        List<AdminQuerries> adminQuerriesList = new ArrayList<>();
-        List<SupportTypeLogs> supportTypeLogsList = supportTypeLogsDao.getAllLogsData();
 
-        for (SupportTypeLogs supportTypeLogs : supportTypeLogsList) {
+    public Page<AdminQuerries> getSupportData(Pageable pageable) {
+        Page<SupportTypeLogs> supportTypeLogsPage = supportTypeLogsDao.getAllLogsData(pageable);
+
+        List<AdminQuerries> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
             AdminQuerries adminQuerries = new AdminQuerries();
             adminQuerries.setUserID(supportTypeLogs.getUserObj().getUserId());
             adminQuerries.setSupportId(supportTypeLogs.getSupportLogsId());
-            UserDetails UserDetails = userdetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
-            adminQuerries.setContactDetails(UserDetails.getPhone());
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
+            adminQuerries.setContactDetails(userDetails.getPhone());
             adminQuerries.setSypportType(supportTypeLogs.getSupportType());
             adminQuerries.setAccountType(UserTypeEnum.getValueById(supportTypeLogs.getUserObj().getAccountType()));
             adminQuerries.setMessage(supportTypeLogs.getDescription());
+
+            adminQuerries.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
             LocalDate createdDate = supportTypeLogs.getCreatedDate();
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = createdDate.format(formatter);
 
             adminQuerries.setCreatedDate(formattedDate);
-            adminQuerriesList.add(adminQuerries);
-        }
+            return adminQuerries;
+        }).collect(Collectors.toList());
 
-        return adminQuerriesList;
+        return new PageImpl<>(adminQuerriesList, pageable, supportTypeLogsPage.getTotalElements());
+    }
+
+
+    public Page<AdminQuerries> getRunningData(Pageable pageable) {
+        // Fetch paginated SupportTypeLogs data
+        Page<SupportTypeLogs> supportTypeLogsPage = supportTypeLogsDao.getRunningData(pageable);
+
+        // Convert SupportTypeLogs to AdminQuerries
+        List<AdminQuerries> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
+            AdminQuerries adminQuerries = new AdminQuerries();
+            adminQuerries.setUserID(supportTypeLogs.getUserObj().getUserId());
+            adminQuerries.setSupportId(supportTypeLogs.getSupportLogsId());
+
+            // Fetch user details
+            UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
+            adminQuerries.setContactDetails(userDetails.getPhone());
+            adminQuerries.setSypportType(supportTypeLogs.getSupportType());
+            adminQuerries.setAccountType(UserTypeEnum.getValueById(supportTypeLogs.getUserObj().getAccountType()));
+            adminQuerries.setMessage(supportTypeLogs.getDescription());
+            adminQuerries.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+
+            if (supportTypeLogs.isFile()) {
+                adminQuerries.setFileAvailable(1);
+            } else {
+                adminQuerries.setFileAvailable(2);
+            }
+            String fileLocation;
+            if (supportTypeLogs.getUserObj().getAccountType() == 3) {
+                fileLocation = "/UrbanRides/resources/uploads/riderDocuments/riderComplain" + userDetails.getUser().getUserId() + "/complain" + userDetails.getUser().getUserId() + supportTypeLogs.getFileExtention();
+            } else {
+                fileLocation = "/UrbanRides/resources/uploads/captainDocuments/captainComplain" + userDetails.getUser().getUserId() + "/complain" + userDetails.getUser().getUserId() + supportTypeLogs.getFileExtention();
+            }
+            adminQuerries.setFileLocaton(fileLocation);
+
+            LocalDate createdDate = supportTypeLogs.getCreatedDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String formattedDate = createdDate.format(formatter);
+            adminQuerries.setCreatedDate(formattedDate);
+
+            return adminQuerries;
+        }).collect(Collectors.toList());
+
+        // Return a Page object containing the paginated data
+        return new PageImpl<>(adminQuerriesList, pageable, supportTypeLogsPage.getTotalElements());
+    }
+
+
+    @Autowired
+    private UserDetailsDao userDetailsDao;
+
+    public Page<AdminQuerries> getCompletedData(Pageable pageable) {
+        // Fetch paginated SupportTypeLogs data
+        Page<SupportTypeLogs> supportTypeLogsPage = supportTypeLogsDao.getCompletedData(pageable);
+
+        // Convert SupportTypeLogs to AdminQuerries
+        List<AdminQuerries> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
+            AdminQuerries adminQuerries = new AdminQuerries();
+            adminQuerries.setUserID(supportTypeLogs.getUserObj().getUserId());
+            adminQuerries.setSupportId(supportTypeLogs.getSupportLogsId());
+
+            // Fetch user details
+            UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
+            adminQuerries.setContactDetails(userDetails.getPhone());
+            adminQuerries.setSypportType(supportTypeLogs.getSupportType());
+            adminQuerries.setAccountType(UserTypeEnum.getValueById(supportTypeLogs.getUserObj().getAccountType()));
+            adminQuerries.setMessage(supportTypeLogs.getDescription());
+            adminQuerries.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+
+            // Fetch admin details
+            UserDetails adminDetails = userdetailsDao.getUserDetailsByUserId(supportTypeLogs.getAdminObj().getUserId());
+            adminQuerries.setAdminName(adminDetails.getFirstName() + " , " + adminDetails.getLastName());
+
+            // Format date
+            LocalDate createdDate = supportTypeLogs.getCreatedDate();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String formattedDate = createdDate.format(formatter);
+            adminQuerries.setCreatedDate(formattedDate);
+
+            return adminQuerries;
+        }).collect(Collectors.toList());
+
+        // Return a Page object containing the paginated data
+        return new PageImpl<>(adminQuerriesList, pageable, supportTypeLogsPage.getTotalElements());
     }
 
 
@@ -106,25 +197,39 @@ public class AdminService {
     }
 
 
-    public ResponseEntity<?> riderPersonalDetailSubmit(RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> adminPersonalDetailSubmit(RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
+        Map<String, String> response = new HashMap<>();
+
         try {
             UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
 
             UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
             if (userDetails == null) {
-                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                response.put("message", "User not found");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-            userDetails.setFirstName(riderUMPersonalDetailDto.getFirstName());
-            userDetails.setLastName(riderUMPersonalDetailDto.getLastName());
+            String firstName = capitalizeFirstLetter(riderUMPersonalDetailDto.getFirstName());
+            String lastName = capitalizeFirstLetter(riderUMPersonalDetailDto.getLastName());
+            userDetails.setFirstName(firstName);
+            userDetails.setLastName(lastName);
             userDetails.setPhone(riderUMPersonalDetailDto.getPhone());
             userdetailsDao.updateUserDetails(userDetails);
-            return new ResponseEntity<>("Personal details updated successfully", HttpStatus.OK);
+            response.put("message", "Personal details updated successfully");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Failed to update personal details: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("message", "Failed to update personal details: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    //-------------------------------------------------password--------------------------
+
+    private String capitalizeFirstLetter(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+//-------------------------------------------------password--------------------------
 
 
     public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest req) throws Exception {
@@ -134,6 +239,7 @@ public class AdminService {
             return error;
         }
         updatePassword(riderUMLoginDetails, req);
+
         return null;
     }
 
@@ -158,6 +264,7 @@ public class AdminService {
         Boolean verified = passwordToHash.checkPassword(riderUMLoginDetails.getCurrentPassword(), user.getSalt(), user.getPasswordHash());
         if (verified) {
             updateToDB(user, riderUMLoginDetails);
+            emailSend.loginCredentialUpdated(user.getEmail());
         } else {
             throw new Exception("Incorrect current password");
         }
@@ -176,6 +283,7 @@ public class AdminService {
             notificationLogs.setNotificationMsg("The password has been changed from the user's My Profile section.");
             notificationLogs.setUser(user);
             notificationLogsDao.saveNotificationLog(notificationLogs);
+            sendNotiToRider(notificationLogs.getNotificationMsg());
             return user;
         } catch (Exception e) {
             throw new Exception("Error updating password: " + e.getMessage());
@@ -183,14 +291,29 @@ public class AdminService {
     }
 
 
-    //    -----------------file-----------------------
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    public void sendNotiToRider(String notiMsg) {
+        Map<String, String> notification = new HashMap<>();
+        System.out.println("weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+        notification.put("message", notiMsg);
+        simpMessagingTemplate.convertAndSend("/topic/rider-incoming-notifications", notification);
+    }
+
+//    -----------------file-----------------------
 
 
     public String updateProfilePic(RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session) throws IOException {
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("adminSessionObj");
-        // Get UserDetails object for the current user
-        UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+        if (userSessionObj == null) {
+            throw new IOException("User session not found.");
+        }
 
+        UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
+        if (userDetails == null) {
+            throw new IOException("User details not found.");
+        }
 
         String adminId = String.valueOf(userSessionObj.getUserId());
         String folderName = "adminProfilePics" + adminId; // Dynamic folder name
@@ -198,23 +321,25 @@ public class AdminService {
         File folder = new File(folderPath);
 
         // Delete all existing files in the folder
-        deleteFilesInFolder(folder);
-
-        if (!folder.exists()) {
-            // Create the folder if it doesn't exist
-            folder.mkdirs();
+        try {
+            deleteFilesInFolder(folder);
+        } catch (Exception e) {
+            throw new IOException("Failed to delete existing files: " + e.getMessage(), e);
         }
 
-        String fileExtension = getFileExtension(riderUMUpdateProfileLogo.getProfilePhoto().getOriginalFilename()); // Get the actual file extension
+        if (!folder.exists()) {
+            if (!folder.mkdirs()) {
+                throw new IOException("Failed to create directory: " + folderPath);
+            }
+        }
 
-        // Check for valid file extensions (.png or .jpg)
+        String fileExtension = getFileExtension(riderUMUpdateProfileLogo.getProfilePhoto().getOriginalFilename());
         if (!isValidFileExtension(fileExtension)) {
             throw new IOException("Invalid file extension: " + fileExtension);
         }
 
         String fileNameBase = "adminProfile";
-        String fileName = fileNameBase + adminId + fileExtension; // Use riderId in the filename
-
+        String fileName = fileNameBase + adminId + fileExtension;
         String fileProfile = folderPath + File.separator + fileName;
         System.out.println("Saving profile photo to: " + fileProfile);
 
@@ -223,23 +348,27 @@ public class AdminService {
             fos.write(data);
             System.out.println("Profile photo uploaded successfully!");
         } catch (IOException e) {
-            System.out.println("Error uploading profile photo: " + e.getMessage());
-            throw e; // Rethrow the exception to be handled by the controller
+            throw new IOException("Error uploading profile photo: " + e.getMessage(), e);
         }
+
         // Set profile photo flag and extension
         userDetails.setProfilePhoto(true);
-        userDetails.setProfilePhotoExtention(getFileExtension(riderUMUpdateProfileLogo.getProfilePhoto().getOriginalFilename()));
+        userDetails.setProfilePhotoExtention(fileExtension);
 
-        // Update user details in the database
-        userdetailsDao.updateUserDetails(userDetails);
-        userSessionObj.setProfileLoc("/resources/uploads/adminDocuments/adminProfilePics" + userSessionObj.getUserId() + "/adminProfile" + userSessionObj.getUserId() + userDetails.getProfilePhotoExtention());
+        try {
+            userdetailsDao.updateUserDetails(userDetails);
+        } catch (Exception e) {
+            throw new IOException("Failed to update user details in the database: " + e.getMessage(), e);
+        }
+
+        userSessionObj.setProfileLoc("/resources/uploads/adminDocuments/adminProfilePics" + userSessionObj.getUserId() + "/adminProfile" + userSessionObj.getUserId() + fileExtension);
         session.setAttribute("adminSessionObj", userSessionObj);
 
         // Get the relative path
         String relativePath = getRelativePath(fileProfile, session);
-
         return relativePath;
     }
+
 
     private void deleteFilesInFolder(File folder) {
         if (folder == null || !folder.exists() || !folder.isDirectory()) {
@@ -284,5 +413,509 @@ public class AdminService {
         return fullPath; // If rootDir not found, return fullPath as is
     }
 
+//-----------accept request__________________
+
+
+    public boolean acceptRequest(int id) {
+        SupportTypeLogs supportTypeLogs = supportTypeLogsDao.getSupportBySupportId(id);
+        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
+        User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+        supportTypeLogs.setAdminObj(user);
+        supportTypeLogsDao.updateSupportTypeLogs(supportTypeLogs);
+        emailSend.acceptSupportRequest(supportTypeLogs);
+
+        return true;
+        // Log the exception or perform any other necessary error handling
+
+    }
+
+    public boolean completeRequest(int id) {
+        SupportTypeLogs supportTypeLogs = supportTypeLogsDao.getSupportBySupportId(id);
+        supportTypeLogs.setSolved(true);
+        supportTypeLogsDao.updateSupportTypeLogs(supportTypeLogs);
+        emailSend.concludeSupportRequest(supportTypeLogs);
+        return true;
+    }
+
+
+    //    --------------------------------------------------------------- user management--------------------
+    public List<AdminUserManagementAllDto> getAllUsersData() {
+        List<AdminUserManagementAllDto> userlist = new ArrayList<>();
+        List<User> userList = usersDao.getAllUsersUnblockedUser();
+        for (User user : userList) {
+            AdminUserManagementAllDto allDataObj = new AdminUserManagementAllDto();
+            allDataObj.setAccountType(user.getAccountType());
+            allDataObj.setEmail(user.getEmail());
+            allDataObj.setRiderUserId(user.getUserId());
+            allDataObj.setStatus(user.getAccountStatus());
+
+
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+            allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+            allDataObj.setPhone(userDetails.getPhone());
+
+            int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
+            int failedTripCount = tripDao.getFailedTripCount(user.getUserId());
+            int allTripCount = tripDao.getTotalTripCount(user.getUserId());
+            allDataObj.setTotalSuccestrip(sucessTripCount);
+            allDataObj.setTotalFailedTrip(failedTripCount);
+            allDataObj.setTotalNumberofRides(allTripCount);
+
+
+            userlist.add(allDataObj);
+        }
+        return userlist;
+    }
+
+    public List<AdminUserManagementAllDto> getRiderUsersData() {
+        List<AdminUserManagementAllDto> userlist = new ArrayList<>();
+        List<User> userList = usersDao.getRiderUsersUnblockedUser();
+        for (User user : userList) {
+            AdminUserManagementAllDto allDataObj = new AdminUserManagementAllDto();
+            allDataObj.setAccountType(user.getAccountType());
+            allDataObj.setEmail(user.getEmail());
+            allDataObj.setRiderUserId(user.getUserId());
+            allDataObj.setStatus(user.getAccountStatus());
+
+
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+            allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+            allDataObj.setPhone(userDetails.getPhone());
+
+            int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
+            int failedTripCount = tripDao.getFailedTripCount(user.getUserId());
+            int allTripCount = tripDao.getTotalTripCount(user.getUserId());
+            allDataObj.setTotalSuccestrip(sucessTripCount);
+            allDataObj.setTotalFailedTrip(failedTripCount);
+            allDataObj.setTotalNumberofRides(allTripCount);
+
+
+            userlist.add(allDataObj);
+        }
+        return userlist;
+    }
+
+    public List<AdminUserManagementAllDto> getCaptainUsersData() {
+        List<AdminUserManagementAllDto> userlist = new ArrayList<>();
+        List<User> userList = usersDao.getCaptainUsersUnblockedUser();
+        for (User user : userList) {
+            AdminUserManagementAllDto allDataObj = new AdminUserManagementAllDto();
+            allDataObj.setAccountType(user.getAccountType());
+            allDataObj.setEmail(user.getEmail());
+            allDataObj.setRiderUserId(user.getUserId());
+            allDataObj.setStatus(user.getAccountStatus());
+
+
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+            allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+            allDataObj.setPhone(userDetails.getPhone());
+
+            int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
+            int failedTripCount = tripDao.getFailedTripCount(user.getUserId());
+            int allTripCount = tripDao.getTotalTripCount(user.getUserId());
+            allDataObj.setTotalSuccestrip(sucessTripCount);
+            allDataObj.setTotalFailedTrip(failedTripCount);
+            allDataObj.setTotalNumberofRides(allTripCount);
+
+
+            userlist.add(allDataObj);
+        }
+        return userlist;
+    }
+
+    public List<AdminUserManagementAllDto> getAdminUsersData() {
+        List<AdminUserManagementAllDto> userlist = new ArrayList<>();
+        List<User> userList = usersDao.getAdminUsersUnblockedUser();
+        for (User user : userList) {
+            AdminUserManagementAllDto allDataObj = new AdminUserManagementAllDto();
+            allDataObj.setAccountType(user.getAccountType());
+            allDataObj.setEmail(user.getEmail());
+            allDataObj.setRiderUserId(user.getUserId());
+            allDataObj.setStatus(user.getAccountStatus());
+
+
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+            allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+            allDataObj.setPhone(userDetails.getPhone());
+
+            int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
+            int failedTripCount = tripDao.getFailedTripCount(user.getUserId());
+            int allTripCount = tripDao.getTotalTripCount(user.getUserId());
+            allDataObj.setTotalSuccestrip(sucessTripCount);
+            allDataObj.setTotalFailedTrip(failedTripCount);
+            allDataObj.setTotalNumberofRides(allTripCount);
+
+
+            userlist.add(allDataObj);
+        }
+        return userlist;
+    }
+
+    public List<AdminUserManagementAllDto> getBlockUsersData() {
+        List<AdminUserManagementAllDto> userlist = new ArrayList<>();
+        List<User> userList = usersDao.getUsersBlockedUser();
+        for (User user : userList) {
+            AdminUserManagementAllDto allDataObj = new AdminUserManagementAllDto();
+            allDataObj.setAccountType(user.getAccountType());
+            allDataObj.setEmail(user.getEmail());
+            allDataObj.setRiderUserId(user.getUserId());
+            allDataObj.setStatus(user.getAccountStatus());
+
+
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+            allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+            allDataObj.setPhone(userDetails.getPhone());
+
+            int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
+            int failedTripCount = tripDao.getFailedTripCount(user.getUserId());
+            int allTripCount = tripDao.getTotalTripCount(user.getUserId());
+            allDataObj.setTotalSuccestrip(sucessTripCount);
+            allDataObj.setTotalFailedTrip(failedTripCount);
+            allDataObj.setTotalNumberofRides(allTripCount);
+
+
+            userlist.add(allDataObj);
+        }
+        return userlist;
+    }
+
+    public boolean unblockUser(int userId) {
+        User user = usersDao.getUserByUserId(userId);
+        if (user != null) {
+            user.setAccountStatus(5);
+            usersDao.updateUser(user);
+
+            try {
+                emailSend.unblockUserMail(user.getEmail());
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Handle the exception according to your application's logic
+                // Log the error or take other necessary actions
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    public boolean blockUser(int userId) {
+        User user = usersDao.getUserByUserId(userId);
+        if (user == null) {
+            return false;
+        }
+
+        NotificationLogs notificationLogs = new NotificationLogs();
+        notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID15"));
+        notificationLogs.setNotificationMsg("Your account has been blocked by admin due to violating the terms and conditions.");
+        notificationLogs.setUser(user);
+        notificationLogsDao.saveNotificationLog(notificationLogs);
+
+        user.setAccountStatus(6);
+
+        if (user.getAccountType() == 2) {
+            sendNotiToCaptain(notificationLogs.getNotificationMsg());
+            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            if (userSessionObj != null && userSessionObj.getUserId() == userId) {
+                HttpSession session = httpServletRequest.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
+            }
+        } else {
+            sendNotiToRider(notificationLogs.getNotificationMsg());
+            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+            if (userSessionObj != null && userSessionObj.getUserId() == userId) {
+                HttpSession session = httpServletRequest.getSession(false);
+                if (session != null) {
+                    session.invalidate();
+                }
+            }
+        }
+
+        try {
+            emailSend.blockUserMail(user.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception according to your application's logic
+            // Log the error or take other necessary actions
+        }
+
+        usersDao.updateUser(user);
+        return true;
+    }
+
+
+    private String formatLocalDateTime(LocalDateTime dateTime, DateTimeFormatter formatter) {
+        return dateTime.format(formatter);
+    }
+
+    @Autowired
+    private GeneralTripDetailsDao generalTripDetailsDao;
+
+
+    public List<RiderMyTripDataDto> ridesFilterData(AdminRidesFilterData filterData) {
+        List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
+
+        List<Trip> tripList = tripDao.getAllTripByFilter(filterData);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
+
+        for (Trip perTrip : tripList) {
+            RiderMyTripDataDto riderDataList = new RiderMyTripDataDto();
+
+
+            riderDataList.setServiceTypeId(perTrip.getServiceType().getServiceTypeId());
+            riderDataList.setVehicleTypeId(perTrip.getVehicleId().getVehicleId());
+            riderDataList.setPickUpLocation(perTrip.getPickupAddress());
+            riderDataList.setDropOffLocation(perTrip.getDropoffAddress());
+            riderDataList.setTripDate(formatLocalDateTime(perTrip.getCreatedDate(), formatter));
+            riderDataList.setDistance(perTrip.getDistance());
+
+            UserDetails riderDetails = userDetailsDao.getUserDetailsByUserId(perTrip.getTripUserId().getUserId());
+            riderDataList.setRiderName(riderDetails.getFirstName() + " " + riderDetails.getLastName());
+            riderDataList.setTripId(perTrip.getTripCode());
+
+            if (perTrip.isAccepted()) {
+                if (perTrip.isAccepted()) {
+
+                }
+                riderDataList.setIsAccepted(1);
+                riderDataList.setIsCancelationDetails(2);
+                riderDataList.setIsCaptainDetails(1);
+                riderDataList.setDuration(perTrip.getEstimatedTime() != null ? perTrip.getEstimatedTime().toString() : "--");
+                riderDataList.setCharges(perTrip.getCharges());
+
+                UserDetails captainDetails = userdetailsDao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
+                riderDataList.setCaptainName(captainDetails.getFirstName() + " , " + captainDetails.getLastName());
+
+                String captainProfilePath = "/UrbanRides/resources/uploads/captainDocuments/captain" + perTrip.getCaptainUserObj().getUserId() + "/profilePhoto.png";
+                riderDataList.setCaptainProfilePath(captainProfilePath);
+
+                GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripByTripId(perTrip.getTripId());
+                if (generalTripDetails != null && generalTripDetails.getIsTripCompleted() || perTrip.getPaymentMethod() != null) {
+                    riderDataList.setStatus(5); // completed
+                    if (filterData.getTripStatus() != 5) {
+                        if (filterData.getTripStatus() != 0) {
+                            continue;
+                        }
+                    }
+                } else {
+                    riderDataList.setStatus(4); // running
+                    if (filterData.getTripStatus() != 4) {
+                        if (filterData.getTripStatus() != 0) {
+                            continue;
+                        }
+                    }
+                }
+
+            } else {
+
+                PackageTrip packageTrip = packageTripDao.getPackageTripDataByTripId(perTrip.getTripId());
+                LocalDate today = LocalDate.now();
+                riderDataList.setIsAccepted(2);
+                riderDataList.setIsCaptainDetails(2);
+                riderDataList.setCancellationReason(perTrip.getReasonForCancellation() != null ? perTrip.getReasonForCancellation() : "Captain Not Available Or Cancelled By Rider");
+                if (perTrip.getReasonForCancellation() != null) {
+                    riderDataList.setIsCancelationDetails(1);
+                    riderDataList.setStatus(3); // cancelled
+                    if (filterData.getTripStatus() != 3) {
+                        if (filterData.getTripStatus() != 0) {
+                            continue;
+                        }
+                    }
+
+                } else if (packageTrip != null && !perTrip.isAccepted() && (today.isAfter(packageTrip.getPickupDate()) || today.isEqual(packageTrip.getPickupDate()))) {
+                    riderDataList.setIsCancelationDetails(2);
+                    riderDataList.setStatus(2); // expired
+                    if (filterData.getTripStatus() != 2) {
+                        if (filterData.getTripStatus() != 0) {
+                            continue;
+                        }
+                    }
+                } else {
+                    riderDataList.setIsCancelationDetails(2);
+                    riderDataList.setStatus(1); // pending
+                    if (filterData.getTripStatus() != 1) {
+                        if (filterData.getTripStatus() != 0) {
+                            continue;
+                        }
+                    }
+                }
+            }
+            riderMyTripList.add(riderDataList);
+        }
+        return riderMyTripList;
+    }
+
+
+//    --------------------------------get all captain data----------------------------------------------
+
+    @Autowired
+    private CaptainDetailsDao captainDetailsDao;
+    @Autowired
+    private PackageTripDao packageTripDao;
+
+    @Transactional
+    public List<AdminCaptainApproveDataDto> getAllCaptainData() {
+
+        List<AdminCaptainApproveDataDto> captainData = new ArrayList<>();
+        List<CaptainDetails> captainDetails = captainDetailsDao.getAllUnverifiedCaptain();
+
+        for (CaptainDetails perCaptainList : captainDetails) {
+            User user = usersDao.getUserByUserId(perCaptainList.getUser().getUserId());
+
+            AdminCaptainApproveDataDto adminCaptainApproveDataDto = new AdminCaptainApproveDataDto();
+            UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+
+            adminCaptainApproveDataDto.setCaptainId(user.getUserId());
+            adminCaptainApproveDataDto.setCaptainName(userDetails.getFirstName() + " " + userDetails.getLastName());
+            adminCaptainApproveDataDto.setPhone(userDetails.getPhone());
+            adminCaptainApproveDataDto.setEmail(userDetails.getUser().getEmail());
+            adminCaptainApproveDataDto.setCreatedDate(formatDateToString(userDetails.getCreatedDate()));
+            adminCaptainApproveDataDto.setStatus(getStatusString(user.getAccountStatus()));
+
+            String fileLocation = "/UrbanRides/resources/uploads/captainDocuments/captain" + user.getUserId();
+
+            adminCaptainApproveDataDto.setAdharApprovedApprove(perCaptainList.isAdharApproved());
+            adminCaptainApproveDataDto.setDrivingLicenceApprove(perCaptainList.isLicenseApproved());
+            adminCaptainApproveDataDto.setRCCertificateApprove(perCaptainList.isRcApproved());
+            adminCaptainApproveDataDto.setRCExpirationDateApprove(perCaptainList.isRcExpirationDateApproved());
+            adminCaptainApproveDataDto.setDrivingLicenceExpiryDateApprove(perCaptainList.isLicenseExpirationDateApproved());
+            adminCaptainApproveDataDto.setNumberPlateApprove(perCaptainList.isNumberplateApproved());
+
+
+            adminCaptainApproveDataDto.setAdharCard(fileLocation + "/adharcard.pdf");
+            adminCaptainApproveDataDto.setDrivingLicence(fileLocation + "/drivingLicense.pdf");
+            adminCaptainApproveDataDto.setDrivingLicenceExpiryDate(formatDateToString(perCaptainList.getLicenseExpirationDate()));
+            adminCaptainApproveDataDto.setRCCertificate(fileLocation + "/registrationCertificate.pdf");
+            adminCaptainApproveDataDto.setRCExpirationDate(formatDateToString(perCaptainList.getRcExpirationDate()));
+            adminCaptainApproveDataDto.setVehicleNumber(perCaptainList.getNumberPlate());
+
+// Set status based on user account status
+            if (user.getAccountStatus() == 3) {
+                adminCaptainApproveDataDto.setStatus("new");
+            } else if (user.getAccountStatus() == 5) {
+                adminCaptainApproveDataDto.setStatus("re-upload");
+            }
+            if (user.getAccountStatus() == 3 || user.getAccountStatus() == 5) {
+                captainData.add(adminCaptainApproveDataDto);
+            }
+        }
+
+        return captainData;
+    }
+
+    public String getStatusString(int status) {
+        switch (status) {
+            case 3:
+                return "Unverified";
+            case 4:
+                return "Verification Failed";
+            default:
+                return "Unknown";
+        }
+    }
+
+    public static String formatDateToString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return date.format(formatter);
+    }
+
+    public void adminCaptainApproveDoc(AproveCaptainsDataDto aproveCaptainsDataDto) {
+        // Fetch the captain's details from the database
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(aproveCaptainsDataDto.getCaptainId());
+
+        if (captainDetails == null) {
+            throw new IllegalArgumentException("Captain not found for ID: " + aproveCaptainsDataDto.getCaptainId());
+        }
+
+        // Get lists of verified and unverified documents, handling potential null values
+        List<String> verifiedDocs = aproveCaptainsDataDto.getVerifiedDocId() != null ? aproveCaptainsDataDto.getVerifiedDocId() : new ArrayList<>();
+        List<String> unverifiedDocs = aproveCaptainsDataDto.getUnverifiedDocId() != null ? aproveCaptainsDataDto.getUnverifiedDocId() : new ArrayList<>();
+
+        // Initialize document approval statusdrivingLicenceExpiryApprove
+
+        // Set document approval statuses
+        if (!captainDetails.isLicenseApproved()) {
+            boolean licenseApproved = verifiedDocs.contains("drivingApprove") && !unverifiedDocs.contains("drivingUnapprove");
+            captainDetails.setLicenseApproved(licenseApproved);
+        }
+        if (!captainDetails.isRcApproved()) {
+            boolean rcApproved = verifiedDocs.contains("rcApprove") && !unverifiedDocs.contains("rcUnapprove");
+            captainDetails.setRcApproved(rcApproved);
+        }
+        if (!captainDetails.isAdharApproved()) {
+            boolean adharApproved = verifiedDocs.contains("adharApprove") && !unverifiedDocs.contains("adharUnapprove");
+            captainDetails.setAdharApproved(adharApproved);
+        }
+        if (!captainDetails.isRcExpirationDateApproved()) {
+            boolean rcExpirationDateApproved = verifiedDocs.contains("rcExpiryApprove") && !unverifiedDocs.contains("rcExpiryUnapprove");
+            captainDetails.setRcExpirationDateApproved(rcExpirationDateApproved);
+
+        }
+        if (!captainDetails.isLicenseExpirationDateApproved()) {
+            boolean drivingLicenceExpiryDateApproved = verifiedDocs.contains("drivingLicenceExpiryApprove") && !unverifiedDocs.contains("drivingLicenceExpiryUnapprove");
+
+            captainDetails.setLicenseExpirationDateApproved(drivingLicenceExpiryDateApproved);
+
+        }
+        if (!captainDetails.isNumberplateApproved()) {
+            boolean numberPlateApprove = verifiedDocs.contains("numberPlateApprove") && !unverifiedDocs.contains("numberPlateUnapprove");
+            captainDetails.setNumberplateApproved(numberPlateApprove);
+        }
+
+
+        // Set overall document approval status
+        boolean allDocsApproved = captainDetails.isLicenseApproved() && captainDetails.isRcApproved() && captainDetails.isAdharApproved() && captainDetails.isRcExpirationDateApproved() && captainDetails.isLicenseExpirationDateApproved();
+        captainDetails.setDocumentApproved(allDocsApproved);
+        User user = usersDao.getUserByUserId(aproveCaptainsDataDto.getCaptainId());
+
+        if (allDocsApproved) {
+            user.setAccountStatus(5);
+
+            NotificationLogs notificationLogs = new NotificationLogs();
+            notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID12"));
+            notificationLogs.setNotificationMsg("Your Document has been verified .");
+            notificationLogs.setUser(user);
+            sendNotiToCaptain(notificationLogs.getNotificationMsg());
+            try {
+                emailSend.allDocumentsApproved(user.getEmail());
+
+            } catch (Exception e) {
+                System.out.println("email not send");
+            }
+
+            notificationLogsDao.saveNotificationLog(notificationLogs);
+        } else {
+            user.setAccountStatus(4);
+            NotificationLogs notificationLogs = new NotificationLogs();
+            notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID13"));
+            notificationLogs.setNotificationMsg("Some of your documents are not verified. Please re-upload the documents.");
+            notificationLogs.setUser(user);
+            sendNotiToCaptain(notificationLogs.getNotificationMsg());
+            try {
+                emailSend.documentsNotApproved(user.getEmail());
+            } catch (Exception e) {
+                System.out.println("email not send");
+            }
+            notificationLogsDao.saveNotificationLog(notificationLogs);
+        }
+        usersDao.updateUser(user);
+
+        // Save the updated captain details
+        captainDetailsDao.updateCaptainDetail(captainDetails);
+    }
+
+    public void sendNotiToCaptain(String notiMsg) {
+        Map<String, String> notification = new HashMap<>();
+        notification.put("message", notiMsg);
+        simpMessagingTemplate.convertAndSend("/topic/captain-incoming-notifications", notification);
+    }
+
 
 }
+

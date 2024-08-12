@@ -35,13 +35,15 @@
           rel="stylesheet">
 <body>
 <%@include file="../admin/adminNavbar.jsp" %>
+<%@include file="../commonImports/loader.jsp" %>
+
 <div class="container">
     <div id="filter-by-id">Filter by</div>
 
 
     <div id="ride-management-cont" class=" mb-3 row">
         <div class="input-container col-sm-4  col-12" id="service-type-filter">
-            <input type="text" class="form-control taskName" autocomplete="off" id="search-id"
+            <input type="text" class="form-control taskName" onchange="applyFilters()" autocomplete="off" id="trip-id"
                    name="dropoff" required/>
             <label class="floating-label place-holder">Search by trip ID</label>
             <img src="<c:url value='/resources/images/search.svg'/>"
@@ -49,10 +51,11 @@
         </div>
         <div class="input-container   col-sm-4 col-12" style="position: relative">
             <div class="custom-select-wrapper">
-                <select id="service-type" name="vehicleType" class="form-control" required>
-                    <option value="1" class="vehicle-select-package" selected title="Bike">General booking</option>
-                    <option value="2" class="vehicle-select-package" title="Bike">Rent a taxi</option>
-                    <option value="3" class="vehicle-select-package" title="Bike">Daily pick up</option>
+                <select id="service-type" name="vehicleType" onfocus="applyFilters()" class="form-control" required>
+                    <option value="0" class="vehicle-select-package" selected title="All">All</option>
+                    <option value="1" class="vehicle-select-package" title="General booking">General booking</option>
+                    <option value="2" class="vehicle-select-package" title="Rent a taxi">Rent a taxi</option>
+                    <option value="3" class="vehicle-select-package" title="Daily pick up">Daily pick up</option>
                 </select>
                 <label class="always-focus">Service type</label>
 
@@ -60,10 +63,13 @@
         </div>
         <div class="input-container   col-sm-4 col-12" style="position: relative">
             <div class="custom-select-wrapper">
-                <select id="status" name="vehicleType" class="form-control" required>
-                    <option value="1" class="vehicle-select-package" selected title="Bike">Completed</option>
-                    <option value="2" class="vehicle-select-package" title="Bike">Cancelled</option>
-                    <option value="3" class="vehicle-select-package" title="Bike">Running</option>
+                <select id="trip-status" name="vehicleType" onfocus="applyFilters()" class="form-control" required>
+                    <option value="0" class="vehicle-select-package" selected title="All">All</option>
+                    <option value="1" class="vehicle-select-package" title="Pending">Pending</option>
+                    <option value="2" class="vehicle-select-package" title="Expired">Expired</option>
+                    <option value="3" class="vehicle-select-package" title="Cancelled">Cancelled</option>
+                    <option value="4" class="vehicle-select-package" title="Running">Running</option>
+                    <option value="5" class="vehicle-select-package" title="Completed">Completed</option>
                 </select>
                 <label class="always-focus">Status</label>
 
@@ -112,11 +118,11 @@
                     <div class="mt-2">
                         <div class="pickup-dropp">
                             <span class="my-trip-accor-details-resp">Pick up location : &nbsp; </span><span
-                                class="my-trip-pickup">Mota Mavva</span>
+                                class="my-trip-pickup">--</span>
                         </div>
                         <div class="pickup-dropp">
                             <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span
-                                class="my-trip-pickup">Mota  MavvaMota MavvaMota MavvaMota MavvaMota Mavva</span>
+                                class="my-trip-pickup">--</span>
                         </div>
                     </div>
                     <div class="trip-details-bottom-cont">
@@ -150,9 +156,11 @@
             </div>
         </div>
     </div>
-
 </div>
-</body>
+<div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
+<script src="<c:url value="/resources/js/toaster.js"/>"></script>
 <script src="<c:url value="/resources/js/adminRideManagement.js"/>"></script>
+
+</body>
 
 </html>

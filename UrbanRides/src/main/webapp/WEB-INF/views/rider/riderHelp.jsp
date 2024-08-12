@@ -24,6 +24,7 @@
 
     <link rel="stylesheet" href="<c:url value="/resources/css/getHelp.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
+    <script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
 
     <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">

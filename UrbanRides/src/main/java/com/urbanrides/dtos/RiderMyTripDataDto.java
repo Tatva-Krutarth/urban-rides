@@ -11,6 +11,7 @@ public class RiderMyTripDataDto {
     private int vehicleTypeId;
     private String pickUpLocation;
     private String dropOffLocation;
+    private String riderName;
 
     //1 for completed 2 for failed
     private int status;
@@ -26,5 +27,18 @@ public class RiderMyTripDataDto {
     private int isCaptainDetails;
     private int isCancelationDetails;
     private int isAccepted;
+
+
+    //for rent a taxi and service ride
+    private String emergencyContact;
+    private String pickupDate;
+    private String dropOffDate;
+    private String pickupTime;
+    private int numberOfPassengers;
+    private int numberOfDays;
+    private String concludeNotes;
+    private String dailyPickUpDays;
+    private String specialInstruction;
+
 
 }

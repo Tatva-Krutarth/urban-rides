@@ -22,7 +22,7 @@ public class NotificationLogs {
     private int notificationId;
 
     @NotBlank(message = "Notification type is required")
-    @Size(max = 20, message = "Notification type must be less than 20 characters")
+    @Size(max = 30, message = "Notification type must be less than 30 characters")
     @Column(name = "notification_Type")
     private String notificationType;
 
@@ -31,7 +31,7 @@ public class NotificationLogs {
     private LocalDateTime createdDate;
 
     @NotBlank(message = "Notification msg type is required")
-    @Size(max = 100, message = "Notification msg must be less than 100 characters")
+    @Size(max = 256, message = "Notification msg must be less than 256 characters")
     @Column(name = "notification_msg")
     private String notificationMsg;
 

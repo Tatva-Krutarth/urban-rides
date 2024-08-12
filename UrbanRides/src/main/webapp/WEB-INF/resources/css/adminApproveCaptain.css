@@ -61,7 +61,7 @@ body {
 }
 
 
-#nav-approve-captains{
+#nav-approve-captains {
     background-color: #0D63A5; /* Change to your preferred active background color */
     color: #FFD717;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -186,17 +186,43 @@ body {
     font-size: 14px;
     top: 13px;
 }
-#captain-approve-btn{
+
+.cap-app-btn-theme {
     background-color: #0D63A5;
     color: white;
     display: block;
     transition: background-color 0.3s ease;
     border: 0px solid black;
-    margin:  5px auto;
-    width: 200px;
+    margin: 5px 5px;
+    width: 120px;
+    height: 30px;
     border-radius: 5px;
 }
-#accordion-button {
+
+.cap-app-btn-theme-save {
+    background-color: #0D63A5;
+    color: white;
+    display: block;
+    transition: background-color 0.3s ease;
+    border: 0px solid black;
+    margin: 5px auto;
+    width: 120px;
+    height: 30px;
+    border-radius: 5px;
+}
+
+.clicked-approve {
+    background-color: #4CAF50; /* Green background for approved */
+    color: white; /* White text */
+}
+
+.clicked-unapprove {
+    background-color: #F44336; /* Red background for unapproved */
+    color: white; /* White text */
+}
+
+
+.accordion-button-cls {
     cursor: pointer;
     position: absolute;
     right: 2%;
@@ -220,7 +246,7 @@ body {
     justify-content: center; /* Ensures content is centered vertically */
 }
 
-#accordion-button:focus {
+.accordion-button-cls:focus {
     z-index: 3;
     outline: 0;
     box-shadow: none !important;
@@ -548,23 +574,30 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 12px;
+    flex-direction: column;
 }
 
 .trip-details-bottom-cont > div {
-    width: 50%;
+    width: 100%;
 }
 
-.left-part {
-    border-right: 1px solid gray;
-    margin-right: 30px;
-    /*background: #0D63A5;*/
+.card {
+    margin-top: 8px;
+    margin-bottom: 8px;
 }
+
+.left-part-right-side {
+    display: flex;
+    justify-content: space-between;
+
+}
+
 
 .left-part > div {
     display: flex;
-
+    margin-top: 8px;
     justify-content: space-between;
-    margin-right: 35px;
+    /*margin-right: 35px;*/
 }
 
 .cancelation-reason {
@@ -575,11 +608,9 @@ body {
 
 .right-part > div {
     display: flex;
+    margin-top: 8px;
     justify-content: space-between;
-    margin-right: 35px;
 }
-
-
 
 
 /*-----------card-------------------------------*/
@@ -611,17 +642,24 @@ body {
 
     .left-part > div {
         display: flex;
-        margin-top: 10px;
+        margin-top: 15px;
         justify-content: space-between;
         margin-right: 35px;
+        flex-direction: column;
+    }
+
+    .left-part-right-side {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
     }
 
     .right-part > div {
         display: flex;
-        margin-top: 10px;
-
+        margin-top: 15px;
         justify-content: space-between;
         margin-right: 35px;
+        flex-direction: column;
     }
 
     .my-trip-time {
@@ -665,7 +703,7 @@ body {
     }
 
 
-    #accordion-button {
+    .accordion-button-cls {
         cursor: pointer;
         position: absolute;
         right: 2%;
@@ -764,6 +802,7 @@ body {
     }
 
 }
+
 @media only screen and (min-width: 360px) and (max-width: 460px) {
 
     #reached {
@@ -780,7 +819,8 @@ body {
         flex-direction: row;
         padding-left: 5px;
     }
-    .noti-img-cont{
+
+    .noti-img-cont {
         display: none;
     }
 

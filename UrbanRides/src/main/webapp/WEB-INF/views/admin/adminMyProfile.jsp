@@ -28,6 +28,7 @@
 
     <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
+    <script src="<c:url value="/resources/js/toaster.js"/>"></script>
 
 
     <!-- font  -->
@@ -35,6 +36,7 @@
           rel="stylesheet">
 <body>
 <%@include file="../admin/adminNavbar.jsp" %>
+<%@include file="../commonImports/loader.jsp" %>
 
 <div class="container">
 
@@ -64,11 +66,11 @@
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Last Name</div>
-                    <input type="text" class="personal-details-data" name="lastName" value="">
+                    <input type="text" class="personal-details-data" name="lastName" readonly value="">
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Phone</div>
-                    <input type="text" class="personal-details-data" name="phone" value="">
+                    <input type="text" class="personal-details-data" name="phone"  readonly value="">
                 </div>
                 <div class="edit-btn-cont mt-4">
                     <button class="edit-button first-button common-btn-color3-theme" type="button">
@@ -136,7 +138,13 @@
         </div>
     </div>
 </div>
+<button onclick="loaderfier()" >Button</button>
+
+<div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
+<script src="<c:url value="/resources/js/toaster.js"/>"></script>
+<script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
+
+<script src="<c:url value="/resources/js/adminManageAccount.js"/>"></script>
 </body>
-<script src="<c:url value="/resources/js/adminMyProfile.js"/>"></script>
 
 </html>

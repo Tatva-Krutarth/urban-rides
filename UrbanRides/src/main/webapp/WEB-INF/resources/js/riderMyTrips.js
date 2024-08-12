@@ -17,12 +17,24 @@ $(document).ready(function () {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
-            populateTransactionDetails(data);
+            if (!data || data.length === 0) {
+                var accordionExample = $('#accordionExample');
+                accordionExample.empty(); // Clear any existing content
+
+                accordionExample.append(`
+            <div>
+                <h5>You have no trips yet.</h5>
+                <p>It looks like you haven't completed any trips so far. Once you book and complete a ride, your trip details will appear here.</p>
+            </div>
+        `);
+            } else {
+                populateTransactionDetails(data);
+            }
         },
+
         error: function (xhr, textStatus, errorThrown) {
-            console.error('Error fetching transaction details:', xhr, textStatus, errorThrown);
-            showErrorMsg('Failed to fetch trip details. Please try again later.');
+            console.error('Error fetching trip details:', xhr, textStatus, errorThrown);
+            showErrorMsg('There is no.');
         }
     });
 
@@ -49,13 +61,13 @@ $(document).ready(function () {
                     statusText = 'Pending';
                     statusColor = 'gray';
                     break;
-                case 5:
-                    statusText = 'Completed';
-                    statusColor = 'green';
+                case 4:
+                    statusText = 'Expired';
+                    statusColor = 'red';
                     break;
                 default:
                     statusText = 'Running';
-                    statusColor = 'yellow';
+                    statusColor = 'gray';
                     break;
             }
 
@@ -69,12 +81,18 @@ $(document).ready(function () {
                             <div class="service-type-text">Service Type: <span class="my-trip-serviceType">${serviceTypeText}</span></div>
                             <hr class="hr-accor">
                             <div class="my-trip-accor-details">
-                                <div class="my-trip-accor-details-resp-cont">
-                                    <span class="my-trip-accor-details-resp">Pick up location: </span><span class="my-trip-pickup">${trip.pickUpLocation}</span>
-                                </div>
-                                <div class="my-trip-accor-details-resp-cont">
-                                    <span class="my-trip-accor-details-resp">Drop off location: </span><span class="my-trip-pickup">${trip.dropOffLocation}</span>
-                                </div>
+                                ${trip.serviceTypeId === 2 ? `
+                                    <div class="my-trip-accor-details-resp-cont">
+                                        <span class="my-trip-accor-details-resp">Pickup/Dropoff Location : </span><span class="my-trip-pickup"> ${trip.pickUpLocation} - ${trip.dropOffLocation}</span>
+                                    </div>
+                                ` : `
+                                    <div class="my-trip-accor-details-resp-cont">
+                                        <span class="my-trip-accor-details-resp">Pick up location : </span><span class="my-trip-pickup"> ${trip.pickUpLocation}</span>
+                                    </div>
+                                    <div class="my-trip-accor-details-resp-cont">
+                                        <span class="my-trip-accor-details-resp">Drop off location : </span><span class="my-trip-pickup"> ${trip.dropOffLocation}</span>
+                                    </div>
+                                `}
                             </div>
                         </div>
                         <div class="my-trip-time">
@@ -90,8 +108,8 @@ $(document).ready(function () {
 
                     <div id="collapse${index}" class="collapse" aria-labelledby="heading${index}" data-parent="#accordionExample">
                         <div class="card-body p-0">
-                            ${trip.serviceTypeId === 2 && (trip.status === 2 || trip.status === 3) ? `
-                                <div class="waiting-for-captain">
+                            ${trip.serviceTypeId === 30 ? `
+                                <div class="waiting-for-captain p-2">
                                     Waiting for the captain to accept the ride.
                                 </div>
                             ` : `
@@ -105,12 +123,13 @@ $(document).ready(function () {
                                                 <div class="captain-org-name">
                                                     You have rated ${trip.captainName}
                                                 </div>
-                                                <div id="rating-system${index}" class="d-flex gap-1 give-star">
-                                                    ${generateStarRating(trip.captainRatting)}
-                                                </div>
+                                                <!-- Initialize star rating here based on your logic -->
+                                                <!-- Example: <div id="rating-system${index}"></div> -->
                                             </div>
                                         </div>
                                     </div>
+                                ` : ''}
+                                ${trip.serviceTypeId == 1 ? `
                                     <div class="trip-details-bottom-cont">
                                         <div class="left-part">
                                             <div>
@@ -123,10 +142,12 @@ $(document).ready(function () {
                                             </div>
                                         </div>
                                         <div class="right-part">
-                                            <div>
-                                                <span>Duration: </span>
-                                                <span>${trip.duration}</span>
-                                            </div>
+                                            ${trip.duration ? `
+                                                <div>
+                                                    <span>Duration: </span>
+                                                    <span>${trip.duration}</span>
+                                                </div>
+                                            ` : ''}
                                             <div>
                                                 <span>Trip Id: </span>
                                                 <span>${trip.tripId}</span>
@@ -134,42 +155,65 @@ $(document).ready(function () {
                                         </div>
                                     </div>
                                 ` : ''}
-                                <div class="cancelation-reason">
-                                    Cancellation Reason: ${trip.cancellationReason ? trip.cancellationReason : 'N/A'}
-                                </div>
+                                ${trip.serviceTypeId !== 1 || trip.serviceTypeId == 2 ? `
+                                    <div class="trip-details-bottom-cont">
+                                        <div class="left-part">
+                                            <div>
+                                                <span>Pickup Date: </span>
+                                                <span>${trip.pickupDate}</span>
+                                            </div>
+                                            <div>
+                                                <span>Trip Id: </span>
+                                                <span>${trip.tripId}</span>
+                                            </div>
+                                            <div>
+                                                <span>Pickup Time: </span>
+                                                <span>${trip.pickupTime}</span>
+                                            </div>
+                                            ${trip.dailyPickUpDays ? `
+                                                <div>
+                                                    <span>Daily Pickup Days: </span>
+                                                    <span>${trip.dailyPickUpDays}</span>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                        <div class="right-part">
+                                            <div>
+                                                <span>DropOff Date: </span>
+                                                <span>${trip.dropOffDate}</span>
+                                            </div>
+                                            <div>
+                                                <span>Number of Passengers: </span>
+                                                <span>${trip.numberOfPassengers}</span>
+                                            </div>
+                                            <div>
+                                                <span>Number of Days: </span>
+                                                <span>${trip.numberOfDays}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                ${trip.serviceTypeId == 1 ? `
+                                    ${trip.cancellationReason ? `
+                                        <div class="cancelation-reason p-2">
+                                            Cancellation Reason: ${trip.cancellationReason}
+                                        </div>
+                                    ` : ''}
+                                ` : ''}
+                                ${trip.serviceTypeId !== 1 ? `
+                                    ${trip.specialInstruction ? `
+                                        <div class="cancelation-reason p-2">
+                                            Special Instruction: ${trip.specialInstruction}
+                                        </div>
+                                    ` : ''}
+                                ` : ''}
                             `}
                         </div>
                     </div>
                 </div>
             `;
             accordionExample.append(tripCard);
-
-            // Initialize star ratings for each trip
-            if (trip.isCaptainDetails !== 2 && !(trip.serviceTypeId === 2 && (trip.status === 2 || trip.status === 3))) {
-                initializeStarRating(`rating-system${index}`, trip.captainRatting);
-            }
         });
-    }
-
-    function initializeStarRating(containerId, rating) {
-        const container = document.getElementById(containerId);
-        if (container) {
-            const fullStar = `<svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
-            const halfStar = `<svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="url(#half-filled-gradient)"/></svg>`;
-            const emptyStar = `<svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="gray"/></svg>`;
-
-            let stars = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= rating) {
-                    stars += fullStar;
-                } else if (i - rating === 0.5) {
-                    stars += halfStar;
-                } else {
-                    stars += emptyStar;
-                }
-            }
-            container.innerHTML = stars;
-        }
     }
 
     function getServiceTypeText(serviceType) {
@@ -192,23 +236,5 @@ $(document).ready(function () {
             default:
                 return '/UrbanRides/resources/images/taxi-general-booking.svg';
         }
-    }
-
-    function generateStarRating(rating) {
-        const fullStar = `<svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
-        const halfStar = `<svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="url(#half-filled-gradient)"/></svg>`;
-        const emptyStar = `<svg class="star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="gray"/></svg>`;
-
-        let stars = '';
-        for (let i = 1; i <= 5; i++) {
-            if (i <= rating) {
-                stars += fullStar;
-            } else if (i - rating === 0.5) {
-                stars += halfStar;
-            } else {
-                stars += emptyStar;
-            }
-        }
-        return stars;
     }
 });

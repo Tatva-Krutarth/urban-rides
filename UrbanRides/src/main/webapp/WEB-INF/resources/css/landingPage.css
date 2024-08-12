@@ -161,6 +161,10 @@
     .login-btns-setting {
         height: 50px;
     }
+    .adjust-in-pc{
+        display: flex;
+        justify-content: center;
+    }
 
 }
 

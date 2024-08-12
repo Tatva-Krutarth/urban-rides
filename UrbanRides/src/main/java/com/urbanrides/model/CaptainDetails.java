@@ -1,13 +1,18 @@
 package com.urbanrides.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "captain_details")
 public class CaptainDetails {
@@ -33,6 +38,8 @@ public class CaptainDetails {
 
     @Column(name = "is_license_approved", nullable = false)
     private boolean isLicenseApproved = false;
+    @Column(name = "is_free", nullable = false)
+    private boolean isFree = true;
 
     @Column(name = "license_expiration_date")
     @Future(message = "License expiration date should be in the future")
@@ -53,6 +60,12 @@ public class CaptainDetails {
 
     @Column(name = "is_document_approved", nullable = false)
     private boolean isDocumentApproved = false;
+
+    @Column(name = "is_rc_expiration_date_approved", nullable = false)
+    private boolean isRcExpirationDateApproved = false;
+
+    @Column(name = "is_license_expiration_date_approved", nullable = false)
+    private boolean isLicenseExpirationDateApproved = false;
 
     @Column(name = "is_live", nullable = false)
     private boolean isLive = false;
@@ -79,4 +92,10 @@ public class CaptainDetails {
     @NotNull(message = "Number plate is required")
     @Column(name = "number_plate")
     private String numberPlate;
+
+    @Column(name = "is_number_plate_approved", nullable = false)
+    private boolean isNumberplateApproved = false;
+
+    @Column(name = "ratting", nullable = false)
+    private float ratting = 0.0f;
 }

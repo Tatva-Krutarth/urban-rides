@@ -10,43 +10,41 @@ function showInputField() {
 
 function addMoney() {
     var depositAmount = parseFloat(document.getElementById('depositAmount').value);
-
     // Validations
-    if (!isNaN(depositAmount) && depositAmount > 0 && depositAmount <= 5000) {
-        // AJAX request to backend
-        $.ajax({
-            url: 'rider-update-amount', // Replace with your actual endpoint
-            method: 'POST',
-            data: {amount: depositAmount}, // Send amount as a simple object
-            contentType: 'application/x-www-form-urlencoded', // Adjust content type as per backend expectation
-            dataType: 'json', // Expect JSON response from backend
-
-            success: function (response) {
-                // Handle successful response
-                console.log('Amount successfully sent to backend:', response);
-                // Check if response is a number (indicating success)
-                if (!isNaN(response)) {
-                    var walletBalance = document.querySelector('.wallet-balance');
-                    var currentBalance = parseFloat(walletBalance.textContent.replace('Balance: ₹ ', ''));
-                    var newBalance = currentBalance + depositAmount;
-                    walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
-                    document.getElementById('depositAmount').value = '';
-                    showSuccesstMsg('Money added successfully.');
-                    var inputContainer = document.getElementById('inputContainer');
-                    inputContainer.style.display = 'none';
-                } else {
-                    showErrorMsg('Failed to add money. Please try again later.');
-                }
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.error('Error sending amount to backend:', xhr, textStatus, errorThrown);
-                // Optionally handle error and show user-friendly message
-                showErrorMsg('Failed to add money. Please try again later.');
-            }
-        });
-    } else {
-        showErrorMsg('Please enter a valid amount up to 5000.');
+    if (isNaN(depositAmount) || depositAmount <= 10 || depositAmount > 50000) {
+        showErrorMsg('Please enter a valid amount between 10 to 5000.');
+        return; // Exit the function if the input is invalid
     }
+    // Validations
+    // AJAX request to backend
+    $.ajax({
+        url: 'rider-update-amount', // Replace with your actual endpoint
+        method: 'POST',
+        data: {amount: depositAmount}, // Send amount as a simple object
+        contentType: 'application/x-www-form-urlencoded', // Adjust content type as per backend expectation
+        dataType: 'json',
+        success: function (response) {
+            // Handle successful response
+            var walletBalance = document.querySelector('.wallet-balance');
+            var currentBalance = parseFloat(walletBalance.textContent.replace('Balance: ₹ ', ''));
+            var newBalance = currentBalance + depositAmount;
+            walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
+            document.getElementById('depositAmount').value = '';
+            // showSuccesstMsg('Money added successfully.');
+            var inputContainer = document.getElementById('inputContainer');
+            inputContainer.style.display = 'none';
+
+        },
+        error: function (xhr, textStatus, errorThrown) {
+            console.error('Error sending amount to backend:', xhr, textStatus, errorThrown);
+            // Optionally handle error and show user-friendly message
+            var errorMessage = 'Failed to add money. Please try again later.';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            showErrorMsg(errorMessage);
+        }
+    });
 }
 
 
@@ -65,8 +63,8 @@ $(document).ready(function () {
             var container2 = $('#transaction-container2'); // Adjust the selector to match your container
             container1.empty(); // Clear any existing content
             container2.empty(); // Clear any existing content
-            container1.append('<div class="no-records">Failed to fetch transaction details Or there is no data</div>');
-            container2.append('<div class="no-records">Failed to fetch transaction details Or there is no data</div>');
+            container1.append('<div class="no-records">You have no record paid by Cash</div>');
+            container2.append('<div class="no-records">You have no record paid by Wallet</div>');
 
 
         }
@@ -107,10 +105,10 @@ function populateTransactionDetails(data) {
     });
 
     if (!hasMethod1) {
-        container1.append('<div class="no-records">You have no record paid by wallet.</div>');
+        container1.append('<div class="no-records">You have no record paid by Cash.</div>');
     }
     if (!hasOtherMethods) {
-        container2.append('<div class="no-records">You have no record paid by Cash.</div>');
+        container2.append('<div class="no-records">You have no record paid by wallet.</div>');
     }
 }
 

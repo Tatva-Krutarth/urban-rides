@@ -74,7 +74,8 @@
                         <div id="package-form-inner-cont">
                             <div class="land-sub-heading-t2 w-100 select-service mb-2">Select a service</div>
                             <div class="dropdown-package w-100">
-                                <button type="button" class="dropbtn-package w-100" id="selectedService">Rent a Taxi</button>
+                                <button type="button" class="dropbtn-package w-100" id="selectedService">Rent a Taxi
+                                </button>
                                 <div class="dropdown-content-package w-100">
                                     <a href="#" id="dailyPickup">Daily Pickup</a>
                                 </div>
@@ -107,7 +108,14 @@
                             <div class="input-container mt-3 mb-2">
                                 <input type="date" class="form-control taskName" autocomplete="off" id="pickupDate"
                                        name="pickupDate" required>
-                                <label class="always-focus">Pick up date</label>
+                                <label class="always-focus" id="pick-up-date">Pick up date</label>
+                                <img src="<c:url value='/resources/images/pickup-date.svg'/>"
+                                     class="pickUpimage pickup-placeholder-img">
+                            </div>
+                            <div class="input-container mt-3 mb-2">
+                                <input type="date" class="form-control taskName" autocomplete="off" id="dropoffDate"
+                                       name="dropOffDate" required>
+                                <label class="always-focus" id="drop-off-date" >Drop off date</label>
                                 <img src="<c:url value='/resources/images/pickup-date.svg'/>"
                                      class="pickUpimage pickup-placeholder-img">
                             </div>
@@ -116,17 +124,17 @@
                             <div class="input-container mt-3 mb-2">
                                 <input type="time" class="form-control taskName" autocomplete="off" id="pickupTime"
                                        name="pickupTime" required>
-                                <label class="always-focus" for="pickupTime">Pickup Time</label>
+                                <label class="always-focus"  for="pickupTime">Pickup Time</label>
                                 <img src="<c:url value='/resources/images/time.svg'/>"
                                      class="pickUpimage pickup-placeholder-img">
                             </div>
-                            <div class="input-container mt-3 mb-2">
-                                <input type="time" class="form-control taskName" autocomplete="off" id="drofOffTime"
-                                       name="drofOffTime" required>
-                                <label class="always-focus" for="pickupTime">DropOff Time</label>
-                                <img src="<c:url value='/resources/images/time.svg'/>"
-                                     class="pickUpimage pickup-placeholder-img">
-                            </div>
+<%--                            <div class="input-container mt-3 mb-2">--%>
+<%--                                <input type="time" class="form-control taskName" autocomplete="off" id="drofOffTime"--%>
+<%--                                       name="drofOffTime" required>--%>
+<%--                                <label class="always-focus" for="pickupTime">DropOff Time</label>--%>
+<%--                                <img src="<c:url value='/resources/images/time.svg'/>"--%>
+<%--                                     class="pickUpimage pickup-placeholder-img">--%>
+<%--                            </div>--%>
 
 
                             <div class="input-container mt-3 mb-3">
@@ -143,11 +151,11 @@
                             <div class="input-container mt-1 mb-2">
                                 <div class="custom-select-wrapper">
                                     <select id="vehicleType" name="vehicleType" class="form-control" required>
-                                        <option value="1" class="vehicle-select-package" selected title="Bike">Bike</option>
-                                        <option value="2" class="vehicle-select-package" title="Rickshaw">Rickshaw</option>
-                                        <option value="3" class="vehicle-select-package" title="Car">Car</option>
-                                        <option value="4" class="vehicle-select-package" title="Luxury Car">Luxury Car</option>
-                                        <option value="5" class="vehicle-select-package" title="Bus">Bus</option>
+                                        <option class="vehicle-select-package"  title="Bike">Select</option>
+                                        <option value="1" class="vehicle-select-package"  title="Bike">Bike (1 count)</option>
+                                        <option value="2" class="vehicle-select-package" title="Rickshaw">Rickshaw (3 count)</option>
+                                        <option value="3" class="vehicle-select-package" title="Car">Car (4 count)</option>
+                                        <option value="4" class="vehicle-select-package" title="Luxury Car">Luxury Car (4 count)</option>
                                     </select>
                                 </div>
                             </div>
@@ -192,19 +200,11 @@
                                 <input type="text" id="selectedDays" class="d-none" required name="selectedDays"
                                        value="">
                             </div>
-                            <div class="input-container mt-3 mb-3">
-                                <input type="number" class="form-control taskName" autocomplete="off" id="numDays"
-                                       name="numDays" required>
-                                <label class="floating-label pickup-placeholder place-holder" for="numPassengers">Number
-                                    of Days</label>
-                                <img src="<c:url value='/resources/images/number-of-passenger.svg'/>"
-                                     class="pickUpimage pickup-placeholder-img">
-                            </div>
+
                             <div class="input-container mt-2 mb-2" id="charges-div-cont">
-                                <input type="number" class="form-control taskName" autocomplete="off" id="charges" readonly
-                                       name="charges" value="0">
-                                <%--                                <label class="floating-label pickup-placeholder place-holder"--%>
-                                <%--                                       for="numPassengers">Charges</label>--%>
+                                <input type="number" class="form-control taskName" autocomplete="off" id="charges"
+                                       readonly
+                                       name="charges" value="">
                                 <label class="always-focus" for="pickupTime">Charges</label>
 
                                 <img src="<c:url value='/resources/images/charges.svg'/>"
@@ -221,21 +221,26 @@
 
                             <div class="form-floating mt-2">
                             <textarea class="form-control" rows="1" placeholder="Leave a comment here"
+                                      name="specialInstruction"
                                       maxlength="500" id="floatingTextarea"></textarea>
                                 <label for="floatingTextarea" class="textarea-package" id="special-instruciton">Special
                                     Instructions(Optional)</label>
                             </div>
 
                             <div id="package-distance-time-container" class="d-none mt-4">
-                                <div id="package-distance">Distance :- <span id="package-dist" class="dynamic-distance-package">--</span></div>
-                                <div id="package-ride-time">Estimated time :- <span id="package-time" class="dynamic-time-package">--</span></div>
+                                <div id="package-distance">Distance :- <span id="package-dist"
+                                                                             class="dynamic-distance-package">--</span>
+                                </div>
+                                <div id="package-ride-time">Estimated time :- <span id="package-time"
+                                                                                    class="dynamic-time-package">--</span>
+                                </div>
                             </div>
 
-                            <div class="otp-notes mt-4" id="hide-chages-notes">Charges:- The charges will be calculated
-                                as vehicale selected by you (1000-1500 per day) , the Kilometers travelled during the trip per km 2.5 rs.
+                            <div class="charges-notes mt-4" id="hide-chages-notes">Note:- Charges exclude vehicle maintenance charges. Additional charges for kilometers traveled will be applied
                             </div>
                             <input type="text" class="d-none" name="validLocation" id="valid-location-package" value="">
-
+                                <input type="text" id="numberOfDays" class="d-none" name="numberOfDays"
+                                       value="">
                         </div>
                     </form>
 
@@ -419,7 +424,8 @@
                             <div class="vehicle-number">
                                 AD23AD1234
                             </div>
-                        </div> <div class="captain-info-rout-info-cont">
+                        </div>
+                        <div class="captain-info-rout-info-cont">
                             <div class="estimated-waiting-time">
                                 Estimated Waiting Time :-
                             </div>
@@ -641,7 +647,7 @@
 
 <%------------------------------------jquerry  validation--%>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
-
+<script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
 <script src="<c:url value="/resources/js/riderDashboard.js"/>"></script>
 <script src="<c:url value="/resources/js/package.js"/>"></script>
 

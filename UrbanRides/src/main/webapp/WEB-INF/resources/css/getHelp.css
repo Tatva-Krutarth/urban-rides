@@ -601,6 +601,13 @@ body {
     /*left: 50%;*/
     /*transform: translateX(-50%);*/
 }
+#uploadFile-error {
+    color: red;
+    font-size: 12px;
+    font-weight: 500;
+    margin: auto;
+    text-align: center;
+}
 
 #search-btn-help {
     background-color: #0D63A5;

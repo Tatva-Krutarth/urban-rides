@@ -381,6 +381,7 @@ body {
 .my-trip-accor-details-resp-cont {
     display: flex;
     flex-direction: row;
+    margin-top: 10px;
 }
 
 .my-trip-pickup {

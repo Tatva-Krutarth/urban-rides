@@ -78,11 +78,11 @@ public class RiderInterceptor extends HandlerInterceptorAdapter {
                     return false;
                 }
                 break;
-            case 2:
+            case 5:
 
                 return true;
 
-           case 6:
+            case 6:
                 if (!currentUri.equals(request.getContextPath() + "/rider/blocked")) {
                     response.sendRedirect(request.getContextPath() + "/rider/blocked");
                     return false;

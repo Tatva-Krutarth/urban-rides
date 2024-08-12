@@ -25,6 +25,18 @@ body {
 
 }
 
+#getLocationBtn {
+    color: white;
+    transition: background-color 0.3s ease;
+    border: 0px solid black;
+    /* border-radius: 25px; */
+    margin: auto;
+    padding: 7px 16px;
+    background-color: #0D63A5;
+    border-radius: 12px;
+    display: none;
+}
+
 .dropbtn {
     border: 0px;
     background: transparent;
@@ -248,7 +260,8 @@ body {
     border-radius: 10px;
     width: 100%;
 }
-.acceptTripBtn:hover{
+
+.acceptTripBtn:hover {
     background-color: #0D63A5;
     color: #FFD717;
 }
@@ -480,7 +493,7 @@ body {
     .captain-dash-upper {
         width: 100%;
 
-        background: yellow;
+        /*background: yellow;*/
         height: calc(60vh - 55px);
     }
 
@@ -512,7 +525,7 @@ body {
     }
 
     .captain-dash-upper {
-        background: yellow;
+        /*background: yellow;*/
         height: calc(60vh - 45px);
     }
 
@@ -630,12 +643,13 @@ body {
     transform: translateX(-50%);
 }
 
-#pickupLocation-error,#otp-error ,  #numDays-error, ickupLocation-error, #drofOffTime-error, #numPassengers-error, #dropoffLocation-error, #pickupDate-error, #pickupTime-error, #vehicleType-error, #emergencyContact-error, #charges-error, numPassengers-error {
+#pickupLocation-error, #otp-error,#uploadFile-error,  #opt-error, #numDays-error, ickupLocation-error, #drofOffTime-error, #numPassengers-error, #dropoffLocation-error, #pickupDate-error, #pickupTime-error, #vehicleType-error, #emergencyContact-error, #charges-error, numPassengers-error {
     color: red;
     font-size: 12px;
     font-weight: 500;
     position: absolute;
     width: 100%;
+
     /*left: 57%;*/
     text-align: center /*transform: translateX(-50%);*/
 }

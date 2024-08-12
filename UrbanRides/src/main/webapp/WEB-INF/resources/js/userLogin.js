@@ -1,3 +1,8 @@
+$.validator.addMethod("strongPass", function (value, element) {
+    return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/.test(value);
+}, "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character.");
+
+
 $("#myForm").validate({
     rules: {
         email: {
@@ -9,7 +14,8 @@ $("#myForm").validate({
         password: {
             required: true,
             minlength: 8, // Minimum length for a secure password
-            maxlength: 16 // Increased maximum length
+            maxlength: 16, // Increased maximum length
+            strongPass: true // Use custom validator for strong password
         },
     },
     messages: {
@@ -18,12 +24,13 @@ $("#myForm").validate({
             required: "Please enter your email address",
             email: "Please enter a valid email address",
             minlength: "Please enter at least one character",
-            maxlength: "The length of the email address must be below 100"
+            maxlength: "The length of the email address must be below 30"
         },
         password: {
             required: "Please enter your password",
             minlength: "Please enter at least 8 characters",
-            maxlength: "The length of the password must be below 50"
+            maxlength: "The length of the password must be below 16",
+            strongPass: "Password must be between 8-16 characters and include at least one uppercase letter, one lowercase letter, one number, and one special character."
         },
     },
 
@@ -49,17 +56,26 @@ $("#myForm").validate({
 
                 // Handle successful response
                 if (typeof response === 'string') {
+
                     if (response.startsWith("Login")) {
+
                         let loginMessage = response.substring(0, response.indexOf("+")); // get the "Login successful" part
                         showSuccesstMsg(loginMessage.trim()); // trim to remove extra spaces
                         let accountType = response.substring(response.indexOf("+") + 1).trim(); // get the account type digit
+                        disableAllElements();
+
                         setTimeout(function () {
                             $(".loader").hide();
+
                             if (accountType === "3") {
                                 window.location.href = "/UrbanRides/rider/rider-dashboard";
-                            } else {
+                            } else if (accountType === "2") {
+
                                 window.location.href = "/UrbanRides/captain/captain-dashboard";
+                            } else {
+                                window.location.href = "/UrbanRides/admin/admin-dashboard";
                             }
+
                         }, 3000); // 3000ms = 3 seconds
                     } else {
                         showErrorMsg(response);
@@ -69,12 +85,12 @@ $("#myForm").validate({
                 } else {
                     showErrorMsg(response);
                 }
-                console.log("Form submitted successfully:", response);
                 $(".loader").hide();
 
             },
             error: function (xhr, textStatus, errorThrown) {
                 console.error("Error:", xhr, textStatus, errorThrown);
+
                 $(".loader").hide();
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
@@ -127,3 +143,19 @@ togglePassword.addEventListener('click', function (e) {
 document.getElementById('back-button').addEventListener('click', function () {
     history.go(-1); /* move back in history on click */
 });
+
+function disableAllElements() {
+    // Disable all buttons
+    var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+    buttons.forEach(function (button) {
+        button.disabled = true;
+    });
+
+    // Disable all links
+    var links = document.querySelectorAll('a');
+    links.forEach(function (link) {
+        link.style.pointerEvents = 'none'; // Prevents clicking
+        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
+        link.removeAttribute('href'); // Optionally remove the href attribute
+    });
+}

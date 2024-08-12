@@ -12,5 +12,9 @@ public class AdminQuerries {
     private String accountType;
     private String message;
     private String createdDate;
+    private String userName;
+    private String adminName;
+    private int fileAvailable ;
+    private String fileLocaton;
 
 }
