@@ -18,7 +18,7 @@ $(document).ready(function () {
 });
 
 function applyFilters() {
-    const tripId = document.getElementById('trip-id').value;
+    const tripId = document.getElementById('trip-id').value.trim();
     const serviceType = document.getElementById('service-type').value;
     const tripStatus = document.getElementById('trip-status').value;
     var payload = {}
@@ -26,18 +26,18 @@ function applyFilters() {
     payload["serviceType"] = serviceType
     payload["tripStatus"] = tripStatus
     // Send the filter values to the backend via AJAX
-    $(".loader").css("display", "flex");
+    // $(".loader").css("display", "flex");
 
     $.ajax({
         url: 'admin-rides-filter-trips', // Update this with your actual backend endpoint
         method: 'POST', contentType: 'application/json', data: JSON.stringify(payload), success: function (response) {
             // Update the UI with the filtered data
             populateTrips(response);
-            $(".loader").hide();
+            // $(".loader").hide();
 
         }, error: function (xhr, textStatus, errorThrown) {
             showErrorMsg("Error while processing the filter data")
-            $(".loader").hide();
+            // $(".loader").hide();
 
         }
     });
@@ -46,6 +46,7 @@ function applyFilters() {
 function populateTrips(data) {
     const accordion = document.getElementById('accordionExample');
     accordion.innerHTML = ''; // Clear existing trip cards
+
     if (data && data.length > 0) {
         data.forEach((trip, index) => {
             const card = document.createElement('div');
@@ -54,9 +55,14 @@ function populateTrips(data) {
             const statusText = getStatusText(trip.status);
             const statusColor = getStatusColor(trip.status);
             const notiImgSrc = getNotificationImage(trip.serviceTypeId);
-            const captainName = trip.captainName ? trip.captainName : '--';
-            const distance = trip.captainName ? trip.distance : '--';
-            const duration = trip.captainName ? trip.duration : '--';
+
+            // Determine the label for location based on service type
+            const locationLabel = trip.serviceTypeId === 2 ? "Drop off/Pickup location" : "Pickup location";
+            const dropOffLocationLabel = trip.serviceTypeId === 2 ? "" : `
+                <div class="pickup-dropp">
+                    <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span class="my-trip-pickup">${trip.dropOffLocation}</span>
+                </div>`;
+
             card.innerHTML = `
             <div class="card-header noti-container p-0" id="heading${index}">
                 <div class="noti-img-cont">
@@ -67,9 +73,14 @@ function populateTrips(data) {
                     <hr class="hr-accor">
                     <div class="my-trip-accor-details">
                         <div class="my-trip-accor-details-resp-cont">
-                            <span class="my-trip-accor-details-resp">Captain Name : &nbsp; </span><span class="my-trip-pickup">${captainName}</span>
+                            ${trip.captainName ? `
+                                <div>
+                                    <span class="my-trip-accor-details-resp">Captain Name : &nbsp; </span>
+                                    <span class="my-trip-pickup">${trip.captainName}</span>
+                                </div>
+                            ` : ''}
                         </div>
-                        <div class="my-trip-accor-details-resp-cont">
+                        <div class="my-trip-accor-details-resp-cont mb-3">
                             <span class="my-trip-accor-details-resp">Rider Name : &nbsp; </span><span class="my-trip-pickup">${trip.riderName}</span>
                         </div>
                     </div>
@@ -87,45 +98,114 @@ function populateTrips(data) {
                 <div class="card-body p-0">
                     <div class="mt-2">
                         <div class="pickup-dropp">
-                            <span class="my-trip-accor-details-resp">Pick up location : &nbsp; </span><span class="my-trip-pickup">${trip.pickUpLocation}</span>
+                            <span class="my-trip-accor-details-resp">${locationLabel} : &nbsp;</span><span class="my-trip-pickup">${trip.pickUpLocation}</span>
                         </div>
-                        <div class="pickup-dropp">
-                            <span class="my-trip-accor-details-resp">Drop off location : &nbsp;</span><span class="my-trip-pickup">${trip.dropOffLocation}</span>
-                        </div>
+                        ${dropOffLocationLabel}
                     </div>
                     <div class="trip-details-bottom-cont">
                         <div class="left-part">
-                            <div>
-                                <span>Distance : -</span>
-                                <span>${distance} Km</span>
+                                ${trip.distance ? `
+                                    <div>
+                                        <span>Distance : -</span>
+                                        <span>${trip.distance}</span>
+                                    </div>
+                                ` : ''}
+                                ${trip.charges ? `
+                                    <div>
+                                        <span>Charges :-</span>
+                                        <span>${trip.charges} rs</span>
+                                    </div>
+                                ` : ''}
+                                
+                                ${trip.pickupDate ? `
+                                    <div>
+                                        <span>Pickup Date :-</span>
+                                        <span>${trip.pickupDate}</span>
+                                    </div>
+                                ` : ''}
+                                ${trip.pickupTime ? `
+                                    <div>
+                                        <span>Pickup Time :-</span>
+                                        <span>${trip.pickupTime}</span>
+                                    </div>
+                                ` : ''}
+                                 ${trip.dailyPickUpDays ? `
+                                    <div>
+                                        <span>Daily Pickup Days :-</span>
+                                        <span>${trip.dailyPickUpDays}</span>
+                                    </div>
+                                ` : ''}  
+                                       
+                                 ${trip.concludeNotes ? `
+                                    <div>
+                                        <span>Conclude Notes :-</span>
+                                        <span>${trip.concludeNotes}</span>
+                                    </div>
+                                ` : ''}
                             </div>
-                            <div>
-                                <span>Charges  :-</span>
-                                <span>${trip.charges} rs</span>
+                            <div class="right-part">
+                                ${trip.tripId ? `
+                                    <div>
+                                        <span>Trip Id :-</span>
+                                        <span>${trip.tripId}</span>
+                                    </div>
+                                ` : ''}
+                                 ${trip.duration ? `
+                                    <div>
+                                        <span>Duration :-</span>
+                                        <span>${trip.duration}</span>
+                                    </div>
+                                ` : ''} 
+                              
+                                ${trip.emergencyContact ? `
+                                    <div>
+                                        <span>Emergency Contact :-</span>
+                                        <span>${trip.emergencyContact}</span>
+                                    </div>
+                                ` : ''}
+                                ${trip.dropOffDate ? `
+                                    <div>
+                                        <span>Dropoff Date :-</span>
+                                        <span>${trip.dropOffDate}</span>
+                                    </div>
+                                ` : ''}
+                                ${trip.numberOfPassengers ? `
+                                    <div>
+                                        <span>Number of Passengers :-</span>
+                                        <span>${trip.numberOfPassengers}</span>
+                                    </div>
+                                ` : ''}
+                                ${trip.numberOfDays ? `
+                                    <div>
+                                        <span>Number of Days :-</span>
+                                        <span>${trip.numberOfDays}</span>
+                                    </div>
+                                ` : ''}
+                                 ${trip.specialInstruction ? `
+                                    <div>
+                                        <span>Special Instructions :-</span>
+                                        <span>${trip.specialInstruction}</span>
+                                    </div>
+                                ` : ''}
                             </div>
+                          
                         </div>
-                        <div class="right-part">
-                            <div>
-                                <span>Duration  :-</span>
-                                <span>${duration} Mins</span>
-                            </div>
-                            <div>
-                                <span>Trip Id  :-</span>
-                                <span>${trip.tripId}</span>
-                            </div>
-                        </div>
+                          ${trip.cancellationReason ? `
+                                    <div>
+                                        <div>Cancellation Reason :-
+                                       ${trip.cancellationReason}</div>
+                                    </div>
+                                ` : ''}
                     </div>
-                    <div class="cancelation-reason">Cancellation Reason :- ${trip.cancellationReason}</div>
                 </div>
-            </div>
-        `;
-
+            `;
             accordion.appendChild(card);
         });
     } else {
         accordion.innerHTML = '<div class="no-data-found" style="font-width: 500;">No Record found</div>';
     }
 }
+
 
 function getServiceTypeText(serviceType) {
     switch (serviceType) {

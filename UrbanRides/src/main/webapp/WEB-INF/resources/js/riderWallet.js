@@ -24,16 +24,13 @@ function addMoney() {
         contentType: 'application/x-www-form-urlencoded', // Adjust content type as per backend expectation
         dataType: 'json',
         success: function (response) {
-            // Handle successful response
             var walletBalance = document.querySelector('.wallet-balance');
             var currentBalance = parseFloat(walletBalance.textContent.replace('Balance: ₹ ', ''));
             var newBalance = currentBalance + depositAmount;
             walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
             document.getElementById('depositAmount').value = '';
-            // showSuccesstMsg('Money added successfully.');
             var inputContainer = document.getElementById('inputContainer');
             inputContainer.style.display = 'none';
-
         },
         error: function (xhr, textStatus, errorThrown) {
             console.error('Error sending amount to backend:', xhr, textStatus, errorThrown);
@@ -82,7 +79,7 @@ function populateTransactionDetails(data) {
     var hasOtherMethods = false;
 
     data.forEach(function (transaction) {
-        var imgSrc = transaction.paymentMethod == 1 ? getContextPath() + '/resources/images/wallet-white.svg' : getContextPath() + '/resources/images/cash.svg';
+        var imgSrc = transaction.paymentMethod == 1 ? getContextPath() + '/resources/images/cash.svg' : getContextPath() + '/resources/images/wallet-white.svg';
 
         var html = '<div class="noti-container mt-2 mb-2">' +
             '<div class="noti-img-cont">' +

@@ -88,10 +88,10 @@ $("#myForm").validate({
             dataType: 'text',
             success: function (response) {
                 // Handle successful response
-
                 if (typeof response === 'string') {
                     if (response.startsWith("Login")) {
                         showSuccesstMsg("Personal Details Saved");
+                        disableAllElements();
                         setTimeout(function () {
                             $(".loader").hide();
                             window.location.href = "/UrbanRides/captain/captain-document-details";
@@ -153,3 +153,20 @@ $.validator.addMethod("notSameValue", function (value, element, param) {
 
     return this.optional(element) || valOne !== valTwo;
 }, "The values must be different.");
+
+
+function disableAllElements() {
+    // Disable all buttons
+    var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
+    buttons.forEach(function(button) {
+        button.disabled = true;
+    });
+
+    // Disable all links
+    var links = document.querySelectorAll('a');
+    links.forEach(function(link) {
+        link.style.pointerEvents = 'none'; // Prevents clicking
+        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
+        link.removeAttribute('href'); // Optionally remove the href attribute
+    });
+}

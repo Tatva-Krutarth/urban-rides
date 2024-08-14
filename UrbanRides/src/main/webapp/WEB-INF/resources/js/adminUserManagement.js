@@ -28,17 +28,8 @@ function reattachAccordionEventListeners() {
             const targetId = btn.getAttribute('data-bs-target');
             const accordionContent = document.querySelector(targetId);
 
-            // Toggle the 'show' class on accordionContent
             accordionContent.classList.toggle('show');
 
-            // Toggle the text content of the button
-            if (accordionContent.classList.contains('show')) {
-                btn.textContent = 'Hide';
-            } else {
-                btn.textContent = 'View';
-            }
-
-            // Collapse other accordion items
             accordionBtns.forEach(otherBtn => {
                 if (otherBtn !== btn) {
                     const otherTargetId = otherBtn.getAttribute('data-bs-target');
@@ -56,7 +47,6 @@ function reattachAccordionEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
     reattachAccordionEventListeners();
     attachUnblockEventListeners(); // Attach event listeners for unblock buttons
-
     attachBlockEventListeners(); // Attach event listeners for block buttons initially
 });
 

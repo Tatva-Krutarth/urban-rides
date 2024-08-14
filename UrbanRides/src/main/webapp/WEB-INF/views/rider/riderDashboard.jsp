@@ -521,6 +521,9 @@
         </div>
     </div>
 </div>
+<%--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rating-modal">--%>
+<%--    Open Rating Modal--%>
+<%--</button>--%>
 
 <!------------------------ Ratting  modal -------------------------------------------------------->
 <div class="modal fade" id="rating-modal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"

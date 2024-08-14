@@ -424,7 +424,7 @@ function isWithinAhmedabad(bounds) {
 
 
 function disableNavbarLinks() {
-    $('nav a').each(function() {
+    $('nav a').each(function () {
         $(this).addClass('disabled-link'); // Add a class to visually indicate disabled state
         $(this).attr('href', '#'); // Override href to prevent navigation
     });
@@ -497,7 +497,6 @@ function setLiveLocation() {
     $(".loader").css("display", "flex");
 
 
-
     // Check if the user has granted access to their location
     if (navigator.geolocation) {
         $(".pickup-placeholder").css("display", "none");
@@ -529,7 +528,7 @@ function setLiveLocation() {
             // Get the latitude and longitude from the position object
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
-            const defaultLocation = { lat, lng };
+            const defaultLocation = {lat, lng};
 
             userMarker = new google.maps.Marker({
                 position: defaultLocation,
@@ -559,7 +558,7 @@ function setLiveLocation() {
                     $("#pickup").prop("readonly", false);
                     $(".loader").hide();
                 },
-                error: function() {
+                error: function () {
                     showErrorMsg("Error: Unable to retrieve address from coordinates.");
                     elseConditionLiveLocation();
                 }
@@ -941,7 +940,7 @@ function connectToBackend() {
             var captainInfo = JSON.parse(captainInfoJson);
 
             if (captainInfo) {
-                showSuccesstMsg("Ride Confirmed, Captain is on the way");
+                // showSuccesstMsg("Ride Confirmed, Captain is on the way");
 
                 $('#waitTingModal').modal('hide');
                 $(".ride-package").css('display', 'none');
@@ -975,10 +974,8 @@ function connectToBackend() {
 }
 
 function captainReached() {
-    console.log("we tre donnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
     stompClient.subscribe('/topic/captain-reached', function (message) {
         console.log('captain reached: ' + message.body);
-        // showSuccessMsg("Captain reached, Enjoy the ride");
 
         try {
 
@@ -1140,70 +1137,70 @@ $(document).ready(function () {
         }
     });
 });
-
-$('#rating-modal-form-id').submit(function (event) {
-    event.preventDefault(); // Prevent default form submission
-
-    // Fetch form data
-    let feedback = $('#feedback').val(); // Fetch the feedback value
-    let payMethod = $('.pay-option.rating-active').text().trim(); // Fetch the payment method
-    let ratting = $('.long-rattings').text().trim(); // Get the text "0 stars"
-    let ratingValue = ratting.match(/[\d.]+/)[0]; // Extract the digit (can include decimals)
-    let tripId = $("#general-tripdetails-id").val(); // Fetch Trip ID
-
-    // Display fetched values for verification (optional)
-    console.log('Feedback:', feedback);
-    console.log('Payment Method:', payMethod);
-    console.log('Ratting:', ratting);
-    console.log('Rating Value:', ratingValue);
-    console.log('Trip ID:', tripId);
-
-
-    let data = {
-        tripId: tripId, feedback: feedback, payMethod: payMethod, rattings: ratingValue
-    };
-    // Ajax call to submit data
-    $.ajax({
-        type: "POST", url: "/UrbanRides/rider/ride-ratting-submit",  // Adjust URL as per your actual endpoint
-        contentType: "application/json", data: JSON.stringify(data),
-
-
-        success: function (response) {
-            console.log('Response:', response);
-            $('#rating-modal').modal('hide');
-
-            showSuccesstMsg('Ride Completed');
-
-            // Reload the page after 2 seconds
-            setTimeout(function () {
-                location.reload();
-            }, 3000); // 2000 milliseconds = 2 seconds
-        },
-
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
-            var responseText = jqXHR.responseText;
-
-            // Attempt to parse the response text as JSON
-            try {
-                responseText = JSON.parse(responseText);
-            } catch (e) {
-                // Handle cases where response is not valid JSON
-                showErrorMsg(jqXHR.responseText);
-                return;
-            }
-
-            // Check if the response is a map with keys and values
-            if (typeof responseText === 'object' && !Array.isArray(responseText)) {
-                var messages = Object.values(responseText).join(', ');
-                showErrorMsg(messages);
-            } else {
-                // Handle generic or unexpected errors
-                showErrorMsg("An unexpected error occurred: " + jqXHR.responseText);
-            }
+// Initialize validation on the form
+$('#rating-modal-form-id').validate({
+    rules: {
+        feedback: {
+            maxlength: 200 // Maximum length of 200 characters
         }
-    });
+    },
+    messages: {
+        feedback: {
+            maxlength: "Feedback cannot exceed 200 characters."
+        }
+    },
+    submitHandler: function(form) {
+        // Fetch form data
+        let feedback = $('#feedback').val(); // Fetch the feedback value
+        let payMethod = $('.pay-option.rating-active').text().trim(); // Fetch the payment method
+        let ratting = $('.long-rattings').text().trim(); // Get the text "0 stars"
+        let ratingValue = ratting.match(/[\d.]+/)[0]; // Extract the digit (can include decimals)
+        let tripId = $("#general-tripdetails-id").val(); // Fetch Trip ID
+
+        let data = {
+            tripId: tripId,
+            feedback: feedback,
+            payMethod: payMethod,
+            rattings: ratingValue
+        };
+
+        // Ajax call to submit data
+        $.ajax({
+            type: "POST",
+            url: "/UrbanRides/rider/ride-ratting-submit",  // Adjust URL as per your actual endpoint
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            success: function (response) {
+                console.log('Response:', response);
+                $('#rating-modal').modal('hide');
+
+                // Reload the page after 2 seconds
+                setTimeout(function () {
+                    location.reload();
+                }, 3000);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR);
+                var responseText = jqXHR.responseText;
+
+                try {
+                    responseText = JSON.parse(responseText);
+                } catch (e) {
+                    showErrorMsg(jqXHR.responseText);
+                    return;
+                }
+
+                if (typeof responseText === 'object' && !Array.isArray(responseText)) {
+                    var messages = Object.values(responseText).join(', ');
+                    showErrorMsg(messages);
+                } else {
+                    showErrorMsg("An unexpected error occurred: " + jqXHR.responseText);
+                }
+            }
+        });
+    }
 });
+
 // ]});
 //
 // function notificationConnect() {

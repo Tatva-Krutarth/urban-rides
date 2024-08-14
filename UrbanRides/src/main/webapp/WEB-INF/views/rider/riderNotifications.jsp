@@ -69,8 +69,38 @@
                     <c:when test="${notification.notificationType eq 'Deposit successful'}">
                         <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">
                     </c:when>
+                    <c:when test="${notification.notificationType eq 'Ride accepted'}">
+                        <img src="<c:url value='/resources/images/taxi-general-booking.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Ride Concluded'}">
+                        <img src="<c:url value='/resources/images/taxi-general-booking.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Password Changed'}">
+                        <img src="<c:url value='/resources/images/password.svg'/>" id="noti-img">
+                    </c:when>
                     <c:when test="${notification.notificationType eq 'Payment Done'}">
-                        <img src="<c:url value='/resources/images/cash.svg'/>" id="noti-img">
+                        <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Withdraw Successful'}">
+                        <img src="<c:url value='/resources/images/wallet-white.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Service Confirmed'}">
+                        <img src="<c:url value='/resources/images/taxi-rent-car.png'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Document Verified'}">
+                        <img src="<c:url value='/resources/images/document.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Document Verification Failed'}">
+                        <img src="<c:url value='/resources/images/document.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Service Concluded'}">
+                        <img src="<c:url value='/resources/images/taxi-rent-car.png'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Appeal Raised'}">
+                        <img src="<c:url value='/resources/images/appeal.svg'/>" id="noti-img">
+                    </c:when>
+                    <c:when test="${notification.notificationType eq 'Appeal Raised'}">
+                    <img src="<c:url value='/resources/images/block.svg'/>" id="noti-img">
                     </c:when>
                     <c:otherwise>
                         <img src="<c:url value='/resources/images/taxi-rent-car.png'/>" id="Ride accepted">

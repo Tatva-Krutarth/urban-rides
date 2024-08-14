@@ -167,15 +167,14 @@ $(document).ready(function () {
                                                 <span>${trip.tripId}</span>
                                             </div>
                                             <div>
+                                                <span>Charges: </span>
+                                                <span>${trip.charges}</span>
+                                            </div>
+                                            <div>
                                                 <span>Pickup Time: </span>
                                                 <span>${trip.pickupTime}</span>
                                             </div>
-                                            ${trip.dailyPickUpDays ? `
-                                                <div>
-                                                    <span>Daily Pickup Days: </span>
-                                                    <span>${trip.dailyPickUpDays}</span>
-                                                </div>
-                                            ` : ''}
+                                           
                                         </div>
                                         <div class="right-part">
                                             <div>
@@ -185,11 +184,18 @@ $(document).ready(function () {
                                             <div>
                                                 <span>Number of Passengers: </span>
                                                 <span>${trip.numberOfPassengers}</span>
-                                            </div>
+                                            </div> 
+                                            
                                             <div>
                                                 <span>Number of Days: </span>
                                                 <span>${trip.numberOfDays}</span>
                                             </div>
+                                             ${trip.dailyPickUpDays ? `
+                                                <div>
+                                                    <span>Daily Pickup Days: </span>
+                                                    <span>${trip.dailyPickUpDays}</span>
+                                                </div>
+                                            ` : ''}
                                         </div>
                                     </div>
                                 ` : ''}

@@ -401,9 +401,10 @@ public class CabBookingService {
 
         // Handle payment method
         if ("Pay with wallet".equalsIgnoreCase(riderRattingConclude.getPayMethod())) {
-            BigDecimal wallet = riderUserDetails.getWallet();
-            BigDecimal updateRiderdWallet = wallet.subtract(tripCharge);
-            BigDecimal updateCaptaindWallet = wallet.add(tripCharge);
+            BigDecimal walletRider = riderUserDetails.getWallet();
+            BigDecimal walletCaptain = captainUserDetails.getWallet();
+            BigDecimal updateRiderdWallet = walletRider.subtract(tripCharge);
+            BigDecimal updateCaptaindWallet = walletCaptain.add(tripCharge);
             riderUserDetails.setWallet(updateRiderdWallet);
             captainUserDetails.setWallet(updateCaptaindWallet); // Update captain's wallet if needed
         }
@@ -415,7 +416,7 @@ public class CabBookingService {
         // Log notification
         NotificationLogs notificationLogs = new NotificationLogs();
         notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID3"));
-        notificationLogs.setNotificationMsg("You have paid " + trip.getCharges() + " to " + captainUserDetails.getFirstName() + " " + captainUserDetails.getLastName() + " with " + riderRattingConclude.getPayMethod());
+        notificationLogs.setNotificationMsg("You have paid " + trip.getCharges() + " Rs to " + captainUserDetails.getFirstName() + " " + captainUserDetails.getLastName() + " with " + riderRattingConclude.getPayMethod());
         notificationLogs.setUser(riderUser);
         sendNotiToRider(notificationLogs.getNotificationMsg());
         notificationLogsDao.saveNotificationLog(notificationLogs);
@@ -617,10 +618,10 @@ public class CabBookingService {
         VehicleType vehicleTypeObj = vehicleTypeDao.getVehicaleId(Integer.parseInt(packageServiceDto.getVehicleId()));
         trip.setVehicleId(vehicleTypeObj);
         trip.setPickupAddress(packageServiceDto.getPickup());
-        trip.setDropoffAddress(packageServiceDto.getPickup());
+        trip.setDropoffAddress(packageServiceDto.getDropOff());
         ServiceType serviceType = serviceTypeDao.getServiceType(2);
         trip.setServiceType(serviceType);
-        trip.setDistance(packageServiceDto.getDistance());
+        trip.setDistance(packageServiceDto.getDistance() + "Km");
         trip.setCharges(packageServiceDto.getCharges());
         int tripId = tripDao.saveGeneralTrip(trip);
         trip.setTripId(tripId);
@@ -704,7 +705,7 @@ public class CabBookingService {
         trip.setDropoffAddress(packageServiceDto.getDropOff());
         ServiceType serviceType = serviceTypeDao.getServiceType(3);
         trip.setServiceType(serviceType);
-        trip.setDistance(packageServiceDto.getDistance());
+        trip.setDistance(packageServiceDto.getDistance() + "Km");
         trip.setCharges(packageServiceDto.getCharges());
         return trip;
     }

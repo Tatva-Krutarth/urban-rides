@@ -24,16 +24,6 @@
     </div>
 
     <div class="nav-right-side">
-        <%--        <a href="captain-dashboard" style="text-decoration: none" class="common-btn-color7-theme nav-my-trip-cont">--%>
-        <%--            <div class="nav-my-trip-img">--%>
-        <%--                <img src="<c:url value='/resources/images/home.svg' />" alt="">--%>
-        <%--            </div>--%>
-        <%--            <div class="nav-my-trip">--%>
-        <%--                Home--%>
-        <%--            </div>--%>
-        <%--        </a>--%>
-
-
         <a href="captain-dashboard" style="text-decoration: none" class="common-btn-color7-theme nav-my-trip-cont">
             <div class="nav-my-trip-img">
                 <img src="<c:url value='/resources/images/home.svg' />" alt="">
@@ -75,7 +65,6 @@
                 <div>
                     <hr class="hr-setting">
                 </div>
-
 
 
                 <a href="captain-manage-account" class="dropdown-list " style="text-decoration: none">

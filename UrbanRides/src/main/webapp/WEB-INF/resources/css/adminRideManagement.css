@@ -457,8 +457,8 @@ body {
     width: 100%;
 }
 
-.pickup-dropp{
-    padding: 0px  13px;
+.pickup-dropp {
+    padding: 0px 13px;
 }
 
 /*-----back button---------*/
@@ -523,7 +523,13 @@ body {
         position: absolute;
         right: 2%;
         font-size: 14px;
-        top: 45px;
+        top: 52px;
+    }
+
+    .service-type-text {
+        font-size: 17px;
+        font-weight: 500;
+        margin-bottom: 10px;
     }
 
     .status-hide-this {
@@ -601,7 +607,7 @@ body {
         position: absolute;
         right: 2%;
         font-size: 14px;
-        top: 65px;
+        top: 30px;
     }
 
     .profile-pic img {
@@ -661,6 +667,35 @@ body {
 
     #ride-management-cont > div {
         margin-top: 18px;
+    }
+
+    .trip-details-bottom-cont > div {
+        width: 100%;
+    }
+
+    .trip-details-bottom-cont {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 12px;
+    }
+
+    .left-part {
+        border: none;
+        margin-right: 0px;
+        /*background: #0D63A5;*/
+    }
+
+    .left-part > div {
+        display: flex;
+        justify-content: space-between;
+        margin-right: 0px;
+    }
+
+    .right-part > div {
+        display: flex;
+        justify-content: space-between;
+        margin-right: 0px;
     }
 }
 

@@ -133,9 +133,9 @@ function populateAllRequests(data) {
                             ` : ''}
                         </div>
                     </div>
-                    <input type="text" id="approved-docs-${captain.captainId}" value="">
-                    <input type="text" id="unapproved-docs-${captain.captainId}" value="">
-                    <input type="text" id="captain-id-${captain.captainId}" value="${captain.captainId}">
+                    <input type="hidden" id="approved-docs-${captain.captainId}" value="">
+                    <input type="hidden" id="unapproved-docs-${captain.captainId}" value="">
+                    <input type="hidden" id="captain-id-${captain.captainId}" value="${captain.captainId}">
                     <button id="captain-approve-btn-${captain.captainId}" class="mb-3 cap-app-btn-theme-save" onclick="saveApproval(${captain.captainId}, ${totalDocsToVerify})">
                         Save
                     </button>
@@ -299,6 +299,7 @@ function saveApproval(captainId, totalDocsToVerify) {
         unverifiedDocId: unapprovedDocs
     };
     console.log(approvalData);
+    $(".loader").css("display", "flex");
 
     $.ajax({
         url: 'admin-approve-captain-docs',
@@ -307,6 +308,7 @@ function saveApproval(captainId, totalDocsToVerify) {
         data: JSON.stringify(approvalData),
         success: function (response) {
             console.log("Approval data saved successfully");
+            $(".loader").hide();
 
             // Hide the relevant section
             const card = document.getElementById(`collapse${captainId}`);
@@ -323,6 +325,8 @@ function saveApproval(captainId, totalDocsToVerify) {
             showSuccesstMsg("Data saved successfully");
         },
         error: function (xhr, textStatus, errorThrown) {
+            $(".loader").hide();
+
             console.error("Error:", xhr, textStatus, errorThrown);
             try {
                 const errorResponse = JSON.parse(xhr.responseText);

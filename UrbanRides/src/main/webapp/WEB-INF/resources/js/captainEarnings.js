@@ -10,7 +10,10 @@ function showInputField() {
 
 function withdrawMoney() {
     var depositAmount = parseFloat(document.getElementById('depositAmount').value);
-
+    if (isNaN(depositAmount) || depositAmount < 10 || depositAmount > 50000) {
+        showErrorMsg('Please enter a valid amount between 10 to 5000.');
+        return; // Exit the function if the input is invalid
+    }
     // Validations
     if (!isNaN(depositAmount) && depositAmount > 0 && depositAmount <= 5000) {
         // AJAX request to backend
@@ -30,7 +33,7 @@ function withdrawMoney() {
                 var newBalance = currentBalance - depositAmount;
                 walletBalance.textContent = 'Balance: ₹ ' + newBalance.toFixed(2);
                 document.getElementById('depositAmount').value = '';
-                // showSuccesstMsg('Money added successfully.');
+                showSuccesstMsg('Money withdrawn successfully.');
                 var inputContainer = document.getElementById('inputContainer');
                 inputContainer.style.display = 'none';
             },
@@ -94,7 +97,7 @@ function populateTransactionDetails(data) {
     var hasOtherMethods = false;
 
     data.forEach(function (transaction) {
-        var imgSrc = transaction.paymentMethod == 1 ? getContextPath() + '/resources/images/wallet-white.svg' : getContextPath() + '/resources/images/cash.svg';
+        var imgSrc = transaction.paymentMethod == 1 ? getContextPath() + '/resources/images/cash.svg' : getContextPath() + '/resources/images/wallet-white.svg';
 
         var html = '<div class="noti-container mt-2 mb-2">' +
             '<div class="noti-img-cont">' +

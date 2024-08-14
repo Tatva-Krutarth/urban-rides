@@ -125,10 +125,10 @@ public class RiderController {
 
     @PostMapping("/ride-ratting-submit")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> rideRattingSubmit(@RequestBody RiderRattingConclude riderRattingConclude, BindingResult bindingResult) throws MethodArgumentNotValidException {
+    public ResponseEntity<Map<String, String>> rideRattingSubmit(@Valid @RequestBody RiderRattingConclude riderRattingConclude, BindingResult bindingResult) throws MethodArgumentNotValidException {
         Map<String, String> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Method method = ReflectionUtils.findMethod(getClass(), "saveGetSupport", RiderRattingConclude.class, BindingResult.class, HttpSession.class);
+            Method method = ReflectionUtils.findMethod(getClass(), "rideRattingSubmit", RiderRattingConclude.class, BindingResult.class, HttpSession.class);
             MethodParameter methodParameter = new MethodParameter(method, 0);
             throw new MethodArgumentNotValidException(methodParameter, bindingResult);
         }
@@ -151,6 +151,7 @@ public class RiderController {
     @GetMapping("/get-captain-details")
     @ResponseBody
     public ResponseEntity<?> getCaptainDetails() {
+
         try {
             List<RiderCaptainDetailsOnMapDto> captainDetails = cabBookingService.getFreeCaptain();
             return new ResponseEntity<>(captainDetails, HttpStatus.OK);
@@ -196,6 +197,7 @@ public class RiderController {
         if (bindingResult.hasErrors()) {
             Method method = ReflectionUtils.findMethod(getClass(), "saveGetSupport", RiderGetSupportDto.class, BindingResult.class, HttpSession.class);
             MethodParameter methodParameter = new MethodParameter(method, 0);
+
             throw new MethodArgumentNotValidException(methodParameter, bindingResult);
         }
         try {

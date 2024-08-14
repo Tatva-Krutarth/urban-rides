@@ -349,6 +349,22 @@ body {
         height: 45px;
         padding: 0px;
     }
+    .trip-details-bottom-cont > div {
+        width: 100%;
+    }
+
+    .trip-details-bottom-cont {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 12px;
+    }
+
+    .left-part {
+        border: none;
+        margin-right: 0px;
+        /*background: #0D63A5;*/
+    }
 }
 
 

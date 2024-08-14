@@ -63,7 +63,7 @@ div.default-bg {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.doc-heading{
+.doc-heading {
     font-weight: 500;
 }
 
@@ -73,7 +73,8 @@ div.default-bg {
     transition: background-color 0.3s ease, color 0.3s ease;
     padding: 10px 10px;
 }
-#document-id{
+
+#document-id {
     background: gray;
     border-radius: 6px;
     padding: 4px 6px;
@@ -530,6 +531,15 @@ div.default-bg {
 
 }
 
+#feedback-error {
+    color: red;
+    font-size: 14px;
+    display: block;
+    /* margin: auto; */
+    align-items: center;
+    text-align: center;
+}
+
 /*--------------------pagination ---------------------*/
 .pagination-class {
     display: flex;
@@ -572,6 +582,7 @@ div.default-bg {
     justify-content: center;
     justify-content: center;
 }
+
 .pagination-class button.active {
     background-color: red; /* Highlight color */
     color: white; /* Text color for visibility */

@@ -351,7 +351,6 @@ $(document).ready(function () {
 
 function loaderfier(){
     $(".loader").css("display", "flex");
-    console.log("we rere r")
 }
 const togglePassword2 = document.querySelector('#togglePassword2');
 const password2 = document.querySelector('#new-password');

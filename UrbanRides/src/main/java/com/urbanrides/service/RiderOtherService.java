@@ -216,7 +216,7 @@ public class RiderOtherService {
                 throw new Exception("User not found");
             }
 
-            updatePassword(riderUMLoginDetails, req);
+            updatePassword(riderUMLoginDetails);
 
             NotificationLogs notificationLogs = new NotificationLogs();
             notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID4"));
@@ -241,7 +241,7 @@ public class RiderOtherService {
         return null;
     }
 
-    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) throws Exception {
+    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails) throws Exception {
         UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
         if (userSessionObj == null) {
             throw new Exception("User session not found");
@@ -267,12 +267,6 @@ public class RiderOtherService {
             user.setSalt(saltString);
             user.setPasswordHash(hashedPasswordString);
             usersDao.updateUser(user);
-
-            NotificationLogs notificationLogs = new NotificationLogs();
-            notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID4"));
-            notificationLogs.setNotificationMsg("The password has been changed from the user's My Profile section.");
-            notificationLogs.setUser(user);
-            notificationLogsDao.saveNotificationLog(notificationLogs);
             return user;
         } catch (Exception e) {
             // Log the exception (you can use a logger here)
@@ -331,6 +325,7 @@ public class RiderOtherService {
 
         userdetailsdao.updateUserDetails(userDetails);
         userSessionObj.setProfileLoc("/resources/uploads/riderDocuments/riderProfilePics" + userSessionObj.getUserId() + "/riderProfile" + userSessionObj.getUserId() + userDetails.getProfilePhotoExtention());
+        userSessionObj.setProfilePhoto(1);
         session.setAttribute("riderSessionObj", userSessionObj);
 
         String relativePath = getRelativePath(fileProfile, session);
@@ -402,7 +397,7 @@ public class RiderOtherService {
             riderDataList.setTripDate(formatLocalDateTime(perTrip.getCreatedDate(), formatter));
             riderDataList.setDistance(perTrip.getDistance());
             riderDataList.setTripId(perTrip.getTripCode());
-            riderDataList.setTripId(perTrip.getTripCode());
+            riderDataList.setCharges(perTrip.getCharges());
 
 
 //            for service type 1 only
@@ -417,7 +412,6 @@ public class RiderOtherService {
                     riderDataList.setDuration("--");
                 }
 
-                riderDataList.setCharges(perTrip.getCharges());
                 UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
                 riderDataList.setCaptainName(userDetails.getFirstName() + " , " + userDetails.getLastName());
 
@@ -446,6 +440,7 @@ public class RiderOtherService {
                     riderDataList.setDropOffDate(formatDateToString(packageTrip.getDropOffDate()));
                     riderDataList.setPickupTime(convertTo24HourFormat(packageTrip.getPickupTime()));
                     riderDataList.setNumberOfPassengers(packageTrip.getNumPassengers());
+                    riderDataList.setNumberOfDays(packageTrip.getNumOfDays());
                     riderDataList.setDailyPickUpDays(convertToDayNames(packageTrip.getDailyPickUp()));
 
                     if (packageTrip.getConcludeNotes() != null && perTrip.getPaymentMethod() != null) {
@@ -499,7 +494,7 @@ public class RiderOtherService {
 
 
 
-                    } else if(packageTrip != null && !perTrip.isAccepted() && ( today.isAfter(packageTrip.getPickupDate()) || today.isEqual(packageTrip.getDropOffDate()))) {
+                    } else if(packageTrip != null && !perTrip.isAccepted() && ( today.isAfter(packageTrip.getPickupDate()) || today.isEqual(packageTrip.getPickupDate()))) {
                         // Pending
                         riderDataList.setStatus(4);
                     }else{

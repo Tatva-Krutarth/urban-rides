@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -232,13 +233,13 @@ public class AdminService {
 //-------------------------------------------------password--------------------------
 
 
-    public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest req) throws Exception {
+    public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails) throws Exception {
         // Custom validation
         String error = passwordValidation(riderUMLoginDetails);
         if (error != null) {
             return error;
         }
-        updatePassword(riderUMLoginDetails, req);
+        updatePassword(riderUMLoginDetails);
 
         return null;
     }
@@ -253,7 +254,7 @@ public class AdminService {
         return null;
     }
 
-    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) throws Exception {
+    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails) throws Exception {
         UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
 
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
@@ -296,7 +297,6 @@ public class AdminService {
 
     public void sendNotiToRider(String notiMsg) {
         Map<String, String> notification = new HashMap<>();
-        System.out.println("weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
         notification.put("message", notiMsg);
         simpMessagingTemplate.convertAndSend("/topic/rider-incoming-notifications", notification);
     }
@@ -662,6 +662,9 @@ public class AdminService {
         List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
 
         List<Trip> tripList = tripDao.getAllTripByFilter(filterData);
+        if (tripList == null) {
+            return riderMyTripList;
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
 
         for (Trip perTrip : tripList) {
@@ -674,20 +677,21 @@ public class AdminService {
             riderDataList.setDropOffLocation(perTrip.getDropoffAddress());
             riderDataList.setTripDate(formatLocalDateTime(perTrip.getCreatedDate(), formatter));
             riderDataList.setDistance(perTrip.getDistance());
+            riderDataList.setCharges(perTrip.getCharges());
+            riderDataList.setTripId(perTrip.getTripCode());
 
             UserDetails riderDetails = userDetailsDao.getUserDetailsByUserId(perTrip.getTripUserId().getUserId());
             riderDataList.setRiderName(riderDetails.getFirstName() + " " + riderDetails.getLastName());
-            riderDataList.setTripId(perTrip.getTripCode());
-
+            try {
+                riderDataList.setDuration(perTrip.getEstimatedTime().toString());
+            } catch (NullPointerException e) {
+                riderDataList.setDuration(null);
+            }
             if (perTrip.isAccepted()) {
-                if (perTrip.isAccepted()) {
 
-                }
                 riderDataList.setIsAccepted(1);
                 riderDataList.setIsCancelationDetails(2);
                 riderDataList.setIsCaptainDetails(1);
-                riderDataList.setDuration(perTrip.getEstimatedTime() != null ? perTrip.getEstimatedTime().toString() : "--");
-                riderDataList.setCharges(perTrip.getCharges());
 
                 UserDetails captainDetails = userdetailsDao.getUserDetailsByUserId(perTrip.getCaptainUserObj().getUserId());
                 riderDataList.setCaptainName(captainDetails.getFirstName() + " , " + captainDetails.getLastName());
@@ -711,14 +715,38 @@ public class AdminService {
                         }
                     }
                 }
+                PackageTrip packageTrip = packageTripDao.getPackageTripDataByTripId(perTrip.getTripId());
+                if (packageTrip != null) {
+
+                    riderDataList.setPickupDate(formatDateToString(packageTrip.getPickupDate()));
+                    riderDataList.setDropOffDate(formatDateToString(packageTrip.getDropOffDate()));
+                    riderDataList.setPickupTime(convertTo24HourFormat(packageTrip.getPickupTime()));
+                    riderDataList.setNumberOfPassengers(packageTrip.getNumPassengers());
+                    riderDataList.setNumberOfDays(packageTrip.getNumOfDays());
+                    riderDataList.setDailyPickUpDays(convertToDayNames(packageTrip.getDailyPickUp()));
+                    riderDataList.setConcludeNotes(packageTrip.getConcludeNotes());
+                    riderDataList.setSpecialInstruction(packageTrip.getSpecialInstructions());
+                }
 
             } else {
 
                 PackageTrip packageTrip = packageTripDao.getPackageTripDataByTripId(perTrip.getTripId());
+                if (packageTrip != null) {
+
+                    riderDataList.setPickupDate(formatDateToString(packageTrip.getPickupDate()));
+                    riderDataList.setDropOffDate(formatDateToString(packageTrip.getDropOffDate()));
+                    riderDataList.setPickupTime(convertTo24HourFormat(packageTrip.getPickupTime()));
+                    riderDataList.setNumberOfPassengers(packageTrip.getNumPassengers());
+                    riderDataList.setNumberOfDays(packageTrip.getNumOfDays());
+                    riderDataList.setDailyPickUpDays(convertToDayNames(packageTrip.getDailyPickUp()));
+                    riderDataList.setConcludeNotes(packageTrip.getConcludeNotes());
+                    riderDataList.setSpecialInstruction(packageTrip.getSpecialInstructions());
+                }
+
                 LocalDate today = LocalDate.now();
                 riderDataList.setIsAccepted(2);
                 riderDataList.setIsCaptainDetails(2);
-                riderDataList.setCancellationReason(perTrip.getReasonForCancellation() != null ? perTrip.getReasonForCancellation() : "Captain Not Available Or Cancelled By Rider");
+                riderDataList.setCancellationReason(perTrip.getReasonForCancellation());
                 if (perTrip.getReasonForCancellation() != null) {
                     riderDataList.setIsCancelationDetails(1);
                     riderDataList.setStatus(3); // cancelled
@@ -752,6 +780,26 @@ public class AdminService {
     }
 
 
+    public static String convertTo24HourFormat(LocalTime time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        return time.format(formatter);
+    }
+
+    public static String convertToDayNames(String numOfDays) {
+        Map<String, String> dayMap = new HashMap<>();
+        dayMap.put("1", "Monday");
+        dayMap.put("2", "Tuesday");
+        dayMap.put("3", "Wednesday");
+        dayMap.put("4", "Thursday");
+        dayMap.put("5", "Friday");
+        dayMap.put("6", "Saturday");
+        dayMap.put("7", "Sunday");
+        String[] daysArray = numOfDays.split(",");
+        String dailyPickUpDays = java.util.Arrays.stream(daysArray).map(dayMap::get) // Map each day number to its name
+                .filter(day -> day != null) // Filter out null values if any
+                .collect(Collectors.joining(", ")); // Join the names with commas
+        return dailyPickUpDays;
+    }
 //    --------------------------------get all captain data----------------------------------------------
 
     @Autowired

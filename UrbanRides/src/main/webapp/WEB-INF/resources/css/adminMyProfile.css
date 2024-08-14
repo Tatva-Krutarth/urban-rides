@@ -528,7 +528,7 @@ body {
     border-bottom: 1px solid gray;
 }
 
-#password-error, #confirmPassword-error, #firstName-error, #lastName-error, #phone-error {
+#password-error, #first-Name-error,#last-Name-error,  #confirmPassword-error, #firstName-error, #lastName-error, #phone-error {
     color: red;
     font-size: 12px;
     font-weight: 500;

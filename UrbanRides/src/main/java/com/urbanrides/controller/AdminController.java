@@ -253,10 +253,10 @@ public class AdminController {
 
     @ResponseBody
     @PostMapping("/update-login-details")
-    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetails riderUMLoginDetails) {
         Map<String, String> response = new HashMap<>();
         try {
-            String result = adminService.sendPassToService(riderUMLoginDetails, request);
+            String result = adminService.sendPassToService(riderUMLoginDetails);
             if (result != null) {
                 response.put("message", result);
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

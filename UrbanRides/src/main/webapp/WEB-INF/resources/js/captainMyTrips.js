@@ -135,50 +135,49 @@ $(document).ready(function () {
                                         </div>
                                     </div>
                                           ` : ''}
-                                          ${trip.serviceTypeId !== 1 || trip.serviceTypeId == 2 ? `
-
-
-                                    <div class="trip-details-bottom-cont">
-                                        <div class="left-part">
-                                            <div>
-                                                <span>Pickup Date: </span>
-                                                <span>${trip.pickupDate}</span>
+                                    ${trip.serviceTypeId !== 1 || trip.serviceTypeId == 2 ? `
+                                        <div class="trip-details-bottom-cont">
+                                            <div class="left-part">
+                                                <div>
+                                                    <span>Pickup Date: </span>
+                                                    <span>${trip.pickupDate}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Trip Id: </span>
+                                                    <span>${trip.tripId}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Pickup Time: </span>
+                                                    <span>${trip.pickupTime}</span>
+                                                </div>
+                                                ${trip.dailyPickUpDays ? `
+                                                <div>
+                                                    <span>Daily Pickup Days: </span>
+                                                    <span>${trip.dailyPickUpDays}</span>
+                                                </div>
+                                                ` : ''}
                                             </div>
-                                            <div>
-                                                <span>Trip Id: </span>
-                                                <span>${trip.tripId}</span>
-                                            </div>
-                                            <div>
-                                                <span>Pickup Time: </span>
-                                                <span>${trip.pickupTime}</span>
-                                            </div>
-                                            <div>
-                                                <span>Daily Pickup Days: </span>
-                                                <span>${trip.dailyPickUpDays}</span>
+                                            <div class="right-part">
+                                                <div>
+                                                    <span>Number of Passengers: </span>
+                                                    <span>${trip.numberOfPassengers}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Number of Days: </span>
+                                                    <span>${trip.numberOfDays}</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="right-part">
-                                            <div>
-                                                <span>Number of Passengers: </span>
-                                                <span>${trip.numberOfPassengers}</span>
-                                            </div> <div>
-                                                <span>Number of Days: </span>
-                                                <span>${trip.numberOfDays}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                         
-                                        
                                     ` : ''}
-                                 ${trip.serviceTypeId == 1 ? `
-                                <div class="cancelation-reason p-2">
-                                    Cancellation Reason: ${trip.cancellationReason ? trip.cancellationReason : 'N/A'}
-                                </div>
+                                ${trip.serviceTypeId == 1 && trip.cancellationReason ? `
+                                    <div class="cancelation-reason p-2">
+                                        Cancellation Reason: ${trip.cancellationReason}
+                                    </div>
                                 ` : ''}
-                                 ${trip.serviceTypeId !== 1 ? `
-                                <div class="cancelation-reason p-2">
-                                    Special Instruction: ${trip.specialInstruction ? trip.specialInstruction : 'N/A'}
-                                </div>
+                                ${trip.serviceTypeId !== 1 ? `
+                                    <div class="cancelation-reason p-2">
+                                        Special Instruction: ${trip.specialInstruction ? trip.specialInstruction : 'N/A'}
+                                    </div>
                                 ` : ''}
                             `}
                         </div>

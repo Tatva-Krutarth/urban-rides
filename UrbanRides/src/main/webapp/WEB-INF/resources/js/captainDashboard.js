@@ -61,7 +61,6 @@ function loadTripsData() {
                 return; // Exit if no trips are found
             }
 
-            showSuccesstMsg("Fired");
 
             data.forEach(function (trip) {
                 geocodeAddress(trip.pickUpLocation, function (results, status) {

@@ -22,9 +22,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="<c:url value="/resources/css/captainPackageRides.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/riderMyTrips.css" />">
+    <link rel="stylesheet" href="<c:url value="/resources/css/captainPackageRides.css" />">
+
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
+            integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
+            integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
@@ -417,7 +424,7 @@
                         <div class="mb-3">
                             <label for="paymentMethodRentTaxi" class="form-label">Payment Method</label>
                             <input class="form-control" id="paymentMethodRentTaxi" name="paymentMethodRentTaxi"
-                                   value="Pay with cash">
+                                   value="Pay with cash" readonly>
                         </div>
                         <div class="mb-3">
                             <label for="distanceRentTaxi" class="form-label">Distance (in kilometers)</label>
@@ -429,8 +436,8 @@
                             <input type="number" class="form-control" id="chargesRentTaxi" name="chargesRentTaxi"
                                    readonly>
                         </div>
-                        <input type="text" id="modalTripIdRentTaxi" name="modalTripIdRentTaxi">
-                        <input type="text" id="vehicleNameInModal" name="vehicleNameInModal">
+                        <input type="hidden" id="modalTripIdRentTaxi" name="modalTripIdRentTaxi">
+                        <input type="hidden" id="vehicleNameInModal" name="vehicleNameInModal">
                         <button type="submit" class="captain-conclude-btn">Conclude Ride</button>
                     </form>
                 </div>
@@ -458,7 +465,7 @@
 
                         <div class="mb-3">
                             <label for="paymentMethodRentTaxi" class="form-label">Payment Method</label>
-                            <input class="form-control" id="paymentMethodDailyPickup" name="paymentMethodDailyPickUp"
+                            <input class="form-control" id="paymentMethodDailyPickup" name="paymentMethodDailyPickUp" readonly
                                    value="Pay with cash">
                         </div>
                         <!-- Add more fields as needed -->

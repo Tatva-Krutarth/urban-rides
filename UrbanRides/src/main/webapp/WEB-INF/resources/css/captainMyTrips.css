@@ -217,11 +217,13 @@ body {
 .show-mobile {
     display: none;
 }
+
 .nati-cont {
     /*background-color: #0D63A5;*/
     padding: 8px;
     border-radius: 12px;
 }
+
 /*---------------------common buttons-----------------------------*/
 
 .common-btn-color7-theme {
@@ -657,6 +659,7 @@ body {
     width: 50%;
 }
 
+
 .left-part {
     border-right: 1px solid gray;
     margin-right: 30px;
@@ -698,6 +701,7 @@ body {
         flex-direction: row;
         padding-left: 5px;
     }
+
 
 }
 
@@ -808,6 +812,23 @@ body {
         background-color: #001F3F;
         height: 45px;
         padding: 0px;
+    }
+
+    .trip-details-bottom-cont > div {
+        width: 100%;
+    }
+
+    .trip-details-bottom-cont {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 12px;
+    }
+
+    .left-part {
+        border: none;
+        margin-right: 0px;
+        /*background: #0D63A5;*/
     }
 
     @media only screen and (max-width: 756px) and (min-width: 360px) {

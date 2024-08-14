@@ -117,11 +117,6 @@
                     </button>
                 </div>
             </div>
-
-
-
-
-
         </div>
     </div>
 </div>
@@ -129,5 +124,4 @@
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
 <script src="<c:url value="/resources/js/adminApproveCaptain.js"/>"></script>
-
 </html>

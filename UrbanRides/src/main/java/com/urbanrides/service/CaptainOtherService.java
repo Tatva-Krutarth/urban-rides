@@ -357,11 +357,7 @@ public class CaptainOtherService {
                 supportTypeLogs.setFileExtention(fileExtension); // Assuming SupportTypeLogs has a field for file extension
             }
 
-            // Get user object from session or database
-            User user = (User) session.getAttribute("user"); // Assuming user is stored in session
-            if (user == null) {
-                user = usersDao.getUserByUserId(userSessionObj.getUserId()); // Default user, replace with actual logic
-            }
+            User user = usersDao.getUserByUserId(userSessionObj.getUserId()); // Default user, replace with actual logic
             supportTypeLogs.setUserObj(user);
 
             // Generate support case ID
@@ -414,6 +410,18 @@ public class CaptainOtherService {
         double amountDouble = walletAmount.setScale(2, RoundingMode.HALF_UP).doubleValue();
         return amountDouble;
     }
+
+    public double getTotalEarnings() {
+        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        List<Trip> trips = tripDao.getTripsForTotalEarnings(userSessionObj.getUserId());
+        double totalEarnings = 0.0;
+        for (Trip trip : trips) {
+            totalEarnings += trip.getCharges();
+        }
+        System.out.println(totalEarnings);
+        return totalEarnings;
+    }
+
 
     public ResponseEntity<Map<String, String>> validateAndDepositAmount(double amount) {
         Map<String, String> response = new HashMap<>();
@@ -685,6 +693,7 @@ public class CaptainOtherService {
             captainPackageTripsDataDto.setTripCode(perTrip.getTripCode());
             captainPackageTripsDataDto.setTripId(perTrip.getTripId());
             captainPackageTripsDataDto.setDistance(perTrip.getDistance());
+            captainPackageTripsDataDto.setCharges(perTrip.getCharges());
 
             UserDetails UserDetails = userdetailsdao.getUserDetailsByUserId(perTrip.getTripUserId().getUserId());
 
@@ -713,7 +722,6 @@ public class CaptainOtherService {
 
             if (perTrip.getServiceType().getServiceTypeId() == 3) {
                 captainPackageTripsDataDto.setIsCharges(1);
-                captainPackageTripsDataDto.setCharges(perTrip.getCharges());
             } else {
                 captainPackageTripsDataDto.setIsCharges(2);
             }
@@ -740,7 +748,7 @@ public class CaptainOtherService {
             if (userSessionObj == null) {
                 throw new IllegalStateException("User session not found");
             }
-           CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
+            CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
             if (captainDetails.getVehicleType().getVehicleId() != trip.getVehicleId().getVehicleId()) {
                 throw new IllegalStateException("You don't have the vehicle required by rider.");
             }
@@ -824,7 +832,7 @@ public class CaptainOtherService {
                 throw new IllegalArgumentException("Package trip not found with ID: " + concludeRideRequestRentTaxDto.getTripId());
             }
             LocalDate today = LocalDate.now();
-            if (today.isAfter(packageTrip.getPickupDate()) || today.isEqual(packageTrip.getPickupDate())) {
+            if (today.isBefore(packageTrip.getDropOffDate())) {
                 throw new IllegalArgumentException("You cannot conclude the ride before the last date of the trip.");
             }
             // Update trip details
@@ -935,7 +943,7 @@ public class CaptainOtherService {
                 throw new IllegalArgumentException("Package trip not found with ID: " + concludeRideRequestDailyPickUpDto.getTripId());
             }
             LocalDate today = LocalDate.now();
-            if (today.isAfter(packageTrip.getPickupDate()) || today.isEqual(packageTrip.getPickupDate())) {
+            if (today.isBefore(packageTrip.getDropOffDate())) {
                 throw new IllegalArgumentException("You cannot conclude the ride before the last date of the trip.");
             }
 

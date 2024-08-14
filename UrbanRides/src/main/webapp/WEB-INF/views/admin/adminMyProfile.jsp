@@ -62,15 +62,15 @@
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">First Name</div>
-                    <input type="text" class="personal-details-data" name="firstName" value="" readonly>
+                    <input type="text" class="personal-details-data" name="firstName" id="first-Name" value="" readonly>
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Last Name</div>
-                    <input type="text" class="personal-details-data" name="lastName" readonly value="">
+                    <input type="text" class="personal-details-data" name="lastName" id="last-Name" readonly value="">
                 </div>
                 <div class="personal-details-cont">
                     <div class="personal-details-title">Phone</div>
-                    <input type="text" class="personal-details-data" name="phone"  readonly value="">
+                    <input type="text" class="personal-details-data" name="phone" readonly value="">
                 </div>
                 <div class="edit-btn-cont mt-4">
                     <button class="edit-button first-button common-btn-color3-theme" type="button">
@@ -138,7 +138,6 @@
         </div>
     </div>
 </div>
-<button onclick="loaderfier()" >Button</button>
 
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>

@@ -31,25 +31,30 @@ $(document).ready(function () {
 
     $("#concludeFormRentTaxi").validate({
         rules: {
-
             paymentMethodRentTaxi: {
                 required: true
             },
             distanceRentTaxi: {
                 required: true,
-                number: true
+                number: true,
+                min: 5,
+                max: 5000,
+                digits: true // Ensures only digits are allowed
             }
         },
         messages: {
-
             paymentMethodRentTaxi: {
                 required: "Please select a payment method."
             },
             distanceRentTaxi: {
                 required: "Please enter the distance.",
-                number: "Please enter a valid number."
+                number: "Please enter a valid number.",
+                min: "The distance must be at least 5 km.",
+                max: "The distance cannot exceed 5000 km.",
+                digits: "Please enter a valid whole number."
             }
         },
+
         submitHandler: function (form) {
             const tripId = $('#modalTripIdRentTaxi').val();
             const vehicleName = $('#vehicleNameInModal').val();
@@ -113,6 +118,7 @@ $(document).ready(function () {
             const tripId = $('#modalTripIdDailyPickup').val();
             const conclusionNote = $('#conclusionNoteDailyPickup').val();
             const paymentMethod = $('#paymentMethodDailyPickup').val();
+            $(".loader").css("display", "flex");
 
             $.ajax({
                 url: 'conclude-ride-daily-pickup',
@@ -128,6 +134,8 @@ $(document).ready(function () {
                     $('.modal-backdrop').remove();
                     showSuccesstMsg("Daily pick up ride concluded successfully")
                     form.reset();
+                    $(".loader").hide();
+
                     loadTripDetails(); // Reload data after concluding
                 },
                 error: function (xhr, textStatus, errorThrown) {
@@ -187,16 +195,13 @@ function populateTheData(data) {
     if (!$('#rentATaxiAccor').children().length) {
         $('#rentATaxiAccor').append('<p>No active service request</p>');
     }
-
     if (!$('#packageServiceAccor').children().length) {
         $('#packageServiceAccor').append('<p>No active service request</p>');
     }
-
     if (!hasActiveService) {
         $('#currentRunning').append('<p>You have no active requests</p>');
     }
 }
-
 function createTripElement(trip) {
     const serviceType = trip.serviceTypeId === 2 ? 'Rent a Taxi' : 'Daily Pickup';
     const pickDropLocation = trip.serviceTypeId === 2
@@ -216,21 +221,29 @@ function createTripElement(trip) {
     const distanceSection = trip.distance ? `<div><span>Distance: -</span><span>${trip.distance} Km</span></div>` : '';
     const dailyPickupDaysSection = trip.dailyPickUpDays ? `<div><span>Daily pickup days: -</span><span>${trip.dailyPickUpDays}</span></div>` : '';
 
+    // Set the image based on the service type
+    const imageSrc = trip.serviceTypeId === 2 ? '/UrbanRides/resources/images/taxi-rent-car.png' : '/UrbanRides/resources/images/taxi-car-route.png';
+
+    // Conditionally render the special instructions
+    const specialInstructionSection = trip.specialInstruction
+        ? `<div><span>Special Instruction: -</span><span>${trip.specialInstruction}</span></div>`
+        : '';
+
     const button = trip.isTripLive === 1
         ? `<button type="button" class="captain-conclude-btn mt-2 mb-2" 
-        data-bs-toggle="modal" 
-        data-bs-target="${trip.serviceTypeId === 2 ? '#concludeModalRentTaxi' : '#concludeModalDailyPickup'}" 
-        data-trip-id="${trip.tripId}" 
-        data-vehicle-name="${trip.vehicleName}">
-    Conclude
-</button>`
+            data-bs-toggle="modal" 
+            data-bs-target="${trip.serviceTypeId === 2 ? '#concludeModalRentTaxi' : '#concludeModalDailyPickup'}" 
+            data-trip-id="${trip.tripId}" 
+            data-vehicle-name="${trip.vehicleName}">
+                Conclude
+          </button>`
         : `<button type="button" class="captain-accept-btn mt-2 mb-2" onclick="acceptRide(${trip.tripId})">Accept Ride</button>`;
 
     return `
         <div class="card p-0 mt-2 mb-2" data-trip-id="${trip.tripId}">
             <div class="card-header noti-container p-0" id="heading${trip.tripId}">
                 <div class="noti-img-cont">
-                    <img src="/UrbanRides/resources/images/taxi-rent-car.png" id="noti-img">
+                    <img src="${imageSrc}" id="noti-img">
                 </div>
                 <div class="my-trip-accor-details-cont mt-2 mb-3">
                     <div class="my-trip-accor-details">
@@ -256,14 +269,14 @@ function createTripElement(trip) {
                             <div><span>Emergency Contact: -</span><span>${trip.emergencyContact}</span></div>
                             <div><span>Pickup Date: -</span><span>${trip.pickupDate}</span></div>
                             <div><span>Pickup Time: -</span><span>${trip.pickupTime}</span></div>
-                            <div><span>Charges: -</span><span>${trip.charges} Rs</span></div>
                             <div><span>Number of passengers: -</span><span>${trip.numberOfPassengers}</span></div>
+                            ${specialInstructionSection}
                         </div>
                         <div class="right-part">
                             <div><span>Trip Id: -</span><span>${trip.tripId}</span></div>
                             <div><span>Number of Days: -</span><span>${trip.numberOfDays}</span></div>
                             <div><span>Vehicle Name: -</span><span>${trip.vehicleName}</span></div>
-                            <div><span>Special Instruction: -</span><span>${trip.specialInstruction}</span></div>
+                            <div><span>Charges: -</span><span>${trip.charges} Rs</span></div>
                             ${dailyPickupDaysSection}
                         </div>
                     </div>
@@ -273,6 +286,7 @@ function createTripElement(trip) {
         </div>
     `;
 }
+
 
 
 function acceptRide(tripId) {
@@ -293,7 +307,6 @@ function acceptRide(tripId) {
             console.log(xhr);
             $(".loader").hide();
 
-            $(".loader").hide();
 
             // Attempt to parse the response as JSON
             try {

@@ -79,7 +79,7 @@ public class Trip {
 
     @Column(name = "trip_code")
     @NotNull(message = "trip code is required")
-    private String TripCode;
+    private String tripCode;
 
     @Column(name = "payment_method")
     private String paymentMethod;

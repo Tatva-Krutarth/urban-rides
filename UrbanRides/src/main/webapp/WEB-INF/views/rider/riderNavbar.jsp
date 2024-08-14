@@ -64,7 +64,7 @@
                     <hr class="hr-setting">
                 </div>
                 <a href="rider-dashboard" class="dropdown-list show-mobile" style="text-decoration: none">
-                    <img src="<c:url value='/resources/images/notification1.svg' />" alt="">    </span>
+                    <img src="<c:url value='/resources/images/home.svg' />" alt="">    </span>
                     Home</a>
                 <div>
                     <hr class="hr-setting">

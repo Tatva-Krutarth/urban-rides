@@ -116,8 +116,6 @@ public class EmailSend {
                     .append("<li><strong>Pickup Time:</strong> ")
                     .append(packageServiceDto.getPickUpTime())
                     .append("</li>")
-                    .append("<li><strong>Drop-off Time:</strong> ")
-                    .append("</li>")
                     .append("<li><strong>Number of Passengers:</strong> ")
                     .append(packageServiceDto.getNumberOfPassengers())
                     .append("</li>")
@@ -284,7 +282,6 @@ public class EmailSend {
                     .append("<h2>Hello Rider</h2>")
                     .append("<p>We regret to inform you that the documents you submitted for verification have not been approved.</p>")
                     .append("<p>Please review the submission guidelines and resubmit the required documents.</p>")
-                    .append("<p>To re-upload your documents, please <a href='https://yourwebsite.com/login'>log in</a> to your account and follow the instructions.</p>")
                     .append("<p>If you have any questions, feel free to contact our support team for assistance.</p>")
                     .append("<p>Thank you for your attention to this matter.</p>")
                     .append("</html>");

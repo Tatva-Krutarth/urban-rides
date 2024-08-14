@@ -664,6 +664,7 @@ public class LoginServices {
         HttpSession session = request.getSession();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
+        UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
 
         user.setAccountStatus(3);
         userSessionObj.setAccountStatus(3);
@@ -677,10 +678,12 @@ public class LoginServices {
         captainDetails.setDrivingLicense(true);
         captainDetails.setLicenseExpirationDate(dateTimeConverter.stringToLocalDate(captainPersonalDetailsDto.getLicenseExpiration()));
         captainDetails.setRegistrationCertificate(true);
-        captainDetails.setRcExpirationDate(dateTimeConverter.stringToLocalDate(captainPersonalDetailsDto.getLicenseExpiration()));
+        captainDetails.setRcExpirationDate(dateTimeConverter.stringToLocalDate(captainPersonalDetailsDto.getRcExpiration()));
         captainDetails.setProfilePhoto(true);
-
+        userDetails.setProfilePhoto(true);
+        userDetails.setProfilePhotoExtention(extension);
         captainDetailsDao.saveCaptainDetails(captainDetails);
+        userDetailsDao.updateUserDetails(userDetails);
         usersDao.updateUser(user);
         session.setAttribute("captainSessionObj", userSessionObj);
     }

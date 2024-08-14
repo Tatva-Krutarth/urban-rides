@@ -100,6 +100,17 @@ public class TripDao {
     }
 
     @Transactional
+    public List<Trip> getTripsForTotalEarnings(int userId) {
+        Session session = getCurrentSession();
+        String hql = "FROM Trip WHERE captainUserObj.userId = :userId AND paymentMethod != null And isAccepted = true";
+        Query<Trip> query = session.createQuery(hql, Trip.class);
+        query.setParameter("userId", userId);
+
+        List<Trip> result = query.getResultList();
+        return result.isEmpty() ? null : result;
+    }
+
+    @Transactional
     public List<Trip> getAllTripOfCaptain(int userId) {
         Session session = getCurrentSession();
         String hql = "FROM Trip WHERE captainUserObj.userId = :userId";
@@ -144,7 +155,7 @@ public class TripDao {
             hql.append(" AND t.isAccepted = false AND t.reasonForCancellation IS NOT NULL");
         } else if (filterData.getTripStatus() == 4) {
             hql.append(" AND t.isAccepted = true AND t.reasonForCancellation IS NULL");
-        }else if (filterData.getTripStatus() == 5) {
+        } else if (filterData.getTripStatus() == 5) {
             hql.append(" AND t.isAccepted = true AND t.paymentMethod IS NOT NULL");
         }
         try {

@@ -311,7 +311,7 @@ function populateRunningRequests(data) {
 
         // Determine if there's a document to view
         var viewDocumentLink = '';
-        if (!item.fileAvailable) {
+        if (item.fileAvailable) {
             viewDocumentLink = `
                 <div class="view-document mt-2 mb-3">
                  <span class="doc-heading">Document :- </span>   <a href="${item.fileLocaton}" target="_blank" id="document-id">View Document</a>
@@ -340,7 +340,7 @@ function populateRunningRequests(data) {
                     </div>
                     <div class="querry-type">
                         <span>Support type :-</span>
-                        <span>${item.supportType}</span>
+                        <span>${item.sypportType}</span>
                     </div>
                     <div class="accoutn-type">
                         <span>Account type :-</span>

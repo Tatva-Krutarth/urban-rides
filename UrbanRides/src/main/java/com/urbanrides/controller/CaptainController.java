@@ -10,7 +10,6 @@ import com.urbanrides.service.LoginServices;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -129,7 +128,6 @@ public class CaptainController {
     }
 
 
-
     @RequestMapping("/captain-waiting-page")
     public String captainWaitingPage() {
         return "captain/captainWaitingPage";
@@ -167,9 +165,6 @@ public class CaptainController {
     }
 
 
-
-
-
     @RequestMapping(value = "/save-captain-location", method = RequestMethod.POST)
     public ResponseEntity<String> saveCaptainLocation(@RequestParam("address") String address) {
         try {
@@ -201,7 +196,9 @@ public class CaptainController {
 
 
         double walletAMount = captainOtherService.getAmount();
+        double totalEarnings = captainOtherService.getTotalEarnings();
         model.addAttribute("walletAmount", walletAMount);
+        model.addAttribute("totalEarning", totalEarnings);
         return "captain/captainEarnings";
     }
 
@@ -305,11 +302,16 @@ public class CaptainController {
 
     @ResponseBody
     @PostMapping("/captain-get-support")
-    public ResponseEntity<Map<String, String>> saveGetSupport(@Valid @ModelAttribute RiderGetSupportDto riderGetSupportDto, HttpSession session, BindingResult bindingResult) throws MethodArgumentNotValidException {
+    public ResponseEntity<Map<String, String>> saveCaptainGetSupport(@Valid @ModelAttribute RiderGetSupportDto riderGetSupportDto, BindingResult bindingResult, HttpSession session) throws MethodArgumentNotValidException {
         if (bindingResult.hasErrors()) {
-            Method method = ReflectionUtils.findMethod(getClass(), "saveGetSupport", RiderGetSupportDto.class, BindingResult.class, HttpSession.class);
-            MethodParameter methodParameter = new MethodParameter(method, 0);
-            throw new MethodArgumentNotValidException(methodParameter, bindingResult);
+            // Validation errors are automatically handled by the global exception handler
+            throw new MethodArgumentNotValidException(
+                    new MethodParameter(
+                            ReflectionUtils.findMethod(getClass(), "saveCaptainGetSupport", RiderGetSupportDto.class, BindingResult.class, HttpSession.class),
+                            0
+                    ),
+                    bindingResult
+            );
         }
         try {
             captainOtherService.getSupportSaveToLogs(riderGetSupportDto, session);
@@ -393,7 +395,7 @@ public class CaptainController {
 //        }
 //    }
     @PostMapping("/conclude-ride-rent-taxi")
-    public ResponseEntity<Map<String, String>> concludeRideRentTaxi(@Valid @RequestBody ConcludeRideRequestRentTaxDto concludeRideRequestRentTaxDto)  {
+    public ResponseEntity<Map<String, String>> concludeRideRentTaxi(@Valid @RequestBody ConcludeRideRequestRentTaxDto concludeRideRequestRentTaxDto) {
         Map<String, String> response = new HashMap<>();
 //
 
