@@ -40,7 +40,6 @@ public class PackageServiceDto {
     @Pattern(regexp = "^$|^([1-7](,([1-7](?!.*\\b\\1\\b)))*?)$", message = "Invalid pickup days format. Should be comma-separated numbers between 1 and 7, with each number appearing only once.")
     private String dailyPickUp;
 
-    //    @Min(value = 1, message = "Charges must be at least 1")
     private int charges;
 
     @NotBlank(message = "Emergency contact number is required")
@@ -49,15 +48,8 @@ public class PackageServiceDto {
 
     @Size(max = 500, message = "Special instructions should not exceed 500 characters")
     private String specialInstructions;
-
-
-    //    @NotBlank(message = "Distance is required")
     @Size(max = 20, message = "Distance cannot be more than 20 characters")
     private String distance;
-
-//    //    @NotBlank(message = "Estimated time is required")
-//    @Length(max = 20, message = "Estimated time cannot be more than 20 characters")
-//    private String estimatedTime;
 
     @Size(max = 20, message = "Service type is required")
     private String serviceType;

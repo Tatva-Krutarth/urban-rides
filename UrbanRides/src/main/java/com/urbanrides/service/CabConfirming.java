@@ -17,31 +17,34 @@ import java.util.List;
 
 @Service
 public class CabConfirming {
+
     @Autowired
     UsersDao usersDao;
+
     @Autowired
     UserDetailsDao userDetailsDao;
 
     @Autowired
     TripDao tripDao;
+
     @Autowired
     CaptainDetailsDao captainDetailsDao;
+
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
     @Autowired
     VehicleTypeDao vehicleTypeDao;
+
     @Autowired
     private HttpSession httpSession;
 
 
     public List<CaptainAllTripsData> getTripsData() {
-
         UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
-
         List<Trip> trips = tripDao.getAllTripOfCaptainDashboard(captainDetails.getVehicleType().getVehicleId());
         List<CaptainAllTripsData> captainDataList = new ArrayList<>();
-
         if (trips != null) {
             for (Trip trip : trips) {
                 UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(trip.getTripUserId().getUserId());
@@ -54,8 +57,6 @@ public class CabConfirming {
                 captainDataList.add(captainData);
             }
         }
-
         return captainDataList;
-
     }
 }

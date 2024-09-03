@@ -12,22 +12,17 @@ function withdrawMoney() {
     var depositAmount = parseFloat(document.getElementById('depositAmount').value);
     if (isNaN(depositAmount) || depositAmount < 10 || depositAmount > 50000) {
         showErrorMsg('Please enter a valid amount between 10 to 5000.');
-        return; // Exit the function if the input is invalid
+        return;
     }
-    // Validations
     if (!isNaN(depositAmount) && depositAmount > 0 && depositAmount <= 5000) {
-        // AJAX request to backend
         $.ajax({
-            url: 'captain-update-amount', // Replace with your actual endpoint
+            url: 'captain-update-amount',
             method: 'POST',
-            data: {amount: depositAmount}, // Send amount as a simple object
-            contentType: 'application/x-www-form-urlencoded', // Adjust content type as per backend expectation
-            dataType: 'json', // Expect JSON response from backend
+            data: {amount: depositAmount},
+            contentType: 'application/x-www-form-urlencoded',
+            dataType: 'json',
 
             success: function (response) {
-                // Handle successful response
-                console.log('Amount successfully sent to backend:', response);
-                // Check if response is a number (indicating success)
                 var walletBalance = document.querySelector('.wallet-balance');
                 var currentBalance = parseFloat(walletBalance.textContent.replace('Balance: ₹ ', ''));
                 var newBalance = currentBalance - depositAmount;
@@ -38,7 +33,6 @@ function withdrawMoney() {
                 inputContainer.style.display = 'none';
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.error('Error updating transaction details:', xhr, textStatus, errorThrown);
                 let errorMessage = "An error occurred while updating transaction details.";
 
                 if (xhr.responseJSON && xhr.responseJSON.error) {
@@ -70,14 +64,14 @@ $(document).ready(function () {
         dataType: 'json',
         success: function (data) {
             populateTransactionDetails(data);
+
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.error('Error fetching transaction details:', xhr, textStatus, errorThrown);
             showErrorMsg('Failed to fetch transaction details. Please try again later.');
-            var container1 = $('#transaction-container1'); // Adjust the selector to match your container
-            var container2 = $('#transaction-container2'); // Adjust the selector to match your container
-            container1.empty(); // Clear any existing content
-            container2.empty(); // Clear any existing content
+            var container1 = $('#transaction-container1');
+            var container2 = $('#transaction-container2');
+            container1.empty();
+            container2.empty();
             container1.append('<div class="no-records">Failed to fetch transaction details Or there is no data</div>');
             container2.append('<div class="no-records">Failed to fetch transaction details Or there is no data</div>');
 
@@ -88,11 +82,16 @@ $(document).ready(function () {
 
 
 function populateTransactionDetails(data) {
-    var container1 = $('#transaction-container1'); // Adjust the selector to match your container
-    var container2 = $('#transaction-container2'); // Adjust the selector to match your container
-    container1.empty(); // Clear any existing content
-    container2.empty(); // Clear any existing content
 
+    var container1 = $('#transaction-container1');
+    var container2 = $('#transaction-container2');
+    container1.empty();
+    container2.empty();
+    if (data.length === 0) {
+        container1.append('<div class="no-records">No record paid by Cash</div>');
+        container2.append('<div class="no-records">No record paid by Wallet.</div>');
+        return;
+    }
     var hasMethod1 = false;
     var hasOtherMethods = false;
 
@@ -111,10 +110,10 @@ function populateTransactionDetails(data) {
             '</div>';
 
         if (transaction.paymentMethod == 1) {
-            container1.append(html); // Append to container1 for payment method 1
+            container1.append(html);
             hasMethod1 = true;
         } else {
-            container2.append(html); // Append to container2 for other payment methods
+            container2.append(html);
             hasOtherMethods = true;
         }
     });

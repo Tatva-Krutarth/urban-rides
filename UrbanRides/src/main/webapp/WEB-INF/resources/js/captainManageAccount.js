@@ -1,11 +1,9 @@
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 
 $(document).ready(function () {
-
-    // Function to fetch user management details and populate the UI
     function fetchUserManagementDetails() {
         $.ajax({
             url: 'captain-usermanagement-details',
@@ -20,32 +18,25 @@ $(document).ready(function () {
         });
     }
 
-    // Function to populate user management details in the UI
     function populateUserManagementDetails(data) {
-        // Populate the profile photo if it exists
         if (data.profilePhotoPath) {
             $('.manage-account-profile-photo img').attr('src', data.profilePhotoPath);
         }
 
-        // Populate the personal details
         $('.personal-details-data[name="firstName"]').val(data.firstName);
         $('.personal-details-data[name="lastName"]').val(data.lastName);
         $('.personal-details-data-login[name="email"]').val(data.email);
         $('.personal-details-data[name="phone"]').val(data.phone);
     }
 
-    // Call the function to fetch and populate user management details on page load
     fetchUserManagementDetails();
 
-    // Edit button click handler for user details form
     $('.edit-button').click(function () {
         if ($(this).hasClass('first-button')) {
-            // Unlock the fields for editing
             $('.personal-details-data').prop('readonly', false);
             $(this).addClass('d-none');
             $(this).siblings('.second-button').removeClass('d-none');
         } else {
-            // Trigger form validation and submit if valid
             $('#user-management-form').submit();
         }
     });
@@ -55,14 +46,14 @@ $(document).ready(function () {
                 required: true,
                 minlength: 1,
                 maxlength: 10,
-                lettersOnly: true, // Assuming you have a custom method for letters only
+                lettersOnly: true,
                 notSameValue: '#last-Name'
             },
             lastName: {
                 required: true,
                 minlength: 1,
                 maxlength: 10,
-                lettersOnly: true, // Assuming you have a custom method for letters only
+                lettersOnly: true,
                 notSameValue: '#first-Name'
             },
             phone: {
@@ -106,7 +97,7 @@ $(document).ready(function () {
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(updatedData),
-                dataType: 'json', // Ensure this is a string
+                dataType: 'json',
                 success: function (response) {
                     showSuccesstMsg('User data updated successfully.');
 
@@ -123,7 +114,6 @@ $(document).ready(function () {
                     $('.edit-button.second-button').addClass('d-none');
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error('Error updating personal details:', xhr, textStatus, errorThrown);
                     let errorMessage = "An error occurred while updating personal details.";
 
                     if (xhr.responseJSON && xhr.responseJSON.errors) {
@@ -145,36 +135,24 @@ $(document).ready(function () {
             });
         }
     });
-    // // Edit button click handler for login details form
-    // $('.edit-button-login-details').click(function () {
-    //     // Toggle visibility of password fields and buttons
-    //     $('.personal-details-cont.d-none').toggleClass('d-none');
-    //     $(this).toggleClass('d-none');
-    //     $(this).siblings('.edit-button-login-details').toggleClass('d-none');
-    // });
 
 
     $('.edit-button-login-details').click(function () {
         if ($(this).hasClass('login-first')) {
-            // Unlock the fields for editing
             $('.personal-details-cont.d-none').toggleClass('d-none');
             $(this).toggleClass('d-none');
             $(this).siblings('.edit-button-login-details').toggleClass('d-none');
         } else {
-            // Trigger form validation and submit if valid
             $('#user-management-login-details').submit();
         }
     });
-
-
-    // Initialize form validation for login details form
     $('#user-management-login-details').validate({
         rules: {
             currentPassword: {
                 required: true,
                 minlength: 8,
                 maxlength: 16,
-                strongPass: true, // Use custom validator for strong
+                strongPass: true,
                 notSameValue: '#new-password'
 
 
@@ -182,7 +160,7 @@ $(document).ready(function () {
                 required: true,
                 minlength: 8,
                 maxlength: 16,
-                strongPass: true,// Use custom validator for strong
+                strongPass: true,
                 notSameValue: '#current-password'
 
 
@@ -220,7 +198,6 @@ $(document).ready(function () {
             }
         },
         submitHandler: function (form) {
-            // Save changes button click handler
             var loginDetails = {
                 currentPassword: $('#current-password').val(),
                 newPassword: $('#new-password').val(),
@@ -232,23 +209,19 @@ $(document).ready(function () {
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(loginDetails),
-                dataType: 'json', // Ensure this is a string
+                dataType: 'json',
 
                 success: function (response) {
-                    // Show success message
                     showSuccesstMsg('Login details updated successfully.');
                     $('#current-password').val('');
                     $('#new-password').val('');
                     $('#conf-new-password').val('');
-                    // Hide password fields again
                     $('.hide-this').addClass('d-none');
-                    // $('.login-second').add('d-none');
                     $('#unhide-btn').addClass('d-none');
                     $('#hide-btn').removeClass('d-none');
                     $(".loader").hide();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error('Error updating login details:', xhr, textStatus, errorThrown);
                     let errorMessage = "An error occurred while updating login details.";
 
                     if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -271,14 +244,10 @@ $(document).ready(function () {
             });
         }
     });
-
-
-    // Change Profile Photo button click handler
     $('.change-profile-photo-button').click(function () {
         $('#profile-photo-input').click();
     });
 
-    // Profile photo input change handler
     $('#profile-photo-input').change(function () {
         var profilePhoto = this.files[0];
         if (profilePhoto) {
@@ -288,7 +257,6 @@ $(document).ready(function () {
                 sho('Invalid file type. Please select a JPG or PNG image.');
                 return;
             }
-
             var formData = new FormData();
             formData.append('profilePhoto', profilePhoto);
             $(".loader").css("display", "flex");
@@ -299,16 +267,13 @@ $(document).ready(function () {
                 data: formData,
                 processData: false,
                 contentType: false,
-                dataType: 'json', // Ensure this is a string
-
+                dataType: 'json',
                 success: function (response) {
-                    // Show success message
-                    showSuccesstMsg('Profile photo updated successfully.');
-                    // Update the profile photo in the UI
-                    var relativePath = response; // Assuming the response contains the relative path
-                    $('.manage-account-profile-photo img').attr('src', relativePath);
-                    $('#profile-photo-input').val(''); // Reset the file input
 
+                    showSuccesstMsg('Profile photo updated successfully.');
+                    var relativePath = response;
+                    $('.manage-account-profile-photo img').attr('src', relativePath);
+                    $('#profile-photo-input').val('');
                     setTimeout(function () {
                         $(".loader").hide();
                         window.location.reload();
@@ -316,19 +281,18 @@ $(document).ready(function () {
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     $(".loader").hide();
-                    console.log(xhr)
-                    $('#profile-photo-input').val(''); // Reset the file input
+                    $('#profile-photo-input').val('');
 
                     try {
-                        let response = JSON.parse(xhr.responseText); // Parse the JSON response
+                        let response = JSON.parse(xhr.responseText);
                         if (response.errors && response.errors.length > 0) {
-                            let errorMessage = response.errors.join('<br>'); // Join the errors with line breaks
-                            showErrorMsg(errorMessage); // Display the error message
+                            let errorMessage = response.errors.join('<br>');
+                            showErrorMsg(errorMessage);
                         } else {
-                            showErrorMsg("Only JPG and PNG files are allowed of size less than 1 mb"); // Fallback for unknown error structure
+                            showErrorMsg("Only JPG and PNG files are allowed of size less than 1 mb");
                         }
                     } catch (e) {
-                        showErrorMsg("Only JPG and PNG files are allowed of size less than 1 mb"); // Fallback for JSON parsing errors
+                        showErrorMsg("Only JPG and PNG files are allowed of size less than 1 mb");
                     }
                 }
 
@@ -344,8 +308,8 @@ $(document).ready(function () {
     }, "Please enter only letters");
 
     $.validator.addMethod("notSameValue", function (value, element, param) {
-        var valOne = value.toLowerCase(); // Convert the first value to lowercase
-        var valTwo = $(param).val().toLowerCase(); // Convert the second value to lowercase
+        var valOne = value.toLowerCase();
+        var valTwo = $(param).val().toLowerCase();
 
         return this.optional(element) || valOne !== valTwo;
     }, "The values must be different.");

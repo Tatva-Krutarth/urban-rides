@@ -62,12 +62,9 @@ public class Trip {
     @CreationTimestamp
     private LocalDateTime createdDate;
 
-    //    @NotBlank(message = "Distance is required")
     @Size(max = 20, message = "Distance cannot be more than 20 characters")
     private String distance;
 
-    // Eestimated time to reach destination
-    //@NotNull(message = "Estimated Time is required")
     private LocalTime estimatedTime;
 
     @Column(name = "charges", nullable = false)

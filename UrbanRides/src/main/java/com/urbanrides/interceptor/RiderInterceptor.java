@@ -12,51 +12,11 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class RiderInterceptor extends HandlerInterceptorAdapter {
 
-//    @Override
-//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-//            throws Exception {
-//        HttpSession session = request.getSession();
-//        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
-//        System.out.println(userSessionObj);
-//        if (userSessionObj == null) {
-//            response.sendRedirect(request.getContextPath() + "/no-session");
-//            return false;
-//        }
-//
-//        int accountStatus = userSessionObj.getAccountStatus();
-//
-//        switch (accountStatus) {
-//            case 1:
-//                response.sendRedirect(request.getContextPath() + "/rider/rider-personal-details");
-//                System.out.println("personal details");
-//                break;
-//            case 2:
-//                response.sendRedirect(request.getContextPath() + "/rider/rider-dashboard");
-//                System.out.println("personal dashboard");
-//
-//                break;
-//            case 3:
-//                response.sendRedirect(request.getContextPath() + "/rider/blocked");
-//                System.out.println("Blocked");
-//
-//                break;
-//            default:
-//                // Handle any other cases if necessary
-//                System.out.println("session");
-//
-//                response.sendRedirect(request.getContextPath() + "/no-session");
-//                break;
-//        }
-//
-//        return false; // Return false to stop further handling
-//    }
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         HttpSession session = request.getSession();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
-        System.out.println(userSessionObj);
 
         if (userSessionObj == null) {
             response.sendRedirect(request.getContextPath() + "/no-session");
@@ -67,21 +27,18 @@ public class RiderInterceptor extends HandlerInterceptorAdapter {
         String currentUri = request.getRequestURI();
 
         if (currentUri.equals(request.getContextPath() + "/rider/rider-personal-details-submit")) {
-            return true; // Proceed with form submission
+            return true;
         }
 
         switch (accountStatus) {
             case 1:
                 if (!currentUri.equals(request.getContextPath() + "/rider/rider-personal-details")) {
-                    System.out.println("pre handler");
                     response.sendRedirect(request.getContextPath() + "/rider/rider-personal-details");
                     return false;
                 }
                 break;
             case 5:
-
                 return true;
-
             case 6:
                 if (!currentUri.equals(request.getContextPath() + "/rider/blocked")) {
                     response.sendRedirect(request.getContextPath() + "/rider/blocked");
@@ -93,7 +50,7 @@ public class RiderInterceptor extends HandlerInterceptorAdapter {
                 return false;
         }
 
-        return true; // Proceed with the request
+        return true;
     }
 
 

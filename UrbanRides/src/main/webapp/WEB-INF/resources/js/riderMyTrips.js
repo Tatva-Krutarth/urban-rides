@@ -1,10 +1,10 @@
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 
 function toggleAccordion(event, collapseId) {
-    event.stopPropagation(); // Prevent default button behavior
+    event.stopPropagation();
     const collapseElement = document.getElementById(collapseId);
     const bsCollapse = new bootstrap.Collapse(collapseElement, {
         toggle: true
@@ -19,8 +19,7 @@ $(document).ready(function () {
         success: function (data) {
             if (!data || data.length === 0) {
                 var accordionExample = $('#accordionExample');
-                accordionExample.empty(); // Clear any existing content
-
+                accordionExample.empty();
                 accordionExample.append(`
             <div>
                 <h5>You have no trips yet.</h5>
@@ -40,14 +39,12 @@ $(document).ready(function () {
 
     function populateTransactionDetails(data) {
         var accordionExample = $('#accordionExample');
-        accordionExample.empty(); // Clear any existing content
+        accordionExample.empty();
 
         data.forEach(function (trip, index) {
             var serviceTypeText = getServiceTypeText(trip.serviceTypeId);
             var notiImgSrc = getNotificationImage(trip.serviceTypeId);
             var statusText, statusColor;
-
-            // Determine status text and color
             switch (trip.status) {
                 case 1:
                     statusText = 'Completed';
@@ -123,8 +120,6 @@ $(document).ready(function () {
                                                 <div class="captain-org-name">
                                                     You have rated ${trip.captainName}
                                                 </div>
-                                                <!-- Initialize star rating here based on your logic -->
-                                                <!-- Example: <div id="rating-system${index}"></div> -->
                                             </div>
                                         </div>
                                     </div>

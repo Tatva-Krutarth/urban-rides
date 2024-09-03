@@ -9,5 +9,4 @@ public class AdminCountData {
     private int generalBooking;
     private int serviceBooking;
     private int totalSuccessBooking;
-
 }

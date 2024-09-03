@@ -1,9 +1,6 @@
 package com.urbanrides.dao;
 
-import com.urbanrides.model.GeneralTripDetails;
 import com.urbanrides.model.PackageTrip;
-import com.urbanrides.model.SupportTypeLogs;
-import com.urbanrides.model.Trip;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -23,33 +20,19 @@ public class PackageTripDao {
     @Autowired
     private SessionFactory sessionFactory;
 
-    //    @Transactional
-//    public int savePackageTrip(PackageTrip packageTrip) {
-//        this.hibernateTemplate.save(packageTrip);
-//        return packageTrip.getPackageTripId();
-//    }
-    //save
     @Transactional
     public void savePackageTrip(PackageTrip packageTrip) {
         this.hibernateTemplate.save(packageTrip);
-
-    }
-
-    @Transactional
-    public PackageTrip getPackageTrip(Integer id) {
-        return this.hibernateTemplate.get(PackageTrip.class, id);
     }
 
     @Transactional
     public void updatePackageTrip(PackageTrip packageTrip) {
-
         this.hibernateTemplate.update(packageTrip);
     }
 
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
-
 
     @Transactional
     public PackageTrip getPackageTripDataByTripId(int tripId) {

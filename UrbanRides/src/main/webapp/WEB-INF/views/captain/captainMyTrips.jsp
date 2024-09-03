@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -22,13 +20,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <%--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>--%>
-    <%--    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>--%>
-    <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
-
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-    <%--//web socket------%>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
             integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -37,12 +28,7 @@
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="stylesheet" href="<c:url value="/resources/css/captainMyTrips.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
 
@@ -107,40 +93,6 @@
                                     You have ratted Ramesh Kumar
                                 </div>
 
-
-<%--                                <div id="rating-system">--%>
-<%--                                    <!-- Display Stars -->--%>
-<%--                                    <div class="d-flex gap-1">--%>
-<%--                                        <svg class="star" data-index="0" xmlns="http://www.w3.org/2000/svg"--%>
-<%--                                             viewBox="0 0 24 24">--%>
-<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
-<%--                                        </svg>--%>
-<%--                                        <svg class="star" data-index="1" xmlns="http://www.w3.org/2000/svg"--%>
-<%--                                             viewBox="0 0 24 24">--%>
-<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
-<%--                                        </svg>--%>
-<%--                                        <svg class="star" data-index="2" xmlns="http://www.w3.org/2000/svg"--%>
-<%--                                             viewBox="0 0 24 24">--%>
-<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
-<%--                                        </svg>--%>
-<%--                                        <svg class="star" data-index="3" xmlns="http://www.w3.org/2000/svg"--%>
-<%--                                             viewBox="0 0 24 24">--%>
-<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
-<%--                                        </svg>--%>
-<%--                                        <svg class="star" data-index="4" xmlns="http://www.w3.org/2000/svg"--%>
-<%--                                             viewBox="0 0 24 24">--%>
-<%--                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>--%>
-<%--                                        </svg>--%>
-<%--                                        <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">--%>
-<%--                                            <defs>--%>
-<%--                                                <linearGradient id="half-filled-gradient">--%>
-<%--                                                    <stop offset="50%" stop-color="#f59e0b"/>--%>
-<%--                                                    <stop offset="50%" stop-color="gray"/>--%>
-<%--                                                </linearGradient>--%>
-<%--                                            </defs>--%>
-<%--                                        </svg>--%>
-<%--                                    </div>--%>
-<%--                                </div>--%>
                             </div>
                         </div>
                     </div>
@@ -181,9 +133,6 @@
 
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-
-<%------------------------------------jquerry  validation--%>
 <script src="<c:url value="/resources/js/captain-web-socket.js"/>"></script>
 
 <script src="<c:url value="/resources/js/captainMyTrips.js"/>"></script>

@@ -20,8 +20,10 @@ import java.util.List;
 
 @Repository
 public class UsersDao {
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -35,7 +37,6 @@ public class UsersDao {
         return sessionFactory.getCurrentSession();
     }
 
-    //update
     @Transactional
     public void updateUser(User user) {
         this.hibernateTemplate.update(user);
@@ -52,30 +53,13 @@ public class UsersDao {
             if (list != null && !list.isEmpty()) {
                 return list.get(0);
             } else {
-                return null; // or you can return a default OtpLogs object
+                return null;
             }
         } finally {
             s.close();
         }
     }
 
-    //    @Transactional
-//    public User getUserByUserId(int id) {
-//        Session s = sessionFactory.openSession();
-//        try {
-//            String sm = "FROM User WHERE userId = :id ";
-//            Query qq = s.createQuery(sm);
-//            qq.setParameter("id", id);
-//            List<User> list = qq.list();
-//            if (list != null && !list.isEmpty()) {
-//                return list.get(0);
-//            } else {
-//                return null; // or you can return a default OtpLogs object
-//            }
-//        } finally {
-//            s.close();
-//        }
-//    }
     @Transactional
     public User getUserByUserId(int id) {
         Session s = sessionFactory.openSession();
@@ -84,16 +68,6 @@ public class UsersDao {
         query.setParameter("id", id);
         List<User> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);
-    }
-
-
-    @Transactional
-    public void deleteOtpLogsByEmail(String email) {
-        Session session = sessionFactory.openSession();
-        String hql = "DELETE FROM OtpLogs  WHERE email = :email";
-        Query query = session.createQuery(hql);
-        query.setParameter("email", email);
-        session.close();
     }
 
     @Transactional

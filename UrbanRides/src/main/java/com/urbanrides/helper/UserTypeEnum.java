@@ -24,7 +24,6 @@ public enum UserTypeEnum {
         return value;
     }
 
-    // Method to retrieve value by ID
     public static String getValueById(int id) {
         for (UserTypeEnum pair : UserTypeEnum.values()) {
             if (pair.getId() == id) {
@@ -34,7 +33,6 @@ public enum UserTypeEnum {
         throw new IllegalArgumentException("Invalid notification type ID: " + id);
     }
 
-    // Method to retrieve ID by value
     public static int getIdByValue(String value) {
         for (UserTypeEnum pair : UserTypeEnum.values()) {
             if (pair.getValue().equals(value)) {

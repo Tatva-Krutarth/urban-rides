@@ -15,7 +15,6 @@ public class EmailConfig {
     public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.office365.com");
-//	    mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername("urbanrides070@outlook.com");
         mailSender.setPassword("@Tatvasoft1");

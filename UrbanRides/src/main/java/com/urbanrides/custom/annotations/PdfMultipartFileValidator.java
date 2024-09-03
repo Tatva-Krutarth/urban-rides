@@ -17,7 +17,7 @@ public class PdfMultipartFileValidator implements ConstraintValidator<PdfValidMu
     public boolean isValid(MultipartFile file, ConstraintValidatorContext context) {
         if (file == null) {
             System.out.println("The file in the cdfsdfs is nu;;");
-            return true; // or false, depending on your requirements
+            return true;
         }
         System.out.println("wthis is snot emptu");
         String fileName = file.getOriginalFilename();

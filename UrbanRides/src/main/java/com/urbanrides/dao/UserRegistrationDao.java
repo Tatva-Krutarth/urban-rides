@@ -18,8 +18,10 @@ import java.util.List;
 
 @Repository
 public class UserRegistrationDao {
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -40,7 +42,7 @@ public class UserRegistrationDao {
             if(list!= null &&!list.isEmpty()) {
                 return list.get(0);
             } else {
-                return null; // or you can return a default OtpLogs object
+                return null;
             }
         } finally {
             s.close();

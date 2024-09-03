@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -32,13 +30,7 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/riderMyTrips.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
     <script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
-    <%--//web socket------%>
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
 
@@ -171,10 +163,6 @@
 
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-
-<%------------------------------------jquerry  validation--%>
-
 <script src="<c:url value="/resources/js/riderMyTrips.js"/>"></script>
 
 </body>

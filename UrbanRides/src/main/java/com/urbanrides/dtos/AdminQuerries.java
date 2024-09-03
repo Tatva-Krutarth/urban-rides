@@ -16,5 +16,4 @@ public class AdminQuerries {
     private String adminName;
     private int fileAvailable ;
     private String fileLocaton;
-
 }

@@ -15,7 +15,6 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
             throws Exception {
         HttpSession session = request.getSession();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("adminSessionObj");
-        System.out.println(userSessionObj);
 
         if (userSessionObj == null) {
             response.sendRedirect(request.getContextPath() + "/no-session");
@@ -26,19 +25,17 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
         String currentUri = request.getRequestURI();
 
         if (currentUri.equals(request.getContextPath() + "/admin/admin-personal-details-submit")) {
-            return true; // Proceed with form submission
+            return true;
         }
 
         switch (accountStatus) {
             case 1:
                 if (!currentUri.equals(request.getContextPath() + "/admin/admin-personal-details")) {
-                    System.out.println("pre handler");
                     response.sendRedirect(request.getContextPath() + "/admin/admin-personal-details");
                     return false;
                 }
                 break;
             case 5:
-                System.out.println("admin dadshsdaafa dada");
                 return true;
 
             case 6:
@@ -52,7 +49,7 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
                 return false;
         }
 
-        return true; // Proceed with the request
+        return true;
     }
 
 

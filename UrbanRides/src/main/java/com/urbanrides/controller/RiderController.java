@@ -1,12 +1,10 @@
 package com.urbanrides.controller;
 
 
-import com.urbanrides.dao.SupportTypeLogsDao;
 import com.urbanrides.dtos.*;
 import com.urbanrides.exceptions.CustomExceptions;
 import com.urbanrides.exceptions.CustomValidationException;
 import com.urbanrides.exceptions.InsufficientFundsException;
-import com.urbanrides.model.SupportTypeLogs;
 import com.urbanrides.service.CabBookingService;
 import com.urbanrides.service.LoginServices;
 import com.urbanrides.service.RiderOtherService;
@@ -15,17 +13,12 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -38,27 +31,21 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/rider")
-
 public class RiderController {
-
 
     @Autowired
     private CabBookingService cabBookingService;
-    @Autowired
-    private ConversionService conversionService;
 
     @Autowired
     private RiderOtherService riderOtherService;
+
     @Autowired
     private LoginServices loginServices;
 
-
     @RequestMapping("/rider-personal-details")
     public String riderPersonalDetails() {
-        System.out.println("inside the demo");
         return "rider/riderPersonalDetails";
     }
-
 
     @ResponseBody
     @PostMapping("/rider-personal-details-submit")
@@ -71,7 +58,6 @@ public class RiderController {
     public String riderDashboard() {
         return "rider/riderDashboard";
     }
-
 
     @ResponseBody
     @PostMapping("/rider-normal-ride-submit")
@@ -86,13 +72,10 @@ public class RiderController {
         }
     }
 
-
     @ResponseBody
     @PostMapping("/cancel-ride-submit")
     public ResponseEntity<String> riderNormalRideSubmit(@RequestParam("cancelation-reason") String cancellationReason, @RequestParam("trip-id") int tripId) {
-        System.out.println("here we go again");
         String toasterMsg = cabBookingService.cancelRide(cancellationReason, tripId);
-
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
 
@@ -114,14 +97,12 @@ public class RiderController {
         cabBookingService.saveRiderStartInfo(tripId);
     }
 
-
     @RequestMapping(path = "/ride-end-info", method = RequestMethod.POST)
     @ResponseBody
     public RattingModalDataDto rideEndInfo(@RequestParam("tripId") int tripId) {
         RattingModalDataDto rattingModalDataDto = cabBookingService.saveRideEndInfo(tripId);
         return rattingModalDataDto;
     }
-
 
     @PostMapping("/ride-ratting-submit")
     @ResponseBody
@@ -151,7 +132,6 @@ public class RiderController {
     @GetMapping("/get-captain-details")
     @ResponseBody
     public ResponseEntity<?> getCaptainDetails() {
-
         try {
             List<RiderCaptainDetailsOnMapDto> captainDetails = cabBookingService.getFreeCaptain();
             return new ResponseEntity<>(captainDetails, HttpStatus.OK);
@@ -161,7 +141,6 @@ public class RiderController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @ResponseBody
     @PostMapping("/package-ride-submit")
@@ -177,17 +156,14 @@ public class RiderController {
         }
     }
 
-
     @RequestMapping("/rider-notifications")
     public String riderNotifications(Model model) {
         List<NotificationDataDto> notiList = riderOtherService.getNotificationData();
-
         if (notiList.isEmpty()) {
             model.addAttribute("noNotifications", "No new notifications in the last 5 days.");
         } else {
             model.addAttribute("notificationDataDto", notiList);
         }
-
         return "rider/riderNotifications";
     }
 
@@ -197,12 +173,10 @@ public class RiderController {
         if (bindingResult.hasErrors()) {
             Method method = ReflectionUtils.findMethod(getClass(), "saveGetSupport", RiderGetSupportDto.class, BindingResult.class, HttpSession.class);
             MethodParameter methodParameter = new MethodParameter(method, 0);
-
             throw new MethodArgumentNotValidException(methodParameter, bindingResult);
         }
         try {
             riderOtherService.getSupportSaveToLogs(riderGetSupportDto, session);
-            // Construct success response with a message
             Map<String, String> response = new HashMap<>();
             response.put("message", "Support request submitted successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -221,12 +195,10 @@ public class RiderController {
         }
     }
 
-
     @RequestMapping("/rider-my-trip")
     public String riderMyTrip() {
         return "rider/riderMyTrips";
     }
-
 
     @ResponseBody
     @RequestMapping("/rider-my-trip-details")
@@ -235,16 +207,12 @@ public class RiderController {
         return listOfRiderTripDetails;
     }
 
-
     @RequestMapping("/rider-wallet")
     public String riderWallet(Model model) {
-
-
         double walletAMount = riderOtherService.getAmount();
         model.addAttribute("walletAmount", walletAMount);
         return "rider/riderWallet";
     }
-
 
     @ResponseBody
     @RequestMapping("/rider-transaction-details")
@@ -275,13 +243,11 @@ public class RiderController {
         return userManagementDataDto;
     }
 
-
     @ResponseBody
     @PostMapping("/update-personal-details")
     public ResponseEntity<Map<String, String>> riderPersonalDetailSubmit(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
         return riderOtherService.riderPersonalDetailSubmit(riderUMPersonalDetailDto);
     }
-
 
     @ResponseBody
     @PostMapping("/update-login-details")
@@ -321,16 +287,6 @@ public class RiderController {
         }
     }
 
-
-    @RequestMapping("/rider-logout")
-    public String riderLogout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        return "landingPage/landingPage";
-    }
-
     @RequestMapping(value = "/search-support-request", method = RequestMethod.GET)
     public ResponseEntity<?> getSupportRequestById(@RequestParam String id) {
         SupportRequestDataDto supportRequestData = riderOtherService.findSupportRequestById(id);
@@ -340,6 +296,15 @@ public class RiderController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @RequestMapping("/rider-logout")
+    public String riderLogout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "landingPage/landingPage";
     }
 
 

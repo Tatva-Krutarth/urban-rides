@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 a.addEventListener("click", function (event) {
                     event.preventDefault();
                     dropbtn.textContent = option.text;
-                    selectedOptionInput.value = option.text; // Store selected option in hidden input
+                    selectedOptionInput.value = option.text;
                     updateDropdownContent(option.text);
                     dropdownContent.classList.remove("show");
                     handleOptionChange(option.id);
@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const dropoffLocation = document.getElementById("dropoffLocation").parentElement;
         const pickupLocation = document.getElementById("pickupLocation");
         const numberOfPassengers = document.getElementById("numPassengers").parentElement;
-        // const chargesDivCont = document.getElementById("charges-div-cont");
         const hideCheckBox = document.getElementById("hide-all-checkbox");
         const pickUpDropOffLabel = document.getElementById("pickup-dropoff-label-id");
         const pickUpDateLabel = document.getElementById("pick-up-date");
@@ -48,20 +47,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const validLocationPackage = document.getElementById("valid-location-package");
         const time = document.getElementById("package-time");
         const dist = document.getElementById("package-dist");
-        // const charges = document.getElementById("charge");
-        // const actualNoOfDays = document.getElementById("numDays");
 
         if (optionId === "rentTaxi") {
             $('#package-form')[0].reset();
-
             numberOfDays.classList.add("d-none");
             numberOfPassengers.classList.remove("d-none");
             hideCheckBox.classList.add("d-none");
             selectedDays.classList.add("d-none");
             dropoffLocation.classList.add("d-none");
-            // chargesDivCont.classList.add("d-none");
             pickupLocation.value = "Pakwan Chokdi, Pakwan Flyover, Bodakdev, Ahmedabad, Gujarat, India";
-            // actualNoOfDays.value = 0;
             pickupLocation.disabled = true;
             hideCheckBoxText.classList.add("d-none");
             specialInstructionsLabel.innerHTML = "Special Instructions (Optional)";
@@ -71,32 +65,23 @@ document.addEventListener("DOMContentLoaded", function () {
             pickUpDropOffLabel.classList.add("d-none");
             pickUpToggle.classList.remove("d-none");
             timeAndDistance.classList.add("d-none");
-            // hideCharges.classList.remove("d-none");
             serviceType.value = "Rent a taxi";
             validLocationPackage.classList.add("d-none");
             pickUpDropOffLabel.innerHTML = "Pick up - Drop off location";
-
         } else if (optionId === "dailyPickup") {
             dropoffLocation.classList.remove("d-none");
             hideCheckBox.classList.remove("d-none");
             selectedDays.classList.remove("d-none");
-            // chargesDivCont.classList.remove("d-none");
-
             pickupLocation.value = "";
             pickupLocation.readOnly = false;
             numberOfDays.classList.remove("d-none");
             pickupLocation.disabled = false;
-
-            // hideCharges.classList.add("d-none");
             serviceType.value = "Daily pick up";
             validLocationPackage.classList.remove("d-none");
             $("#pickupLocation, #dropoffLocation").prop("placeholder", "");
-            // $('#charges').val(0);
             $("#pickup-dropoff-label-id").css("background-color", "white");
-
             $('#numDays').val(0);
             $("#valid-location-package").val('');
-            // numberOfDays.classList.remove("d-none");
             pickUpDropOffLabel.classList.remove("d-none");
             pickUpDropOffLabel.innerHTML = "Pick up location";
             pickUpDateLabel.innerHTML = "Start date";
@@ -122,13 +107,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Initialize the dropdown content
     updateDropdownContent("Rent a Taxi");
     handleOptionChange("rentTaxi");
 });
 
 
-// ---------------------vehiclle drop down ------------
 
 document.addEventListener('DOMContentLoaded', function () {
     const selectBox = document.getElementById('vehicleType');
@@ -151,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-// ----------------------------checkboxes-------------
 document.addEventListener('DOMContentLoaded', function () {
     const checkboxes = document.querySelectorAll('input[type="checkbox"][id^="day"]');
     const hiddenField = document.getElementById('selectedDays');
@@ -181,13 +163,11 @@ function calculateCharges() {
     var selectedDays = $('#selectedDays').val().split(',').map(Number);
     var selectedDaysValue = $('#selectedDays').val();
     var distance = parseFloat($('.dynamic-distance-package').text().replace(' Km', ''));
-
     if (!numPassengers || !vehicleType || !serviceText || !pickupDate || !dropOffDate) {
         $('#charges').val('');
         return;
     }
 
-    // Check if passenger count is valid
     var maxPassengers = 0;
     if (vehicleType === '1') {
         maxPassengers = 1;
@@ -196,13 +176,11 @@ function calculateCharges() {
     } else if (vehicleType === '3' || vehicleType === '4') {
         maxPassengers = 4;
     }
-
     if (numPassengers > maxPassengers) {
         $('#charges').val('');
         return;
     }
 
-    // Check if pickup and dropOff dates are valid
     var pickDate = new Date(pickupDate);
     var dropDate = new Date(dropOffDate);
     var today = new Date();
@@ -216,20 +194,19 @@ function calculateCharges() {
         return;
     }
 
-    // Calculate charges based on service type
     var charges = 0;
     if (serviceText === 'Rent a Taxi') {
         var numDays = (dropDate - pickDate) / (1000 * 60 * 60 * 24);
         var baseRate = 0;
 
         if (vehicleType === '1') {
-            baseRate = 100; // Example rate for bike
+            baseRate = 100;
         } else if (vehicleType === '2') {
-            baseRate = 200; // Example rate for rickshaw
+            baseRate = 200;
         } else if (vehicleType === '3') {
-            baseRate = 300; // Example rate for car
+            baseRate = 300;
         } else if (vehicleType === '4') {
-            baseRate = 400; // Example rate for luxury car
+            baseRate = 400;
         }
 
         charges = baseRate * numPassengers * numDays;
@@ -243,26 +220,24 @@ function calculateCharges() {
         var ratePerPassenger = 0;
 
         if (vehicleType === '1') {
-            baseRatePerKm = 5; // Example rate per km for bike
-            ratePerPassenger = 2; // Example rate per passenger for bike
+            baseRatePerKm = 5;
+            ratePerPassenger = 2;
         } else if (vehicleType === '2') {
-            baseRatePerKm = 10; // Example rate per km for rickshaw
-            ratePerPassenger = 5; // Example rate per passenger for rickshaw
+            baseRatePerKm = 10;
+            ratePerPassenger = 5;
         } else if (vehicleType === '3') {
-            baseRatePerKm = 15; // Example rate per km for car
-            ratePerPassenger = 10; // Example rate per passenger for car
+            baseRatePerKm = 15;
+            ratePerPassenger = 10;
         } else if (vehicleType === '4') {
-            baseRatePerKm = 20; // Example rate per km for luxury car
-            ratePerPassenger = 15; // Example rate per passenger for luxury car
+            baseRatePerKm = 20;
+            ratePerPassenger = 15;
         }
 
-        // Calculate number of days based on selected days and date range
         var numberOfDays = 0;
         var currentDate = new Date(pickupDate);
-        console.log(currentDate.getDay())
 
         while (currentDate <= dropDate) {
-            var dayOfWeek = currentDate.getDay(); // JavaScript getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday. Adding 1 to match your format
+            var dayOfWeek = currentDate.getDay();
             if (currentDate.getDay() === 0) {
                 dayOfWeek = 7;
             }
@@ -287,35 +262,31 @@ function calculateCharges() {
 
 $(document).ready(function () {
 
-    // Custom method to validate future date with at least 2 days buffer
     $.validator.addMethod("futureDateAfterTwoDays", function (value, element) {
         var today = new Date();
         var minDate = new Date(today);
         minDate.setDate(today.getDate() + 2);
         var inputDate = new Date(value);
-        return inputDate >= minDate; // Validation condition
+        return inputDate >= minDate;
     }, "Pickup date must be at least 2 days from today");
 
-    // Custom method to validate that the date is within 6 months in the future
     $.validator.addMethod("withinSixMonths", function (value, element) {
         var today = new Date();
         var maxDate = new Date(today);
         maxDate.setMonth(today.getMonth() + 6);
         var inputDate = new Date(value);
-        return inputDate <= maxDate; // Validation condition
+        return inputDate <= maxDate;
     }, "Date must be within 6 months from today");
 
-    // Custom method to validate that dropOffDate is after pickupDate by at least 1 day
     $.validator.addMethod("afterPickupDate", function (value, element) {
         var pickupDate = $('#pickupDate').val();
         if (!pickupDate) return false;
         var inputDate = new Date(value);
         var pickDate = new Date(pickupDate);
         pickDate.setDate(pickDate.getDate() + 1);
-        return inputDate >= pickDate; // Validation condition
+        return inputDate >= pickDate;
     }, "Drop off date must be at least 1 day after pickup date");
 
-    // Custom method to validate that dropOffDate is within 30 days of pickupDate
     $.validator.addMethod("withinThirtyDays", function (value, element) {
         var pickupDate = $('#pickupDate').val();
         if (!pickupDate) return false;
@@ -323,58 +294,29 @@ $(document).ready(function () {
         var pickDate = new Date(pickupDate);
         var maxDropDate = new Date(pickupDate);
         maxDropDate.setDate(pickDate.getDate() + 30);
-        return inputDate <= maxDropDate; // Validation condition
+        return inputDate <= maxDropDate;
     }, "Drop off date must be within 30 days of pickup date");
 
-    // Custom method to validate that the total number of passengers is within limits
     $.validator.addMethod("validPassengerCount", function (value, element) {
         var numPassengers = parseInt(value, 10);
         var maxPassengers = 0;
-
-        // Vehicle capacities
         var bikeCapacity = 1;
         var rickshawCapacity = 3;
         var carCapacity = 4;
-
-        // Get the vehicle type
         var vehicleType = $('#vehicleType').val();
-
-        // Calculate maximum passengers based on vehicle type
         if (vehicleType === '1') {
             maxPassengers = bikeCapacity;
         } else if (vehicleType === '2') {
             maxPassengers = rickshawCapacity;
         } else if (vehicleType === '3' || vehicleType === '4') {
-            maxPassengers = carCapacity; // Both Car and Luxury Car have the same capacity
+            maxPassengers = carCapacity;
         }
-
-        return numPassengers <= maxPassengers; // Validation condition
+        return numPassengers <= maxPassengers;
     }, "Number of passengers must not exceed the capacity based on vehicle type");
 
-    // Custom method to validate that dropoffTime is at least 10 minutes after pickupTime if service is Daily Pickup
-    // $.validator.addMethod("timeDifferenceAtLeastTenMinutes", function (value, element) {
-    //     var serviceText = $('#selectedService').html().trim();
-    //     if (serviceText !== 'Daily Pickup') return true; // Only apply for Daily Pickup
-    //
-    //     var pickupTime = $('#pickupTime').val();
-    //     if (!pickupTime) return false;
-    //
-    //     var pickupDateTime = new Date('1970-01-01T' + pickupTime + 'Z');
-    //     var dropoffDateTime = new Date('1970-01-01T' + value + 'Z');
-    //
-    //     var diff = (dropoffDateTime - pickupDateTime) / (1000 * 60); // Difference in minutes
-    //
-    //     return diff >= 10; // Validation condition
-    // }, "Drop off time must be at least 10 minutes after pickup time for Daily Pickup");
     $.validator.addMethod("exactValidLocation", function (value, element) {
         return value === "Valid Location";
     }, "Please select Valid Location");
-
-
-    // Function to calculate charges
-
-
-    // Validation initialization
     $('#package-form').validate({
         rules: {
             pickupLocation: {
@@ -503,7 +445,6 @@ $(document).ready(function () {
         errorClass: "error",
 
         submitHandler: function (form) {
-            // Fetching all input values for data processing
             let pickupLocation = $('#pickupLocation').val();
             let dropOff = $('#dropoffLocation').val();
             let pickupDate = $('#pickupDate').val();
@@ -516,10 +457,9 @@ $(document).ready(function () {
             let charges = $('#charges').val();
             let chargesInt = Math.ceil(charges);
             let emergencyContact = $('#emergencyContact').val();
-            let specialInstructions = $('#floatingTextarea').val(); // Optional field
+            let specialInstructions = $('#floatingTextarea').val();
             var distance = parseFloat($('.dynamic-distance-package').text().replace(' Km', ''));
 
-            // Constructing JSON data object for submission
             var payload = {
                 pickup: "Pakwan Chokdi, Pakwan Flyover, Bodakdev, Ahmedabad, Gujarat, India",
                 dropOff: dropOff,
@@ -533,34 +473,27 @@ $(document).ready(function () {
                 charges: chargesInt,
                 emergencyContact: emergencyContact,
                 specialInstructions: specialInstructions,
-                // serviceType: selectedOption,
                 serviceType: selectedOption,
             };
 
-            // Example showing loader during AJAX request
             $(".loader").css("display", "flex");
-            console.log(JSON.stringify(payload));
 
-            // AJAX request to submit form data
             $.ajax({
-                url: 'package-ride-submit', // Replace with your endpoint
+                url: 'package-ride-submit',
                 method: 'POST',
                 data: JSON.stringify(payload),
                 contentType: 'application/json',
                 dataType: 'text',
                 success: function (response) {
-                    // Handle successful response
                     showSuccesstMsg("Request Done Successfully");
                     setTimeout(function () {
                         $(".loader").hide();
                         window.location.reload();
-                    }, 3000); // 3000ms = 3 seconds
+                    }, 3000);
 
-                    console.log("Form submitted successfully:", response);
                     $(".loader").hide();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error("Error:", xhr, textStatus, errorThrown);
                     $(".loader").hide();
 
                     let errorMessage = "Unknown error occurred.";
@@ -568,17 +501,14 @@ $(document).ready(function () {
                         try {
                             const errorResponse = JSON.parse(xhr.responseText);
                             if (errorResponse.errors) {
-                                // If errors is an array, join them into a single message
                                 if (Array.isArray(errorResponse.errors)) {
                                     errorMessage = errorResponse.errors.join(", ");
                                 } else {
                                     errorMessage = errorResponse.errors;
                                 }
                             } else if (errorResponse.error) {
-                                // Handle the single error message
                                 errorMessage = errorResponse.error;
                             } else {
-                                // Handle other cases if response structure changes
                                 errorMessage = xhr.responseText;
                             }
                         } catch (e) {
@@ -593,22 +523,17 @@ $(document).ready(function () {
         }
     });
 
-    // Click handler for form submission
     $('.package-submit').click(function () {
-        $('#package-form').submit(); // Trigger form submission
+        $('#package-form').submit();
     });
 
     $('#vehicleType, #numPassengers').on('change', function () {
-        // Trigger validation for the numPassengers field
         $('#package-form').validate().element('#numPassengers');
     });
-    // Call calculateCharges when relevant fields change
     $('#numPassengers, #vehicleType, #selectedService,#selectedDays, #pickupDate, #dropoffDate, #valid-location-package ,  .dynamic-distance-package, #selectedDays').on('change', calculateCharges);
-    // $('#selectedDays').on('change', calculateCharges())
 });
 
 
-// ----------------------------------------map-----------------------------------
 function rentAtaxiStaticLoc() {
     const defaultLocation = {lat: 23.037737, lng: 72.527735};
 
@@ -637,7 +562,6 @@ autocompleteDropoff = new google.maps.places.Autocomplete(document.getElementByI
 });
 
 
-// -----------------------------map-----------------------------------
 function rentAtaxiStaticLoc() {
     const defaultLocation = {lat: 23.037737, lng: 72.527735};
 
@@ -648,16 +572,9 @@ function rentAtaxiStaticLoc() {
     } else {
         userMarker.setPosition(defaultLocation);
     }
-
-
 }
 
-
-// ---------------------------------lugguage and daily pickup
-
 $(document).ready(function () {
-
-
     $("#pickupLocation").on("change", function () {
         setTimeout(setMapDetailsForPackage, 1000);
     });
@@ -670,7 +587,6 @@ function setMapDetailsForPackage() {
     var pickup = $("#pickupLocation").val();
     var dropoff = $("#dropoffLocation").val();
     if (pickup && dropoff && pickup.trim() !== "" && dropoff.trim() !== "") {
-        console.log(pickup, dropoff);
         calculateDistanceByAddressForPackage(pickup, dropoff);
     }
 }
@@ -684,7 +600,6 @@ function calculateDistanceByAddressForPackage(originAddress, destinationAddress)
             const origin = results[0].geometry.location;
             $("#valid-location-package").val('');
 
-            // Check if origin is outside Gujarat
             if (!isWithinAhmedabad(results[0].geometry.bounds || results[0].geometry.viewport)) {
                 showErrorMsg('The origin address is outside Ahmedabad.');
                 document.getElementById('submitBtn').disabled = true;
@@ -695,7 +610,6 @@ function calculateDistanceByAddressForPackage(originAddress, destinationAddress)
                 if (status === 'OK' && results.length > 0) {
                     const destination = results[0].geometry.location;
 
-                    // Check if destination is outside Gujarat
                     if (!isWithinGujarat(results[0].geometry.bounds || results[0].geometry.viewport)) {
                         showErrorMsg('The destination address is outside Gujarat.');
                         document.getElementById('submitBtn').disabled = true;
@@ -713,18 +627,14 @@ function calculateDistanceByAddressForPackage(originAddress, destinationAddress)
                             const distanceValue = response.rows[0].elements[0].distance.value;
                             const time = response.rows[0].elements[0].duration.text;
 
-                            // Convert distance to km
                             const distanceInKm = distanceValue / 1000;
-                            console.log(distanceInKm)
                             if (distanceInKm < 1 || distanceInKm > 100) {
                                 showErrorMsg('The distance should be between 1 to 100 Km.');
                                 document.getElementById('submitBtn').disabled = true;
                                 return;
                             }
 
-                            console.log(`Distance: ${distanceText}, Time: ${time}`);
 
-                            // Set the distance and time to the elements
                             document.querySelectorAll('.dynamic-distance-package').forEach((element) => {
                                 element.innerText = distanceText;
                             });
@@ -734,10 +644,8 @@ function calculateDistanceByAddressForPackage(originAddress, destinationAddress)
                                 element.innerText = time;
                             });
 
-                            // Enable the submit button if everything is valid
                             document.getElementById('submitBtn').disabled = false;
 
-                            // Calculate and display the route
                             const directionsService = new google.maps.DirectionsService();
                             const request = {
                                 origin: originAddress, destination: destinationAddress, travelMode: travelMode,
@@ -757,7 +665,6 @@ function calculateDistanceByAddressForPackage(originAddress, destinationAddress)
                             $("#valid-location-package").val("Valid Location")
                             calculateCharges();
                         } else {
-                            console.error('Error calculating distance:', status);
                             showErrorMsg('Error calculating distance:', status);
                             document.getElementById('submitBtn').disabled = true;
                             $("#valid-location-package").val("")
@@ -783,24 +690,9 @@ function calculateDistanceByAddressForPackage(originAddress, destinationAddress)
 //check within the gujarat
 function isWithinGujarat(bounds) {
     const gujaratBounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(20.1400, 68.0700), // Southwest coordinates
-        new google.maps.LatLng(24.7000, 74.2000)  // Northeast coordinates
+        new google.maps.LatLng(20.1400, 68.0700),
+        new google.maps.LatLng(24.7000, 74.2000)
     );
     return gujaratBounds.intersects(bounds);
 }
 
-
-// autocompletePickup = new google.maps.places.Autocomplete(document.getElementById("pickupLocation"), {
-//     bounds: new google.maps.LatLngBounds(new google.maps.LatLng(20.1, 68.1), new google.maps.LatLng(24.7, 74.5)),
-//     componentRestrictions: {country: "in"},
-//     fields: ["address_components", "geometry", "icon", "name"],
-//     strictBounds: false,
-// });
-//
-// autocompleteDropoff = new google.maps.places.Autocomplete(document.getElementById("dropoffLocation"), {
-//     bounds: new google.maps.LatLngBounds(new google.maps.LatLng(20.1, 68.1), new google.maps.LatLng(24.7, 74.5)),
-//     componentRestrictions: {country: "in"},
-//     fields: ["address_components", "geometry", "icon", "name"],
-//     strictBounds: false,
-// });
-//

@@ -27,16 +27,13 @@ import java.util.Map;
 @Controller
 @RequestMapping("/admin")
 
-
 public class AdminController {
-
 
     @Autowired
     private AdminService adminService;
+
     @Autowired
     private LoginServices loginServices;
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
 
     @ResponseBody
     @PostMapping("/admin-personal-details-submit")
@@ -47,7 +44,6 @@ public class AdminController {
 
     @RequestMapping("/admin-personal-details")
     public String riderPersonalDetails() {
-        System.out.println("inside the demo");
         return "admin/adminPersonalDetails";
     }
 
@@ -83,37 +79,26 @@ public class AdminController {
         return adminCountData;
     }
 
-    //    @ResponseBody
-//    @RequestMapping("/admin-query-data")
-//    public List<AdminQuerries> getDashData() {
-//        List<AdminQuerries> adminQuerries = adminService.getSupportData();
-//        return adminQuerries;
-//    }
     @ResponseBody
     @GetMapping("/query-data")
-    public Page<AdminQuerries> getDashData(@RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "10") int size) {
+    public Page<AdminQuerries> getDashData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getSupportData(pageable);
     }
 
     @ResponseBody
     @GetMapping("/admin-running-querry-data")
-    public Page<AdminQuerries> getRunningData(@RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "10") int size) {
+    public Page<AdminQuerries> getRunningData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getRunningData(pageable);
     }
 
-
     @ResponseBody
     @GetMapping("/admin-completed-querry-data")
-    public Page<AdminQuerries> getCompletedData(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+    public Page<AdminQuerries> getCompletedData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getCompletedData(pageable);
     }
-
 
     @ResponseBody
     @RequestMapping("/admin-user-all-data")
@@ -146,7 +131,6 @@ public class AdminController {
         }
     }
 
-
     @ResponseBody
     @RequestMapping("/admin-user-rider-data")
     public List<AdminUserManagementAllDto> userManagementRiderData() {
@@ -175,7 +159,6 @@ public class AdminController {
         return adminUserRideData;
     }
 
-
     @PostMapping("/admin-block-user")
     public ResponseEntity<String> blockUser(@RequestParam int riderUserId) {
         boolean success = adminService.blockUser(riderUserId);
@@ -195,7 +178,6 @@ public class AdminController {
             return ResponseEntity.status(400).body("User could not be blocked.");
         }
     }
-
 
     @RequestMapping(value = "/admin-rides-filter-trips", method = RequestMethod.POST)
     public @ResponseBody List<RiderMyTripDataDto> filterTrips(@RequestBody AdminRidesFilterData filterData) {
@@ -243,7 +225,6 @@ public class AdminController {
         UserManagementDataDto userManagementDataDto = adminService.getUserManagementDetails();
         return userManagementDataDto;
     }
-
 
     @ResponseBody
     @PostMapping("/update-personal-details")

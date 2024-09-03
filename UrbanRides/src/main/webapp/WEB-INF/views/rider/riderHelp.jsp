@@ -21,7 +21,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="<c:url value="/resources/css/getHelp.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
@@ -31,26 +30,18 @@
             integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
 </head>
 <body>
 <%@include file="../commonImports/loader.jsp" %>
 <%@include file="../rider/riderNavbar.jsp" %>
 
-
-<!-- Get Support Section -->
 <div class="container my-trip-container mt-5">
     <div class="my-tips-text">
         Get Support
     </div>
     <p>If you have any queries, requests, or complaints, please use the form below to get in touch with us. Our support
         team is here to assist you.</p>
-
-
-    <!-- Form to submit support requests -->
     <form id="supportForm" action="support-request" method="post" enctype="multipart/form-data" class="mt-4">
         <div class="mb-3">
             <label for="supportType" class="form-label">Type of Support</label>
@@ -73,14 +64,12 @@
         <button type="submit" id="submitBtn" class="submit-btn">Submit</button>
     </form>
     <hr>
-    <!-- Search Field for Querying Support Requests -->
     <div class="mb-3">
         <label for="queryId" class="form-label">Enter Support Request ID</label>
         <input type="text" class="form-control" id="queryId" placeholder="Support Request ID">
         <button id="search-btn-help" class="btn btn-primary mt-2">Search</button>
     </div>
 </div>
-<!-- Modal -->
 <div class="modal fade" id="supportRequestModal" tabindex="-1" aria-labelledby="supportRequestModalLabel"
      aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
@@ -90,7 +79,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Support request details will be dynamically populated here -->
                 <p><strong>ID:</strong> <span id="requestId"></span></p>
                 <p><strong>Type:</strong> <span id="requestType"></span></p>
                 <p><strong>Description:</strong> <span id="requestDescription"></span></p>
@@ -102,21 +90,10 @@
         </div>
     </div>
 </div>
-
-<%--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supportRequestModal">--%>
-<%--    Open Support Request Modal--%>
-<%--</button>--%>
-
-
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-
-<%------------------------------------jquerry  validation--%>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
-
-
 <script src="<c:url value="/resources/js/riderHelp.js"/>"></script>
 
 </body>

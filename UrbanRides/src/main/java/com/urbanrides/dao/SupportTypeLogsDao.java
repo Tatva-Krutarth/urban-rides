@@ -1,8 +1,6 @@
 package com.urbanrides.dao;
 
-import com.urbanrides.model.CaptainDetails;
 import com.urbanrides.model.SupportTypeLogs;
-import com.urbanrides.model.Trip;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -19,10 +17,9 @@ import java.util.List;
 @Repository
 
 public class SupportTypeLogsDao {
-
-
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -44,7 +41,6 @@ public class SupportTypeLogsDao {
         List<SupportTypeLogs> results = query.getResultList();
         return results.isEmpty() ? null : results.get(0);
     }
-
 
     @Transactional
     public SupportTypeLogs getSupportBySupportId(int supportLogsId) {
@@ -85,10 +81,8 @@ public class SupportTypeLogsDao {
         query.setMaxResults(pageable.getPageSize());
         query.setFirstResult((int) pageable.getOffset());
         List<SupportTypeLogs> results = query.getResultList();
-
         Query<Long> countQuery = s.createQuery("SELECT COUNT(*) FROM SupportTypeLogs WHERE adminObj is null", Long.class);
         Long count = countQuery.uniqueResult();
-
         return new PageImpl<>(results, pageable, count);
     }
 
@@ -96,22 +90,13 @@ public class SupportTypeLogsDao {
     @Transactional
     public Page<SupportTypeLogs> getRunningData(Pageable pageable) {
         Session session = getCurrentSession();
-
-        // Query to get the paginated results
         String queryString = "FROM SupportTypeLogs WHERE adminObj is not null AND isSolved is false";
         Query<SupportTypeLogs> query = session.createQuery(queryString, SupportTypeLogs.class);
-
-        // Set pagination parameters
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
-
         List<SupportTypeLogs> results = query.getResultList();
-
-        // Query to get the total count of results
         Query<Long> countQuery = session.createQuery("SELECT COUNT(*) FROM SupportTypeLogs WHERE adminObj is not null AND isSolved is false", Long.class);
         Long count = countQuery.uniqueResult();
-
-        // Return a Page object containing the paginated data
         return new PageImpl<>(results, pageable, count);
     }
 
@@ -119,34 +104,19 @@ public class SupportTypeLogsDao {
     @Transactional
     public Page<SupportTypeLogs> getCompletedData(Pageable pageable) {
         Session session = getCurrentSession();
-
-        // Create the base query
         String queryString = "FROM SupportTypeLogs WHERE isSolved = true";
-
-        // Create the query
         Query<SupportTypeLogs> query = session.createQuery(queryString, SupportTypeLogs.class);
-
-        // Set pagination parameters
         int pageNumber = pageable.getPageNumber();
         int pageSize = pageable.getPageSize();
         int firstResult = pageNumber * pageSize;
-
-        // Apply pagination
         query.setFirstResult(firstResult);
         query.setMaxResults(pageSize);
-
-        // Get results
         List<SupportTypeLogs> results = query.getResultList();
-
-        // Get total count
         Query<Long> countQuery = session.createQuery("SELECT COUNT(*) FROM SupportTypeLogs WHERE isSolved = true", Long.class);
         long totalCount = countQuery.getSingleResult();
-
-        // Return paginated results
         return new PageImpl<>(results, pageable, totalCount);
     }
 
-    //update
     @Transactional
     public void updateSupportTypeLogs(SupportTypeLogs supportTypeLogs) {
         this.hibernateTemplate.update(supportTypeLogs);

@@ -16,7 +16,6 @@ public class ConcludeRideRequestRentTaxDto {
     private int charges;
     @Pattern(regexp = "^(Pay with wallet|Pay with cash)$", message = "Payment method must be either 'cash', 'wallet'")
     private String paymentMethod;
-
     private String distance;
 
 }

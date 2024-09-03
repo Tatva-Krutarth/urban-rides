@@ -34,7 +34,6 @@ public class UserDetails {
 
     @CreationTimestamp
     @Column(name = "created_date", nullable = false, updatable = false)
-//    @NotNull(message = "Created date is required")
     private LocalDate createdDate;
 
     @Column(name = "is_blocked_by_admin", nullable = false, columnDefinition = "boolean default true")

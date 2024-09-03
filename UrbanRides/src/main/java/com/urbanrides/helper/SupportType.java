@@ -23,7 +23,6 @@ public enum SupportType {
         return value;
     }
 
-    // Static method to get SupportType enum based on ID
     public static SupportType getById(int id) {
         for (SupportType type : SupportType.values()) {
             if (type.getId() == id) {
@@ -33,7 +32,6 @@ public enum SupportType {
         throw new IllegalArgumentException("Invalid SupportType ID: " + id);
     }
 
-    // Static method to get value based on ID
     public static String getValueById(int id) {
         SupportType type = getById(id);
         return type.getValue();

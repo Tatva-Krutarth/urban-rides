@@ -41,7 +41,6 @@ public class PackageTrip {
     private LocalTime pickupTime;
 
 
-
     @Min(value = 1, message = "Number of passengers must be at least 1")
     @Max(value = 30, message = "Number of passengers cannot be more than 30")
 
@@ -51,8 +50,6 @@ public class PackageTrip {
     @Max(value = 30, message = "Number of days must be at most 30")
     @Column(name = "num_of_days", nullable = false)
     private Integer numOfDays;
-
-
 
 
     @Size(max = 10, message = "Emergency contact must be less than 20 characters")

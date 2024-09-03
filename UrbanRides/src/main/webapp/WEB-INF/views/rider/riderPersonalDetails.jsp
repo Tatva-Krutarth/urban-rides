@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -22,22 +20,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
     <link rel="stylesheet" href="<c:url value="/resources/css/riderPersonalDetails.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
     <script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
-
 </head>
 
 
@@ -47,9 +35,7 @@
      class="d-flex justify-content-start align-items-center container-fluid fixed-start position-fixed">
     <div class="mx-3" style="color: white; font-size: 24px;">
         Urban Rides
-        <!-- <img src="../../images/Icon.png" alt="companyLogo" class="mx-2"> -->
     </div>
-    <!-- other elements -->
 </nav>
 <div id="large-header" class="large-header">
     <canvas id="demo-canvas">
@@ -116,13 +102,9 @@
 
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
 <script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
 <script src="<c:url value="/resources/js/riderPersonalDetails.js"/>"></script>
-
-
-<%--<!-- Include GSAP library -->--%>
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js'/>"></script>
 <script src="<c:url value="/resources/js/userRegistrationBackground.js"/>"></script>
 

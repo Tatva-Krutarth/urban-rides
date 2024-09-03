@@ -23,6 +23,7 @@ public class NotificationLogsDao {
 
     @Autowired
     private SessionFactory sessionFactory;
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
 
@@ -36,17 +37,14 @@ public class NotificationLogsDao {
         return id;
     }
 
-
     @Transactional
     public List<NotificationLogs> getAllNotificationLogs(int id) {
         LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
-
         Session session = getCurrentSession();
         String hql = "FROM NotificationLogs WHERE user.userId = :id AND createdDate >= :fiveDaysAgo ORDER BY createdDate ASC";
         Query<NotificationLogs> query = session.createQuery(hql, NotificationLogs.class);
         query.setParameter("fiveDaysAgo", fiveDaysAgo);
         query.setParameter("id", id);
-
         List<NotificationLogs> result = query.getResultList();
         return result.isEmpty() ? null : result;
     }

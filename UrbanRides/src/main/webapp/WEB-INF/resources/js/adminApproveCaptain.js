@@ -1,5 +1,5 @@
 function toggleAccordion(event, collapseId) {
-    event.stopPropagation(); // Prevent default button behavior
+    event.stopPropagation();
     const collapseElement = document.getElementById(collapseId);
     const bsCollapse = new bootstrap.Collapse(collapseElement, {
         toggle: true
@@ -8,17 +8,14 @@ function toggleAccordion(event, collapseId) {
 
 $(document).ready(function () {
     getCapData();
-    console.log("Page Loaded");
 });
 
 function getCapData() {
-    console.log("Fetching Data");
     $.ajax({
         url: 'admin-captain-all-data',
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             populateAllRequests(data);
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -32,20 +29,18 @@ function populateAllRequests(data) {
     container.innerHTML = ''; // Clear any existing content
 
     if (data.length === 0) {
-        // Display message if there are no captains to approve
         container.innerHTML = '<div class="no-captains-message">There are no captains to approve.</div>';
-        return; // Exit the function early
+        return;
     }
 
     data.forEach(captain => {
-        // Count the number of documents that need approval or unapproval
         let totalDocsToVerify = 0;
         if (!captain.adharApprovedApprove) totalDocsToVerify++;
         if (!captain.drivingLicenceApprove) totalDocsToVerify++;
         if (!captain.rccertificateApprove) totalDocsToVerify++;
         if (!captain.drivingLicenceExpiryDateApprove) totalDocsToVerify++;
         if (!captain.rcexpirationDateApprove) totalDocsToVerify++;
-        if (!captain.numberPlateApprove) totalDocsToVerify++; // Added number plate check
+        if (!captain.numberPlateApprove) totalDocsToVerify++;
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -176,7 +171,6 @@ function setDocumentLink(viewButtonId, url, approveButtonId, unapproveButtonId, 
         window.open(url, '_blank');
     };
 
-    // Initialize button visibility and states
     approveButton.style.display = 'none';
     unapproveButton.style.display = 'none';
 
@@ -185,7 +179,6 @@ function setDocumentLink(viewButtonId, url, approveButtonId, unapproveButtonId, 
         unapproveButton.style.display = 'inline';
     }
 
-    // Handle click events for approval and unapproval
     approveButton.onclick = function () {
         updateApprovalStatus(viewButtonId, approveString, true);
         approveButton.classList.add('clicked-approve');
@@ -203,7 +196,6 @@ function setExpirationDateApproval(approveButtonId, unapproveButtonId, approveSt
     let approveButton = document.getElementById(approveButtonId);
     let unapproveButton = document.getElementById(unapproveButtonId);
 
-    // Initialize button visibility and states
     approveButton.style.display = 'none';
     unapproveButton.style.display = 'none';
 
@@ -212,7 +204,6 @@ function setExpirationDateApproval(approveButtonId, unapproveButtonId, approveSt
         unapproveButton.style.display = 'inline';
     }
 
-    // Handle click events for expiration date approval and unapproval
     approveButton.onclick = function () {
         updateApprovalStatus(approveButtonId, approveString, true);
         approveButton.classList.add('clicked-approve');
@@ -230,7 +221,6 @@ function setVehicleNumberPlateApproval(approveButtonId, unapproveButtonId, appro
     let approveButton = document.getElementById(approveButtonId);
     let unapproveButton = document.getElementById(unapproveButtonId);
 
-    // Initialize button visibility and states
     approveButton.style.display = 'none';
     unapproveButton.style.display = 'none';
 
@@ -239,7 +229,6 @@ function setVehicleNumberPlateApproval(approveButtonId, unapproveButtonId, appro
         unapproveButton.style.display = 'inline';
     }
 
-    // Handle click events for vehicle number plate approval and unapproval
     approveButton.onclick = function () {
         updateApprovalStatus(approveButtonId, approveString, true);
         approveButton.classList.add('clicked-approve');
@@ -254,24 +243,20 @@ function setVehicleNumberPlateApproval(approveButtonId, unapproveButtonId, appro
 }
 
 function updateApprovalStatus(docType, statusString, approved) {
-    let captainId = docType.split('-').pop(); // Extracting captain ID from button ID
+    let captainId = docType.split('-').pop();
     let approvedDocs = document.getElementById(`approved-docs-${captainId}`).value.split(',').filter(Boolean);
     let unapprovedDocs = document.getElementById(`unapproved-docs-${captainId}`).value.split(',').filter(Boolean);
-
     if (approved) {
-        // Handle adding to approved list and removing from unapproved list
         if (!approvedDocs.includes(statusString)) {
             approvedDocs.push(statusString);
         }
         unapprovedDocs = unapprovedDocs.filter(id => id !== statusString.replace('Approve', 'Unapprove'));
     } else {
-        // Handle adding to unapproved list and removing from approved list
         if (!unapprovedDocs.includes(statusString)) {
             unapprovedDocs.push(statusString);
         }
         approvedDocs = approvedDocs.filter(id => id !== statusString.replace('Unapprove', 'Approve'));
     }
-
     document.getElementById(`approved-docs-${captainId}`).value = approvedDocs.join(',');
     document.getElementById(`unapproved-docs-${captainId}`).value = unapprovedDocs.join(',');
 }
@@ -280,25 +265,17 @@ function saveApproval(captainId, totalDocsToVerify) {
     let approvedDocs = document.getElementById(`approved-docs-${captainId}`).value.split(',').filter(Boolean);
     let unapprovedDocs = document.getElementById(`unapproved-docs-${captainId}`).value.split(',').filter(Boolean);
     let captainIdValue = document.getElementById(`captain-id-${captainId}`).value;
-
-    // Combine approved and unapproved docs into a Set for easy lookup
     const allDocs = new Set([...approvedDocs, ...unapprovedDocs]);
-
-    // Check if all required document types have been either approved or unapproved
     const totalVerifiedDocs = approvedDocs.length + unapprovedDocs.length;
-
     if (totalVerifiedDocs !== totalDocsToVerify) {
-        // Show an error message if the total verified documents do not match the expected count
         showErrorMsg(`Please ensure all ${totalDocsToVerify} documents are either approved or unapproved.`);
-        return; // Exit the function without making the AJAX request
+        return;
     }
-
     let approvalData = {
         captainId: captainIdValue,
         verifiedDocId: approvedDocs,
         unverifiedDocId: unapprovedDocs
     };
-    console.log(approvalData);
     $(".loader").css("display", "flex");
 
     $.ajax({
@@ -307,16 +284,11 @@ function saveApproval(captainId, totalDocsToVerify) {
         contentType: 'application/json',
         data: JSON.stringify(approvalData),
         success: function (response) {
-            console.log("Approval data saved successfully");
             $(".loader").hide();
-
-            // Hide the relevant section
             const card = document.getElementById(`collapse${captainId}`);
             if (card) {
                 card.classList.remove('show'); // Collapse the details section
             }
-
-            // Optionally, remove the entire card
             const cardContainer = document.getElementById('accordionExample');
             const cardToRemove = document.getElementById(`heading${captainId}`).parentElement;
             if (cardToRemove) {
@@ -326,20 +298,15 @@ function saveApproval(captainId, totalDocsToVerify) {
         },
         error: function (xhr, textStatus, errorThrown) {
             $(".loader").hide();
-
-            console.error("Error:", xhr, textStatus, errorThrown);
             try {
                 const errorResponse = JSON.parse(xhr.responseText);
                 if (typeof errorResponse === 'object' && !Array.isArray(errorResponse)) {
-                    // Check if the response is a map with keys and values
                     const messages = Object.values(errorResponse).join(', ');
                     showErrorMsg(messages);
                 } else {
-                    // Handle non-object error response
                     showErrorMsg("An unexpected error occurred: " + xhr.responseText);
                 }
             } catch (e) {
-                // Handle non-JSON response
                 if (typeof xhr.responseText === 'string') {
                     showErrorMsg(xhr.responseText);
                 } else {

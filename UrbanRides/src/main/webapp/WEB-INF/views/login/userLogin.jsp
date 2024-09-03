@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -22,18 +20,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
     <link rel="stylesheet" href="<c:url value="/resources/css/userLogin.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
 
@@ -52,9 +41,7 @@
         <div>
             Urban Rides
         </div>
-        <!-- <img src="../../images/Icon.png" alt="companyLogo" class="mx-2"> -->
     </div>
-    <!-- other elements -->
 </nav>
 <div id="large-header" class="large-header">
     <canvas id="demo-canvas">
@@ -71,7 +58,6 @@
                 <div id="backend-error"></div>
                 <div id="registation-lable" class="text-center mt-2 mb-4">
                     Enter Your Email <span class="hide-this">
-                    <%--                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--%>
 
                 </span>
                 </div>
@@ -115,14 +101,11 @@
         </div>
     </div>
 </div>
-<%--------------------modal ----------------------------%>
-<%---------------------------modal 1 Sign up ------------------%>
 <div class="modal fade" id="joinUsModal" tabindex="-1" aria-labelledby="joinUsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header text-center">
                 <h5 class="modal-title " id="joinUsModalLabel">Join Urban Rides</h5>
-                <%--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>--%>
             </div>
             <div class="modal-body">
                 <p class="land-sub-heading-t2">Select account to open</p>
@@ -141,17 +124,10 @@
         </div>
     </div>
 </div>
-<%----------------------------------%>
-
-
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-<%--<!-- Include GSAP library -->--%>
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js'/>"></script>
 <script src="<c:url value="/resources/js/userRegistrationBackground.js"/>"></script>
-
-
 <script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
 <script src="<c:url value="/resources/js/userLogin.js"/>"></script>

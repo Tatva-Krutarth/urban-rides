@@ -46,7 +46,6 @@ function handleFileInputs() {
                 }
             });
 
-            // Initial visibility of view button based on file input value
             if (fileNameField.value !== 'Upload Profile Pic' && fileNameField.value !== '') {
                 $(`.${fileInput.viewClass}`).removeClass("d-none");
             } else {
@@ -57,18 +56,11 @@ function handleFileInputs() {
 }
 function isValidDateRange(date) {
     const currentDate = new Date();
-
-    // Calculate the future date that is 6 months from today
     const futureDate = new Date(currentDate);
     futureDate.setMonth(currentDate.getMonth() + 6);
-
-    // Calculate the maximum date that is 10 years from today
     const maxDate = new Date(currentDate);
     maxDate.setFullYear(currentDate.getFullYear() + 10);
-
     const inputDate = new Date(date);
-
-    // Check if the date is at least 6 months in the future and not more than 10 years
     return inputDate >= futureDate && inputDate <= maxDate;
 }
 function validateForm() {
@@ -82,11 +74,9 @@ function validateForm() {
     });
 
 
-// Add custom validation method for checking if the date is at least 6 months in the future
     $.validator.addMethod("futureDate", function (value, element) {
         return new Date(value) > new Date();
     }, "The date must be in the future.");
-
 
     $.validator.addMethod("sixMonthsFuture", function (value, element) {
         return isValidDateRange(value);
@@ -106,13 +96,13 @@ function validateForm() {
             }, rcExpiration: {
                 required: true,
                 date: true,
-                futureDate: true,  // Check if date is in the future
+                futureDate: true,
                 sixMonthsFuture: true
             },
             licenseExpiration: {
                 required: true,
                 date: true,
-                futureDate: true,  // Check if date is in the future
+                futureDate: true,
                 sixMonthsFuture: true
 
             }, vehicleNumber: {
@@ -143,13 +133,9 @@ function validateForm() {
             }
         }, errorElement: "span", errorClass: "error", submitHandler: function (form) {
             var formData = new FormData();
-
-            // Manually fetch data from the form
             var rcExpiration = $('#rcExpiration').val();
             var licenseExpiration = $('#licenseExpiration').val();
             var vehicleNumber = $('#numberPlate').val();
-
-            // Append data to formData, set null if not visible or empty
             if ($('#adhar-card-file-upload').prop('files')[0]) {
                 formData.append('adharCarde', $('#adhar-card-file-upload').prop('files')[0]);
             }
@@ -171,34 +157,29 @@ function validateForm() {
 
 
             $(".loader").css("display", "flex");
-            console.log(formData);
             $.ajax({
-                url: "captain-reupload-document-details-submit", // Correct backend endpoint
+                url: "captain-reupload-document-details-submit",
                 method: "POST",
                 processData: false,
                 contentType: false,
-                dataType: 'json', // Expect JSON response
+                dataType: 'json',
                 enctype: 'multipart/form-data',
                 data: formData,
                 success: function (response) {
-                    $(".loader").hide(); // Hide loader immediately
-                    console.log("Success:", response);
+                    $(".loader").hide();
                     if (response.status === "success") {
-                        showSuccesstMsg(response.message); // Display success message
+                        showSuccesstMsg(response.message);
                         setTimeout(function () {
                             $(".loader").hide();
                             window.location.href = "/UrbanRides/captain/captain-document-details";
-                        }, 3000); // 3000ms = 3 seconds
+                        }, 3000);
                     } else {
-                        showErrorMsg(response.message); // Display error message
+                        showErrorMsg(response.message);
                     }
                 },
                 error: function (xhr) {
                     $(".loader").hide();
-                    console.log("Error:", xhr);
-
                     try {
-                        // Parse JSON response from error
                         const errorResponse = JSON.parse(xhr.responseText);
                         if (errorResponse.message) {
                             showErrorMsg(errorResponse.message);
@@ -217,16 +198,13 @@ function validateForm() {
 
 $(document).ready(function () {
     $.ajax({
-        url: 'get-captain-document-reupload-details', // Replace with your backend endpoint
+        url: 'get-captain-document-reupload-details',
         type: 'GET',
         dataType: 'json',
         success: function (data) {
-            // Assuming 'data' is the response from your backend with approval statuses
             handleDocumentApprovalData(data);
         },
         error: function (xhr, status, error) {
-            console.error('Error fetching document approval data:', error);
-            // Handle frontend error display if needed
             showErrorMsg("Error while upproving the document ")
         }
     });

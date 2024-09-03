@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -34,9 +32,7 @@
      class="d-flex justify-content-start align-items-center container-fluid fixed-start position-fixed">
     <div class="mx-3" style="color: white; font-size: 24px;">
         Urban Rides
-        <!-- <img src="../../images/Icon.png" alt="companyLogo" class="mx-2"> -->
     </div>
-    <!-- other elements -->
 </nav>
 <div id="large-header" class="large-header">
     <canvas id="demo-canvas">
@@ -115,7 +111,6 @@
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
 <script src="<c:url value="/resources/js/userRegistration.js"/>"></script>
-<%--<!-- Include GSAP library -->--%>
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js'/>"></script>
 <script src="<c:url value="/resources/js/userRegistrationBackground.js"/>"></script>
 </body>

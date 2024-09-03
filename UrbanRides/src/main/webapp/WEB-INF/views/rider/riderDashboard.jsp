@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -22,21 +20,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-    <%--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>--%>
-    <%--    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>--%>
-    <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
-
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
     <link rel="stylesheet" href="<c:url value="/resources/css/riderDashboard.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
 
@@ -115,28 +101,17 @@
                             <div class="input-container mt-3 mb-2">
                                 <input type="date" class="form-control taskName" autocomplete="off" id="dropoffDate"
                                        name="dropOffDate" required>
-                                <label class="always-focus" id="drop-off-date" >Drop off date</label>
+                                <label class="always-focus" id="drop-off-date">Drop off date</label>
                                 <img src="<c:url value='/resources/images/pickup-date.svg'/>"
                                      class="pickUpimage pickup-placeholder-img">
                             </div>
-
-
                             <div class="input-container mt-3 mb-2">
                                 <input type="time" class="form-control taskName" autocomplete="off" id="pickupTime"
                                        name="pickupTime" required>
-                                <label class="always-focus"  for="pickupTime">Pickup Time</label>
+                                <label class="always-focus" for="pickupTime">Pickup Time</label>
                                 <img src="<c:url value='/resources/images/time.svg'/>"
                                      class="pickUpimage pickup-placeholder-img">
                             </div>
-<%--                            <div class="input-container mt-3 mb-2">--%>
-<%--                                <input type="time" class="form-control taskName" autocomplete="off" id="drofOffTime"--%>
-<%--                                       name="drofOffTime" required>--%>
-<%--                                <label class="always-focus" for="pickupTime">DropOff Time</label>--%>
-<%--                                <img src="<c:url value='/resources/images/time.svg'/>"--%>
-<%--                                     class="pickUpimage pickup-placeholder-img">--%>
-<%--                            </div>--%>
-
-
                             <div class="input-container mt-3 mb-3">
                                 <input type="number" class="form-control taskName" autocomplete="off" id="numPassengers"
                                        name="numPassengers" required>
@@ -145,27 +120,28 @@
                                 <img src="<c:url value='/resources/images/number-of-passenger.svg'/>"
                                      class="pickUpimage pickup-placeholder-img">
                             </div>
-
-
                             <div class="land-sub-heading-t2 w-100 mt-2 mb-2">Select the type of vehicle</div>
                             <div class="input-container mt-1 mb-2">
                                 <div class="custom-select-wrapper">
                                     <select id="vehicleType" name="vehicleType" class="form-control" required>
-                                        <option class="vehicle-select-package"  title="Bike">Select</option>
-                                        <option value="1" class="vehicle-select-package"  title="Bike">Bike (1 count)</option>
-                                        <option value="2" class="vehicle-select-package" title="Rickshaw">Rickshaw (3 count)</option>
-                                        <option value="3" class="vehicle-select-package" title="Car">Car (4 count)</option>
-                                        <option value="4" class="vehicle-select-package" title="Luxury Car">Luxury Car (4 count)</option>
+                                        <option class="vehicle-select-package" title="Bike">Select</option>
+                                        <option value="1" class="vehicle-select-package" title="Bike">Bike (1 count)
+                                        </option>
+                                        <option value="2" class="vehicle-select-package" title="Rickshaw">Rickshaw (3
+                                            count)
+                                        </option>
+                                        <option value="3" class="vehicle-select-package" title="Car">Car (4 count)
+                                        </option>
+                                        <option value="4" class="vehicle-select-package" title="Luxury Car">Luxury Car
+                                            (4 count)
+                                        </option>
                                     </select>
                                 </div>
                             </div>
-
-
                             <div class="land-sub-heading-t2 w-100 mb-1 mt-3 d-none" id="hide-daily-pickup-text">Daily
                                 Pickup
                             </div>
                             <div class="checkbox-container d-none" id="hide-all-checkbox">
-
                                 <div>
                                     <input type="checkbox" id="day1" name="day1" value="1">
                                     <label for="day1">Monday </label>
@@ -236,11 +212,12 @@
                                 </div>
                             </div>
 
-                            <div class="charges-notes mt-4" id="hide-chages-notes">Note:- Charges exclude vehicle maintenance charges. Additional charges for kilometers traveled will be applied
+                            <div class="charges-notes mt-4" id="hide-chages-notes">Note:- Charges exclude vehicle
+                                maintenance charges. Additional charges for kilometers traveled will be applied
                             </div>
                             <input type="text" class="d-none" name="validLocation" id="valid-location-package" value="">
-                                <input type="text" id="numberOfDays" class="d-none" name="numberOfDays"
-                                       value="">
+                            <input type="text" id="numberOfDays" class="d-none" name="numberOfDays"
+                                   value="">
                         </div>
                     </form>
 
@@ -358,7 +335,6 @@
 
 
                                 <div id="rating-system">
-                                    <!-- Display Stars -->
                                     <div class="d-flex gap-1">
                                         <svg class="star" data-index="0" xmlns="http://www.w3.org/2000/svg"
                                              viewBox="0 0 24 24">
@@ -454,9 +430,6 @@
                         <hr class="hide-hr">
                     </div>
                 </form>
-                <%--                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rating-modal">--%>
-                <%--                    Open Rating Modal--%>
-                <%--                </button>--%>
             </div>
         </div>
 
@@ -469,7 +442,6 @@
     </div>
 </div>
 
-<!------------------------ waiting modal -------------------------------------------------------->
 <div class="modal fade" id="waitTingModal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
      aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
@@ -521,11 +493,6 @@
         </div>
     </div>
 </div>
-<%--<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rating-modal">--%>
-<%--    Open Rating Modal--%>
-<%--</button>--%>
-
-<!------------------------ Ratting  modal -------------------------------------------------------->
 <div class="modal fade" id="rating-modal" tabindex="-1" aria-labelledby="exampleModalCenterTitle"
      aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
@@ -628,27 +595,16 @@
     </div>
 </div>
 <input type="hidden" name="generalTripDetailsId" id="general-tripdetails-id" value="">
-
-
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-
 <script src="<c:url value="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDCIb4xyEV8ok30VlxsidKGHw1NAlrfFM&libraries=places"/>"></script>
-
 <script src="<c:url value="https://code.jquery.com/jquery-3.6.0.min.js"/>"></script>
-
-
-<%--//web socket------%>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"
         integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
         integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
-<%------------------------------------jquerry  validation--%>
 <script src="<c:url value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"/>"></script>
 <script src="<c:url value="/resources/js/rider-web-socket.js"/>"></script>
 <script src="<c:url value="/resources/js/riderDashboard.js"/>"></script>

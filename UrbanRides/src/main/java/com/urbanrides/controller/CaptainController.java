@@ -33,17 +33,17 @@ import java.util.Map;
 @RequestMapping("/captain")
 
 public class CaptainController {
-
-
     @Autowired
     private CabBookingService cabBookingService;
+
     @Autowired
     private LoginServices loginServices;
+
     @Autowired
     private CabConfirming cabConfirming;
+
     @Autowired
     private CaptainOtherService captainOtherService;
-
 
     @RequestMapping("/captain-personal-details")
     public String riderPersonalDetails() {
@@ -61,12 +61,9 @@ public class CaptainController {
     @GetMapping("/get-captain-document-reupload-details")
     public ResponseEntity<?> getDocReuploadData() {
         try {
-            // Replace this with actual service call to get approval data
             CaptainReuploadDataRendering captainReuploadDataRendering = loginServices.getCaptainReuploadData();
             return ResponseEntity.ok(captainReuploadDataRendering);
-
         } catch (Exception e) {
-            // Log the exception and return an error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch document approval data.");
         }
     }
@@ -79,7 +76,6 @@ public class CaptainController {
             result.getAllErrors().forEach(error -> errors.put("error", error.getDefaultMessage()));
             return ResponseEntity.badRequest().body(errors);
         }
-
         ResponseEntity<Map<String, String>> responseEntity;
         try {
             responseEntity = loginServices.saveCaptainDocumentReupload(captainReuploadDataDto, session, request);
@@ -89,10 +85,8 @@ public class CaptainController {
             errorResponse.put("message", e.getMessage());
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
         return responseEntity;
     }
-
 
     @ResponseBody
     @PostMapping("/captain-personal-details-submit")
@@ -100,7 +94,6 @@ public class CaptainController {
         String toasterMsg = loginServices.captainPersonalDetailSubmit(riderPersonalDetailsDto, request);
         return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
-
 
     @RequestMapping("/captain-document-details")
     public String captainPersonalDetails(HttpServletRequest req, Model m) {
@@ -112,7 +105,6 @@ public class CaptainController {
     @RequestMapping(value = "/captain-document-details-submit", method = RequestMethod.POST)
     public ResponseEntity<Map<String, String>> registerUser(@Valid @ModelAttribute("captainPersonalDetailsDto") CaptainPersonalDetailsDto captainPersonalDetailsDto, BindingResult bindingResult, HttpServletRequest request, HttpSession session) throws MethodArgumentNotValidException {
         Map<String, String> response = new HashMap<>();
-
         if (bindingResult.hasErrors()) {
             Method method = ReflectionUtils.findMethod(getClass(), "saveGetSupport", CaptainPersonalDetailsDto.class, BindingResult.class, HttpSession.class);
             MethodParameter methodParameter = new MethodParameter(method, 0);
@@ -127,7 +119,6 @@ public class CaptainController {
         }
     }
 
-
     @RequestMapping("/captain-waiting-page")
     public String captainWaitingPage() {
         return "captain/captainWaitingPage";
@@ -137,7 +128,6 @@ public class CaptainController {
     public String captainDashboard() {
         return "captain/catainDashboard";
     }
-
 
     @ResponseBody
     @RequestMapping("/get-all-trips-data")
@@ -154,21 +144,17 @@ public class CaptainController {
             cabBookingService.acceptRideRiderSide(tripId);
             return ResponseEntity.ok(riderInfoDto);
         } catch (CustomExceptions ex) {
-            System.out.println("Exception in handler: " + ex.getMessage());
             ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception ex) {
-            System.out.println("Unexpected error: " + ex.getMessage());
             ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
-
     @RequestMapping(value = "/save-captain-location", method = RequestMethod.POST)
     public ResponseEntity<String> saveCaptainLocation(@RequestParam("address") String address) {
         try {
-            System.out.println("we rare");
             cabBookingService.saveCaptainLocation(address);
             return ResponseEntity.ok("Address saved successfully");
         } catch (Exception e) {
@@ -182,26 +168,21 @@ public class CaptainController {
         try {
             int otp = payload.get("otp");
             int tripId = payload.get("tripId");
-            String toasterMsg = cabBookingService.captainOtp(otp, tripId);
-            System.out.println(toasterMsg);
+            cabBookingService.captainOtp(otp, tripId);
             return ResponseEntity.ok("Done");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing OTP: " + e.getMessage());
         }
     }
 
-
     @RequestMapping("/captain-earnings")
     public String captainEarning(Model model) {
-
-
         double walletAMount = captainOtherService.getAmount();
         double totalEarnings = captainOtherService.getTotalEarnings();
         model.addAttribute("walletAmount", walletAMount);
         model.addAttribute("totalEarning", totalEarnings);
         return "captain/captainEarnings";
     }
-
 
     @ResponseBody
     @RequestMapping("/captain-transaction-details")
@@ -222,7 +203,6 @@ public class CaptainController {
 
     @RequestMapping("/captain-manage-account")
     public String captainManageAccount() {
-
         return "captain/captainManageAccount";
     }
 
@@ -243,7 +223,6 @@ public class CaptainController {
     @PostMapping("/accept-package-ride")
     public ResponseEntity<Map<String, String>> acceptPackageRide(@RequestBody AcceptRideRequestDto request) {
         Map<String, String> response = new HashMap<>();
-
         try {
             captainOtherService.acceptPackageRide(request.getTripId());
             response.put("message", "Ride accepted successfully.");
@@ -259,7 +238,6 @@ public class CaptainController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // added .status()
         }
     }
-
 
     @ResponseBody
     @PostMapping("/update-login-details")
@@ -279,11 +257,9 @@ public class CaptainController {
         }
     }
 
-
     @PostMapping("/update-profile-photo")
     public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) {
         Map<String, String> response = new HashMap<>();
-
         if (bindingResult.hasErrors()) {
             response.put("error", "Only JPG and PNG files are allowed of size less than 1 mb");
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -299,23 +275,14 @@ public class CaptainController {
         }
     }
 
-
     @ResponseBody
     @PostMapping("/captain-get-support")
     public ResponseEntity<Map<String, String>> saveCaptainGetSupport(@Valid @ModelAttribute RiderGetSupportDto riderGetSupportDto, BindingResult bindingResult, HttpSession session) throws MethodArgumentNotValidException {
         if (bindingResult.hasErrors()) {
-            // Validation errors are automatically handled by the global exception handler
-            throw new MethodArgumentNotValidException(
-                    new MethodParameter(
-                            ReflectionUtils.findMethod(getClass(), "saveCaptainGetSupport", RiderGetSupportDto.class, BindingResult.class, HttpSession.class),
-                            0
-                    ),
-                    bindingResult
-            );
+            throw new MethodArgumentNotValidException(new MethodParameter(ReflectionUtils.findMethod(getClass(), "saveCaptainGetSupport", RiderGetSupportDto.class, BindingResult.class, HttpSession.class), 0), bindingResult);
         }
         try {
             captainOtherService.getSupportSaveToLogs(riderGetSupportDto, session);
-            // Construct success response with a message
             Map<String, String> response = new HashMap<>();
             response.put("message", "Support request submitted successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -344,17 +311,14 @@ public class CaptainController {
         return "captain/captainBlockedPage";
     }
 
-
     @RequestMapping("/captain-notifications")
     public String captainNotifications(Model model) {
         List<NotificationDataDto> notiList = captainOtherService.getNotificationData();
-
         if (notiList.isEmpty()) {
             model.addAttribute("noNotifications", "No new notifications in the last 5 days.");
         } else {
             model.addAttribute("notificationDataDto", notiList);
         }
-
         return "captain/captainNotification";
     }
 
@@ -372,34 +336,9 @@ public class CaptainController {
         return captainPackageTripsDataList;
     }
 
-    //    @PostMapping("/conclude-ride-rent-taxi")
-//    public ResponseEntity<Map<String, Object>> concludeRideRentTaxi(@RequestBody ConcludeRideRequestRentTaxDto request) {
-//        Map<String, Object> response = new HashMap<>();
-//        try {
-//            captainOtherService.concludeRentTaxi(request);
-//            response.put("status", "success");
-//            response.put("message", "Rent taxi ride concluded successfully");
-//            return ResponseEntity.ok(response);
-//        } catch (IllegalArgumentException e) {
-//            response.put("status", "error");
-//            response.put("message", "Invalid request: " + e.getMessage());
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-//        } catch (IllegalStateException e) {
-//            response.put("status", "error");
-//            response.put("message", "Application state error: " + e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        } catch (Exception e) {
-//            response.put("status", "error");
-//            response.put("message", "An error occurred: " + e.getMessage());
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
-//    }
     @PostMapping("/conclude-ride-rent-taxi")
     public ResponseEntity<Map<String, String>> concludeRideRentTaxi(@Valid @RequestBody ConcludeRideRequestRentTaxDto concludeRideRequestRentTaxDto) {
         Map<String, String> response = new HashMap<>();
-//
-
-
         try {
             captainOtherService.concludeRentTaxi(concludeRideRequestRentTaxDto);
             response.put("message", "Rent taxi ride concluded successfully");
@@ -436,26 +375,14 @@ public class CaptainController {
         }
     }
 
-
     @RequestMapping("/captain-package-rides")
     public String captainPackageRides() {
         return "captain/captainPackageRides";
     }
 
-    @RequestMapping("/captain-logout")
-    public String captainLogout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        System.out.println("logut is fired");
-        if (session != null) {
-            session.invalidate();
-        }
-        return "landingPage/landingPage";
-    }
-
     @RequestMapping(value = "/search-support-request", method = RequestMethod.GET)
     public ResponseEntity<?> getSupportRequestById(@RequestParam String id) {
         SupportRequestDataDto supportRequestData = captainOtherService.findSupportRequestById(id);
-
         if (supportRequestData != null) {
             return ResponseEntity.ok(supportRequestData);
         } else {
@@ -463,4 +390,12 @@ public class CaptainController {
         }
     }
 
+    @RequestMapping("/captain-logout")
+    public String captainLogout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "landingPage/landingPage";
+    }
 }

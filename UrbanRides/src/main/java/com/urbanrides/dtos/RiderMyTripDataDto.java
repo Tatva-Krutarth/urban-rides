@@ -6,14 +6,12 @@ import lombok.Data;
 @Data
 public class RiderMyTripDataDto {
 
-    //1 for yes 2 for no
     private int serviceTypeId;
     private int vehicleTypeId;
     private String pickUpLocation;
     private String dropOffLocation;
     private String riderName;
 
-    //1 for completed 2 for failed
     private int status;
     private String tripDate;
     private String captainName;
@@ -29,7 +27,6 @@ public class RiderMyTripDataDto {
     private int isAccepted;
 
 
-    //for rent a taxi and service ride
     private String emergencyContact;
     private String pickupDate;
     private String dropOffDate;

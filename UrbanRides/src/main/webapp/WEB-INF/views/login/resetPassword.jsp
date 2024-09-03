@@ -11,8 +11,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Urban Rides</title>
-
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -22,18 +20,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
     <link rel="stylesheet" href="<c:url value="/resources/css/userRegistration.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
 
@@ -46,9 +35,7 @@
      class="d-flex justify-content-start align-items-center container-fluid fixed-start position-fixed">
     <div class="mx-3" style="color: white; font-size: 24px;">
         Urban Rides
-        <!-- <img src="../../images/Icon.png" alt="companyLogo" class="mx-2"> -->
     </div>
-    <!-- other elements -->
 </nav>
 <div id="large-header" class="large-header">
     <canvas id="demo-canvas">
@@ -97,36 +84,15 @@
                     </button>
                 </div>
             </form>
-            <%--            <div id="forget-pass-text" class="d-flex justify-content-center mt-3">--%>
-            <%--                <a href="#" class="forget-pass-link">--%>
-            <%--                    Foget Password ?--%>
-            <%--                </a>--%>
-            <%--            </div>--%>
+
         </div>
     </div>
 
 </div>
-
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
-
-<%--<div>--%>
-<%--    <button id="showDefaultMsg">Default</button>--%>
-<%--    <button id="showSuccesstMsg">Success</button>--%>
-<%--    <button id="showErrorMsg">Error</button>--%>
-<%--    <button id="showWarningMsg">Warning</button>--%>
-<%--    <button id="showMultipleMsg">Multiple Message</button>--%>
-<%--    <button id="showAutoClose">Auto Close</button>--%>
-<%--</div>--%>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-
 <script src="<c:url value="/resources/js/userRegistration.js"/>"></script>
-<%--<!-- Include GSAP library -->--%>
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js'/>"></script>
 <script src="<c:url value="/resources/js/userRegistrationBackground.js"/>"></script>
-
-
 </body>
-
-
 </html>

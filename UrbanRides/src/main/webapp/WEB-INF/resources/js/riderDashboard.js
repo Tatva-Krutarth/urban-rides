@@ -7,20 +7,19 @@ $(document).ready(function () {
             $('#rider-form').show();
             $('#rider-form')[0].reset();
             $('#package-form').hide();
-            $('.package-submit').addClass('d-none'); // Hide the "Book Now" button
+            $('.package-submit').addClass('d-none');
             getCaptainsDetails();
 
         } else {
             $('#rider-form').hide();
             $('#package-form').show();
-            $('.package-submit').removeClass('d-none'); // Show the "Book Now" button
+            $('.package-submit').removeClass('d-none');
             rentAtaxiStaticLoc();
         }
     });
 });
 
 
-//jquerry validations of pickup , drop off and select
 $(document).ready(function () {
     $("#rider-form").validate({
         rules: {
@@ -56,11 +55,7 @@ $(document).ready(function () {
             let distance = $(".dynamic-distance").text().trim();
             let estimatedTime = $(".dynamic-time").text().trim();
             let rs = $(".active").find(".vehicle-price-text").html();
-            let numericValue = rs.replace(/rs\s*/i, ''); // Remove "rs " or "Rs " from the string, case insensitive
-            console.log(numericValue.trim()); // Trim any leading or trailing whitespace
-
-
-            console.log(JSON.stringify(jsonData))
+            let numericValue = rs.replace(/rs\s*/i, '');
             var jsonData = {
                 dropoff: dropoff,
                 pickup: pickup,
@@ -69,9 +64,6 @@ $(document).ready(function () {
                 estimatedTime: estimatedTime,
                 charges: numericValue,
             };
-
-
-            console.log(JSON.stringify(jsonData))
             $(".loader").css("display", "flex");
 
             $.ajax({
@@ -83,10 +75,9 @@ $(document).ready(function () {
                 success: function (response) {
                     if (response.startsWith("Ride")) {
                         $('#waitTingModal').modal('show');
-                        var id = response.split(" ").pop(); // Extract the last part which is the ID
+                        var id = response.split(" ").pop();
                         $('#general-trip-id').val(id);
 
-                        // Remove all captain markers from the map
                         captainMarkers.forEach((marker) => {
                             marker.setMap(null);
                         });
@@ -98,11 +89,9 @@ $(document).ready(function () {
                     } else {
                         showErrorMsg(response);
                     }
-                    console.log("Form submitted successfully:", response);
                     $(".loader").hide();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.error("Error:", xhr, textStatus, errorThrown);
                     $(".loader").hide();
 
                     let errorMessage = "Unknown error occurred.";
@@ -110,17 +99,14 @@ $(document).ready(function () {
                         try {
                             const errorResponse = JSON.parse(xhr.responseText);
                             if (errorResponse.errors) {
-                                // If errors is an array, join them into a single message
                                 if (Array.isArray(errorResponse.errors)) {
                                     errorMessage = errorResponse.errors.join(", ");
                                 } else {
                                     errorMessage = errorResponse.errors;
                                 }
                             } else if (errorResponse.error) {
-                                // Handle the single error message
                                 errorMessage = errorResponse.error;
                             } else {
-                                // Handle other cases if response structure changes
                                 errorMessage = xhr.responseText;
                             }
                         } catch (e) {
@@ -132,9 +118,8 @@ $(document).ready(function () {
             });
         }
     });
-    // Click handler for form submission
     $('#submitBtn').click(function () {
-        $('#rider-form').submit(); // Trigger form submission
+        $('#rider-form').submit();
     });
 });
 $(document).ready(function () {
@@ -162,7 +147,6 @@ function setMapDetails() {
     var dropoff = $("#dropoff").val();
     var vehicleId = $("#vehicle-id").val();
     if (pickup && dropoff && pickup.trim() !== "" && dropoff.trim() !== "") {
-        console.log(pickup, dropoff);
         calculateDistanceByAddress(pickup, dropoff);
     }
 }
@@ -177,15 +161,9 @@ window.onload = getCaptainsDetails;
 
 function getCaptainsDetails() {
     $.ajax({
-        url: 'get-captain-details', // Update this with your actual backend endpoint
-        method: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            console.log(response);
+        url: 'get-captain-details', method: 'GET', dataType: 'json', success: function (response) {
             initMap(response);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            console.error('Error fetching captain details:', xhr, textStatus, errorThrown);
+        }, error: function (xhr, textStatus, errorThrown) {
             showErrorMsg('Failed to fetch captain details. Please try again later.');
         }
     });
@@ -194,8 +172,7 @@ function getCaptainsDetails() {
 function initMap(captains) {
     // initializing the map and setting the center portion of the map
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 22.470701, lng: 70.057732},
-        zoom: 12
+        center: {lat: 22.470701, lng: 70.057732}, zoom: 12
     });
 
     distanceService = new google.maps.DistanceMatrixService();
@@ -204,17 +181,13 @@ function initMap(captains) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
             const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
+                lat: position.coords.latitude, lng: position.coords.longitude
             };
 
             userMarker = new google.maps.Marker({
-                position: pos,
-                map: map,
-                title: 'Your Location'
+                position: pos, map: map, title: 'Your Location'
             });
 
-            // setting up the user marker (position)
             map.setCenter(pos);
 
             if (captains && captains.length > 0) {
@@ -226,9 +199,7 @@ function initMap(captains) {
                             const lng = results[0].geometry.location.lng();
 
                             const marker = new google.maps.Marker({
-                                position: {lat: lat, lng: lng},
-                                map: map,
-                                title: captain.captainName
+                                position: {lat: lat, lng: lng}, map: map, title: captain.captainName
                             });
 
                             marker.addListener('click', () => {
@@ -240,50 +211,46 @@ function initMap(captains) {
 
                             captainMarkers.push(marker);
                         } else {
-                            console.error('Error geocoding captain location:', status);
+                            showErrorMsg('Error geocoding captain location:', status);
                         }
                     });
                 });
             } else {
-                console.log('No captain details available.');
+                showErrorMsg('No captain details available.');
             }
 
             // Watch for changes in the user's position
             navigator.geolocation.watchPosition(position => {
                 const newPos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
+                    lat: position.coords.latitude, lng: position.coords.longitude
                 };
 
                 userMarker.setPosition(newPos);
                 map.setCenter(newPos);
             }, error => {
-                console.error('Error watching position:', error);
+                showErrorMsg('Error watching position:', error);
             });
 
         }, error => {
-            console.error('Error getting current position:', error);
+            showErrorMsg('Error getting current position:', error);
             elseCondition();
         });
     } else {
-        console.log("Browser does not support geolocation");
+        showErrorMsg("Browser does not support geolocation");
         elseCondition();
     }
 }
 
 function calculateDistancee(userPosition, captainPosition) {
     const request = {
-        origins: [userPosition],
-        destinations: [captainPosition],
-        travelMode: 'DRIVING'
+        origins: [userPosition], destinations: [captainPosition], travelMode: 'DRIVING'
     };
 
     distanceService.getDistanceMatrix(request, (response, status) => {
         if (status === 'OK') {
             const distance = response.rows[0].elements[0].distance.text;
-            console.log(`Distance to captain: ${distance}`);
         } else {
-            console.error('Error calculating distance:', status);
+            showErrorMsg('Error calculating distance:', status);
         }
     });
 }
@@ -313,8 +280,6 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
         if (status === 'OK' && results.length > 0) {
             const origin = results[0].geometry.location;
             $("#valid-location").val('');
-
-            // Check if origin is outside Ahmedabad
             if (!isWithinAhmedabad(results[0].geometry.bounds || results[0].geometry.viewport)) {
                 showErrorMsg('The origin address is outside Ahmedabad.');
                 document.getElementById('submitBtn').disabled = true;
@@ -324,8 +289,6 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
             geocoder.geocode({address: destinationAddress}, (results, status) => {
                 if (status === 'OK' && results.length > 0) {
                     const destination = results[0].geometry.location;
-
-                    // Check if destination is outside Ahmedabad
                     if (!isWithinAhmedabad(results[0].geometry.bounds || results[0].geometry.viewport)) {
                         showErrorMsg('The destination address is outside Ahmedabad.');
                         document.getElementById('submitBtn').disabled = true;
@@ -342,32 +305,21 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                             const distanceText = response.rows[0].elements[0].distance.text;
                             const distanceValue = response.rows[0].elements[0].distance.value;
                             const time = response.rows[0].elements[0].duration.text;
-
-                            // Convert distance to km
                             const distanceInKm = distanceValue / 1000;
-
                             if (distanceInKm < 1 || distanceInKm > 50) {
                                 showErrorMsg('The distance should be between 1 than 50 km.');
                                 document.getElementById('submitBtn').disabled = true;
                                 return;
                             }
-
-                            console.log(`Distance: ${distanceText}, Time: ${time}`);
-
-                            // Set the distance and time to the elements
                             document.querySelectorAll('.dynamic-distance').forEach((element) => {
                                 element.innerText = distanceText;
                             });
-
-                            const distanceInNumber = Math.round(distanceInKm); // Round the distance
-
+                            const distanceInNumber = Math.round(distanceInKm);
                             const multipliers = [5, 6, 8, 10];
-                            const timeWeightage = getTimeWeightage(); // Get the time weightage
-
-                            // Update price elements
+                            const timeWeightage = getTimeWeightage();
                             document.querySelectorAll('.vehicle-price-text').forEach((element, index) => {
                                 if (index < multipliers.length) {
-                                    const price = Math.round(distanceInNumber * multipliers[index] * timeWeightage); // Calculate and round price
+                                    const price = Math.round(distanceInNumber * multipliers[index] * timeWeightage);
                                     element.innerHTML = `Rs ${price}`;
                                 }
                             });
@@ -376,11 +328,9 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                                 element.innerText = time;
                             });
 
-                            // Enable the submit button if everything is valid
                             document.getElementById('submitBtn').disabled = false;
                             $("#valid-location").val('Valid location');
 
-                            // Calculate and display the route
                             const directionsService = new google.maps.DirectionsService();
                             const request = {
                                 origin: originAddress, destination: destinationAddress, travelMode: travelMode,
@@ -398,7 +348,6 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                                 }
                             });
                         } else {
-                            console.error('Error calculating distance:', status);
                             showErrorMsg('Error calculating distance:', status);
                             document.getElementById('submitBtn').disabled = true;
                         }
@@ -425,13 +374,12 @@ function isWithinAhmedabad(bounds) {
 
 function disableNavbarLinks() {
     $('nav a').each(function () {
-        $(this).addClass('disabled-link'); // Add a class to visually indicate disabled state
-        $(this).attr('href', '#'); // Override href to prevent navigation
+        $(this).addClass('disabled-link');
+        $(this).attr('href', '#');
     });
 }
 
 
-//calculate distance between two markers by using coordinates
 function calculateDistance(origin, destination) {
     distanceService.getDistanceMatrix({
         origins: [origin], destinations: [destination], travelMode: google.maps.TravelMode.DRIVING,
@@ -440,41 +388,32 @@ function calculateDistance(origin, destination) {
             const distance = response.rows[0].elements[0].distance.text;
             document.getElementsByClassName('dynamic-distance').innerText = distance;
         } else {
-            console.error('Error calculating distance:', status);
             showErrorMsg('Error calculating distance:', status);
         }
     });
 }
 
 
-//if the location is denied by the user then it will show this default location of mumbai
 function elseCondition() {
-    // If location permission is not given, use a default location
     const defaultLocation = {lat: 19.0760, lng: 72.8777};
     userMarker = new google.maps.Marker({
         position: defaultLocation, map: map, title: 'Default Location'
     });
-
     map.setCenter(defaultLocation);
-
     captains.forEach(captain => {
         const marker = new google.maps.Marker({
             position: {lat: captain.lat, lng: captain.lng}, map: map, title: captain.name
         });
-
         marker.addListener('click', () => {
             new google.maps.InfoWindow({
                 content: `<h2>${captain.name}</h2><p>Details about the captain...</p>`
             }).open(map, marker);
             calculateDistance(userMarker.getPosition(), marker.getPosition());
         });
-
         captainMarkers.push(marker);
     });
 }
 
-
-// ----------auto suggestion ------------------------------
 
 autocompletePickup = new google.maps.places.Autocomplete(document.getElementById("pickup"), {
     bounds: new google.maps.LatLngBounds(new google.maps.LatLng(20.5937, 78.9629), new google.maps.LatLng(35.5047, 92.4426)),
@@ -492,80 +431,55 @@ autocompleteDropoff = new google.maps.places.Autocomplete(document.getElementByI
 });
 
 
-// -------------setting up the live location ---------------------
 function setLiveLocation() {
     $(".loader").css("display", "flex");
-
-
-    // Check if the user has granted access to their location
     if (navigator.geolocation) {
         $(".pickup-placeholder").css("display", "none");
         $(".pickup-placeholder-img").css("display", "none");
         $(".search-loader").css("display", "initial");
         $("#pickup").val('');
         $("#pickup").prop("readonly", true);
-
-        // Create a promise for geolocation with a timeout
         const geolocationPromise = new Promise((resolve, reject) => {
             const timeout = setTimeout(() => {
                 reject(new Error('Geolocation request timed out'));
-            }, 5000); // 5 seconds timeout
+            }, 5000);
 
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    clearTimeout(timeout);
-                    resolve(position);
-                },
-                error => {
-                    clearTimeout(timeout);
-                    reject(error);
-                }
-            );
+            navigator.geolocation.getCurrentPosition(position => {
+                clearTimeout(timeout);
+                resolve(position);
+            }, error => {
+                clearTimeout(timeout);
+                reject(error);
+            });
         });
-
-        // Handle the geolocation response or timeout
         geolocationPromise.then(position => {
-            // Get the latitude and longitude from the position object
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
             const defaultLocation = {lat, lng};
-
             userMarker = new google.maps.Marker({
-                position: defaultLocation,
-                map: map,
-                title: 'Default Location'
+                position: defaultLocation, map: map, title: 'Default Location'
             });
-
-            // Use the Google Maps API to reverse geocode the coordinates
             var apiUrl = "https://maps.googleapis.com/maps/api/geocode/json";
             var apiKey = "AIzaSyDDCIb4xyEV8ok30VlxsidKGHw1NAlrfFM";
             var params = {
-                latlng: lat + "," + lng,
-                key: apiKey
+                latlng: lat + "," + lng, key: apiKey
             };
-
             $.ajax({
-                url: apiUrl,
-                data: params,
-                dataType: "json",
-                success: function (data) {
+                url: apiUrl, data: params, dataType: "json", success: function (data) {
                     var address = data.results[0].formatted_address;
                     $("#pickup").val(address);
-                    // Set the value of the input field with id "pickup"
                     $(".pickup-placeholder").css("display", "initial");
                     $(".search-loader").css("display", "none");
                     $(".pickup-placeholder-img").css("display", "initial");
                     $("#pickup").prop("readonly", false);
                     $(".loader").hide();
-                },
-                error: function () {
+                }, error: function () {
                     showErrorMsg("Error: Unable to retrieve address from coordinates.");
                     elseConditionLiveLocation();
                 }
             });
         }).catch(error => {
             showErrorMsg("Getting live location timeout");
-
             elseConditionLiveLocation();
         });
     } else {
@@ -586,7 +500,6 @@ function elseConditionLiveLocation() {
 }
 
 
-// ----------watiting modal progress bar -------------
 const progressBar = document.querySelector('.progress-bar');
 const loadingText = document.querySelector('.loading-text');
 const loadingBarText = document.querySelector('.sr-only');
@@ -622,27 +535,24 @@ document.querySelector('#waitTingModal').addEventListener('hide.bs.modal', () =>
     cancelAnimationFrame(animationFrameId);
     progressBar.style.width = '0%';
     timeRemainingElement.textContent = '05:00';
-    loadingText.textContent = 'Loading...'; // Reset or change this text as needed
-    loadingBarText.textContent = ''; // Reset or change this text as needed
+    loadingText.textContent = 'Loading...';
+    loadingBarText.textContent = '';
 });
 
-// -------------------------------waiting modal submit---------------------------------------
 $(document).ready(function () {
     $('#waiting-mod-cancel-btn').click(function (e) {
         e.preventDefault(); // Prevent default form submission
 
         var cancelReason = $('#cancel-reason-input').val();
         var tripId = $('#general-trip-id').val();
-        // Check if cancelReason is empty
         if (cancelReason === '') {
-            $('#cancel-reason-error').css('display', 'block'); // Show error message
+            $('#cancel-reason-error').css('display', 'block');
             return;
         } else {
-            $('#cancel-reason-error').css('display', 'none'); // Hide error message if shown
+            $('#cancel-reason-error').css('display', 'none');
         }
 
-        // Construct the URL relative to the context path
-        var url = '/UrbanRides/rider/cancel-ride-submit'; // Adjust this URL as needed
+        var url = '/UrbanRides/rider/cancel-ride-submit';
 
         $.ajax({
             url: url, type: 'POST', data: {
@@ -650,23 +560,20 @@ $(document).ready(function () {
             }, success: function (response) {
 
                 showSuccesstMsg("Ride Cancelled");
-                console.log("Form submitted successfully:", response);
                 $(".loader").hide();
                 $('#waitTingModal').modal('hide');
-                $('#rider-form')[0].reset(); // Reset form fields
+                $('#rider-form')[0].reset();
                 $(".dynamic-time").html('--')
                 $(".dynamic-distance").html('--')
                 location.reload();
             }, error: function (xhr, status, error) {
-                console.error("Error submitting form:", error);
                 $(".loader").hide();
-                showErrorMsg("Error occurred while cancelling the ride.");
+                showErrorMsg("The cancellation reason cannot be more than 200 character.");
             }
         });
     });
 });
 
-//calculate distance between two markers by using coordinates
 function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddress) {
 
     const geocoder = new google.maps.Geocoder();
@@ -674,17 +581,17 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
     const directionsDisplay = new google.maps.DirectionsRenderer();
     const distanceService = new google.maps.DistanceMatrixService();
     const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12, center: {lat: 0, lng: 0}, // Set your map's initial center
+        zoom: 12, center: {lat: 0, lng: 0},
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'C', // Label for captain's location
+        map: map, label: 'C',
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'O', // Label for pickup point
+        map: map, label: 'O',
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'D', // Label for dropoff point
+        map: map, label: 'D',
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -703,7 +610,6 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
                             const distance = distanceResponse.rows[0].elements[0].distance.text;
                             const time = distanceResponse.rows[0].elements[0].duration.text;
 
-                            console.log(`Distance: ${distance}, Time: ${time}`);
 
                             document.querySelectorAll('.cap-estimated-waiting-distance').forEach((element) => {
                                 element.innerText = distance;
@@ -720,20 +626,21 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
                             let tripid = $("#general-trip-id").val();
                             let estimatedDistance = $(".cap-estimated-waiting-distance").html();
                             let estimatedTime = $(".cap-estimated-waiting-time").html();
-                            console.log(estimatedTime + estimatedDistance + tripid)
 
                             let data = {
                                 tripId: tripid, captainAway: estimatedDistance, captainEstimatedReachTime: estimatedTime
                             };
 
                             $.ajax({
-                                type: "POST", url: "/UrbanRides/rider/rider-reach-info",  // Adjust URL as per your actual endpoint
-                                contentType: "application/json", data: JSON.stringify(data),  // Convert data object to JSON string
+                                type: "POST",
+                                url: "/UrbanRides/rider/rider-reach-info",
+                                contentType: "application/json",
+                                data: JSON.stringify(data),
                                 success: function (response) {
                                     $("#general-tripdetails-id").val(response)
-                                    console.log("AJAX request successful!");
-                                }, error: function (xhr, status, error) {
-                                    console.error("AJAX request failed with status:", status);
+                                },
+                                error: function (xhr, status, error) {
+                                    showErrorMsg("AJAX request failed with status:", status);
                                 }
                             });
 
@@ -748,9 +655,6 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
 
                                     function moveNextStep() {
                                         if (stepIndex >= steps.length) {
-                                            console.log('Reached destination.');
-                                            //otp verification
-
                                             saveRideStartInfo();
                                             captainReached();
                                             return;
@@ -760,10 +664,7 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
                                         for (let i = 0; i < nextSegment.length; i++) {
                                             captainMarker.setPosition(nextSegment[i]);
                                             map.panTo(nextSegment[i]);
-                                            // You can update other markers (pickupMarker, dropoffMarker) similarly if needed
-                                            // For example, pickupMarker.setPosition(pickupLocation);
                                         }
-                                        console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
                                         setTimeout(moveNextStep, 3000); // Simulate delay between steps
                                     }
@@ -771,22 +672,18 @@ function calculateDistanceByAddressForCaptainInfo(originAddress, destinationAddr
                                     moveNextStep();
 
                                 } else {
-                                    console.error('Error calculating route:', routeStatus);
                                     showErrorMsg('Error calculating route:', routeStatus);
                                 }
                             });
                         } else {
-                            console.error('Error calculating distance:', distanceStatus);
                             showErrorMsg('Error calculating distance:', distanceStatus);
                         }
                     });
                 } else {
-                    console.error('Error geocoding destination address:', destinationStatus);
                     showErrorMsg('Error geocoding destination address:', destinationStatus);
                 }
             });
         } else {
-            console.error('Error geocoding origin address:', originStatus);
             showErrorMsg('Error geocoding origin address:', originStatus);
         }
     });
@@ -798,17 +695,17 @@ function richToDestination(originAddress, destinationAddress) {
     const directionsDisplay = new google.maps.DirectionsRenderer();
     const distanceService = new google.maps.DistanceMatrixService();
     const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12, center: {lat: 0, lng: 0}, // Set your map's initial center
+        zoom: 12, center: {lat: 0, lng: 0},
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'C', // Label for captain's location
+        map: map, label: 'C',
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'O', // Label for pickup point
+        map: map, label: 'O',
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'D', // Label for dropoff point
+        map: map, label: 'D',
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -826,9 +723,6 @@ function richToDestination(originAddress, destinationAddress) {
                         if (distanceStatus === 'OK') {
                             const distance = distanceResponse.rows[0].elements[0].distance.text;
                             const time = distanceResponse.rows[0].elements[0].duration.text;
-
-                            console.log(`Distance: ${distance}, Time: ${time}`);
-
                             document.querySelectorAll('.cap-estimated-waiting-distance').forEach((element) => {
                                 element.innerText = distance;
                             });
@@ -851,8 +745,6 @@ function richToDestination(originAddress, destinationAddress) {
 
                                     function moveNextStep() {
                                         if (stepIndex >= steps.length) {
-                                            console.log('Reached destination.');
-                                            //Ratting pop up
                                             setRattingModalDetails();
                                             return;
                                         }
@@ -861,33 +753,26 @@ function richToDestination(originAddress, destinationAddress) {
                                         for (let i = 0; i < nextSegment.length; i++) {
                                             captainMarker.setPosition(nextSegment[i]);
                                             map.panTo(nextSegment[i]);
-                                            // You can update other markers (pickupMarker, dropoffMarker) similarly if needed
-                                            // For example, pickupMarker.setPosition(pickupLocation);
                                         }
-                                        console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
-                                        setTimeout(moveNextStep, 3000); // Simulate delay between steps
+                                        setTimeout(moveNextStep, 3000);
                                     }
 
                                     moveNextStep();
 
                                 } else {
-                                    console.error('Error calculating route:', routeStatus);
                                     showErrorMsg('Error calculating route:', routeStatus);
                                 }
                             });
                         } else {
-                            console.error('Error calculating distance:', distanceStatus);
                             showErrorMsg('Error calculating distance:', distanceStatus);
                         }
                     });
                 } else {
-                    console.error('Error geocoding destination address:', destinationStatus);
                     showErrorMsg('Error geocoding destination address:', destinationStatus);
                 }
             });
         } else {
-            console.error('Error geocoding origin address:', originStatus);
             showErrorMsg('Error geocoding origin address:', originStatus);
         }
     });
@@ -895,14 +780,10 @@ function richToDestination(originAddress, destinationAddress) {
 
 function setRattingModalDetails() {
     let tripId = $("#general-tripdetails-id").val();
-
-
     $.ajax({
-        type: "POST", url: "/UrbanRides/rider/ride-end-info",  // Adjust URL as per your actual endpoint
-        data: {
+        type: "POST", url: "/UrbanRides/rider/ride-end-info", data: {
             tripId: tripId
         }, success: function (response) {
-            console.log(response);
             $('#rating-modal').modal('show');
             $(".captain-info-name").html('You have reached to your destination.');
             $(".pay-amount").text(response.charges + " Rs.");
@@ -913,16 +794,12 @@ function setRattingModalDetails() {
             if (imgElement) {
                 imgElement.src = response.profilePhoto;
             }
-            console.log("Response from server:", response);
-            // Handle success response here if needed
         }, error: function (xhr, status, error) {
-            console.error("AJAX request failed with status:", status);
-            // Handle error response here if needed
+            showErrorMsg("Error while sending end info");
         }
     });
 }
 
-// --------------------------Socket code---------
 var stompClient;
 
 var marker;
@@ -931,16 +808,14 @@ function connectToBackend() {
     var socket = new SockJS('/UrbanRides/rider-cabooking');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        console.log("Connected to Stomp broker: " + frame);
 
         stompClient.subscribe('/topic/rideConfirmed', function (message) {
-            var parts = message.body.split(/:(.+)/);  // Split only at the first colon
+            var parts = message.body.split(/:(.+)/);
             var confirmationMessage = parts[0];
             var captainInfoJson = parts[1];
             var captainInfo = JSON.parse(captainInfoJson);
 
             if (captainInfo) {
-                // showSuccesstMsg("Ride Confirmed, Captain is on the way");
 
                 $('#waitTingModal').modal('hide');
                 $(".ride-package").css('display', 'none');
@@ -965,20 +840,17 @@ function connectToBackend() {
                 calculateDistanceByAddressForCaptainInfo(captainInfo.riderAddress, pickup);
 
             } else {
-                console.error("Received null or invalid captainInfo from backend.");
+                showErrorMsg("Received null or invalid captainInfo from backend.");
             }
         });
     }, function (error) {
-        console.log("Error connecting to Stomp broker: " + error);
+        showErrorMsg("Error connecting to Stomp broker: " + error);
     });
 }
 
 function captainReached() {
     stompClient.subscribe('/topic/captain-reached', function (message) {
-        console.log('captain reached: ' + message.body);
-
         try {
-
             $(".captain-info-name").html('Enjoy the ride');
             $(".estimated-waiting-time").html('Estimated Reach time :-');
             $(".away").html('Distance Away :-');
@@ -988,68 +860,48 @@ function captainReached() {
             $(".captain-info-cancel-text").css('display', 'none');
             $(".hide-hr").css('display', 'none');
 
-
             let dropoff = $("#dropoff").val();
             let pickup = $("#pickup").val();
             richToDestination(pickup, dropoff);
 
 
         } catch (e) {
-            console.log("we tre notttttttdddddddddddddddddddddddddddddddddddddddddddddddddddddttttttttttttttttttttttt")
-
-            console.error("Error parsing reached update message:", e);
+            showErrorMsg("Error parsing reached update message:", e);
         }
     });
 }
 
 function saveRideStartInfo() {
     let tripId = $("#general-tripdetails-id").val();
-
-    // let data = {
-    //     tripId: tripId,
-    // };
-    //
-    // $.ajax({
     $.ajax({
-        type: "POST", url: "/UrbanRides/rider/ride-start-info",  // Adjust URL as per your actual endpoint
-        data: {
+        type: "POST", url: "/UrbanRides/rider/ride-start-info", data: {
             tripId: tripId
         }, success: function (response) {
             showSuccesstMsg("Rider has reached, please confirm the OTP");
-
-            console.log("AJAX request successful!");
-            // Handle success response here if needed
         }, error: function (xhr, status, error) {
-            console.error("AJAX request failed with status:", status);
-            // Handle error response here if needed
+            showErrorMsg("Error while sending the ride start info", status);
         }
     });
 }
 
-// ---otp field in captin info ---------
 document.querySelectorAll('.otp-input').forEach((element, index, array) => {
     element.addEventListener('input', function (event) {
         let inputValue = event.target.value;
         inputValue = inputValue.replace(/[^0-9]/g, '');
         inputValue = inputValue.slice(0, 1);
         event.target.value = inputValue;
-
         if (inputValue !== '') {
-            // Move focus to the next input field
             if (index < array.length - 1) {
                 array[index + 1].focus();
             }
         } else {
-            // Move focus to the previous input field
             if (index > 0) {
                 array[index - 1].focus();
             }
         }
     });
 
-    // Add a blur event listener to handle cases where the user clicks or tabs away
     element.addEventListener('blur', function () {
-        // If the input is empty, move focus to the previous input field
         if (element.value === '' && index > 0) {
             array[index - 1].focus();
         }
@@ -1057,7 +909,6 @@ document.querySelectorAll('.otp-input').forEach((element, index, array) => {
 });
 
 
-// rating------------
 document.addEventListener('DOMContentLoaded', function () {
     const stars = document.querySelectorAll('.star');
     const ratingText = document.getElementById('rating-text');
@@ -1071,7 +922,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 star.classList.add('star-half-filled');
             }
         });
-        // ratingText.textContent = rating + ' stars';
     }
 
     stars.forEach((star, index) => {
@@ -1081,7 +931,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Export the updateRating function to be accessible globally
     window.updateRating = updateRating;
 });
 
@@ -1089,7 +938,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const stars = document.querySelectorAll('.give-star');
     const ratingText = document.getElementById('rating-text-conclude');
-    let rating = 5; // Example rating from backend
+    let rating = 5;
 
     function updateRating(rating) {
         stars.forEach((star, index) => {
@@ -1113,23 +962,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-/*
-document.getElementById('ratting-modal-submit-btn').addEventListener('click', function () {
-    window.location.reload();
-});
-*/
-
 
 $(document).ready(function () {
-    // Event listener for clicking on payment options
     $('.pay-option').click(function () {
-        // Remove 'rating-active' class from all pay-options
         $('.pay-option').removeClass('rating-active');
-
-        // Add 'rating-active' class to the clicked pay-option
         $(this).addClass('rating-active');
-
-        // Show or hide the input field based on the selected payment option
         if ($(this).hasClass('pay-with-wallet')) {
             $('#payment-field').show();
         } else {
@@ -1137,50 +974,39 @@ $(document).ready(function () {
         }
     });
 });
-// Initialize validation on the form
 $('#rating-modal-form-id').validate({
     rules: {
         feedback: {
-            maxlength: 200 // Maximum length of 200 characters
+            maxlength: 200
         }
-    },
-    messages: {
+    }, messages: {
         feedback: {
             maxlength: "Feedback cannot exceed 200 characters."
         }
-    },
-    submitHandler: function(form) {
+    }, submitHandler: function (form) {
         // Fetch form data
-        let feedback = $('#feedback').val(); // Fetch the feedback value
-        let payMethod = $('.pay-option.rating-active').text().trim(); // Fetch the payment method
-        let ratting = $('.long-rattings').text().trim(); // Get the text "0 stars"
-        let ratingValue = ratting.match(/[\d.]+/)[0]; // Extract the digit (can include decimals)
-        let tripId = $("#general-tripdetails-id").val(); // Fetch Trip ID
+        let feedback = $('#feedback').val();
+        let payMethod = $('.pay-option.rating-active').text().trim();
+        let ratting = $('.long-rattings').text().trim();
+        let ratingValue = ratting.match(/[\d.]+/)[0];
+        let tripId = $("#general-tripdetails-id").val();
 
         let data = {
-            tripId: tripId,
-            feedback: feedback,
-            payMethod: payMethod,
-            rattings: ratingValue
+            tripId: tripId, feedback: feedback, payMethod: payMethod, rattings: ratingValue
         };
 
-        // Ajax call to submit data
         $.ajax({
             type: "POST",
-            url: "/UrbanRides/rider/ride-ratting-submit",  // Adjust URL as per your actual endpoint
+            url: "/UrbanRides/rider/ride-ratting-submit",
             contentType: "application/json",
             data: JSON.stringify(data),
             success: function (response) {
-                console.log('Response:', response);
                 $('#rating-modal').modal('hide');
-
-                // Reload the page after 2 seconds
                 setTimeout(function () {
                     location.reload();
                 }, 3000);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                console.log(jqXHR);
                 var responseText = jqXHR.responseText;
 
                 try {
@@ -1200,25 +1026,3 @@ $('#rating-modal-form-id').validate({
         });
     }
 });
-
-// ]});
-//
-// function notificationConnect() {
-//     var socket = new SockJS('/UrbanRides/rider-notification');
-//     stompClient = Stomp.over(socket);
-//     stompClient.connect({}, function (frame) {
-//         console.log("Connected to Stomp broker: " + frame);
-//         stompClient.subscribe('/topic/rider-incoming-notifications', function (message) {
-//             console.log("The message has been received");
-//             console.log(message);
-//
-//             // Parse the message body and call showSuccesstMsg with the actual message
-//             var messageBody = JSON.parse(message.body);
-//             var notificationMessage = messageBody.message || "No Message"; // Default to "No Message" if message is undefined
-//             showSuccesstMsg(notificationMessage);
-//         });
-//     });
-// }
-// $(document).ready(function () {
-//     notificationConnect();
-// });

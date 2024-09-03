@@ -1,6 +1,5 @@
 var map, geocoder;
 
-// Function to initialize Google Map
 function initMap(latitude, longitude) {
     var mapOptions = {
         center: new google.maps.LatLng(latitude, longitude),
@@ -9,7 +8,6 @@ function initMap(latitude, longitude) {
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
     geocoder = new google.maps.Geocoder();
 
-    // Add a marker at user's location
     var marker = new google.maps.Marker({
         position: {lat: latitude, lng: longitude},
         map: map,
@@ -19,46 +17,39 @@ function initMap(latitude, longitude) {
 }
 
 
-// Start the interval for refreshing the data every 10 seconds
 function startRefreshingTripsData() {
     refreshInterval = setInterval(loadTripsData, 10000);
 }
 
-// Stop the interval when the ride is accepted
 function stopRefreshingTripsData() {
     clearInterval(refreshInterval);
 }
 
 
 function clearMarkers() {
-    console.log("clearMarkers function called"); // Debugging log
 
     if (markersArray.length === 0) {
-        console.log("No markers to clear");
-        return; // Exit if there are no markers
+        return;
     }
 
     markersArray.forEach(function (marker, index) {
-        console.log("Clearing marker", index, marker); // Debugging log
         if (marker) {
             marker.setMap(null);
         }
     });
 
-    markersArray = []; // Reset the markers array
+    markersArray = [];
 }
 
 function loadTripsData() {
     $.ajax({
-        url: 'get-all-trips-data', // Replace with your actual backend endpoint
+        url: 'get-all-trips-data',
         method: 'GET',
         success: function (data) {
-            console.log("Data fetched:", data); // Debugging log
-            clearMarkers(); // Ensure this is called
+            clearMarkers();
 
             if (!data || data.length === 0) {
-                console.log("No trips available"); // Debugging log
-                return; // Exit if no trips are found
+                return;
             }
 
 
@@ -85,9 +76,7 @@ function loadTripsData() {
                             title: 'Pick Up Location'
                         });
 
-                        // Add marker to the array
                         markersArray.push(tripMarker);
-                        console.log("Marker added:", tripMarker); // Debugging log
 
                         tripMarker.addListener('click', function () {
                             infoWindow.open(map, tripMarker);
@@ -98,7 +87,7 @@ function loadTripsData() {
                                 button.addEventListener('click', function () {
                                     var tripId = this.getAttribute('data-tripid');
                                     $.ajax({
-                                        url: 'accept-ride', // Replace with your actual backend endpoint
+                                        url: 'accept-ride',
                                         method: 'POST',
                                         data: {tripId: tripId},
                                         dataType: 'json',
@@ -125,7 +114,6 @@ function loadTripsData() {
                                             setDataForRiderAway(data.captainLocation, data.riderPickupLocation);
                                         },
                                         error: function (jqXHR, textStatus, errorThrown) {
-                                            console.error('AJAX Error:', textStatus, errorThrown);
                                             if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
                                                 showErrorMsg(jqXHR.responseJSON.message);
                                             } else {
@@ -143,13 +131,12 @@ function loadTripsData() {
             });
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.error('AJAX Error:', textStatus, errorThrown);
             showErrorMsg('Error fetching location information.');
         }
     });
 }
 
-let markersArray = []; // Ensure this is global and accessible
+let markersArray = [];
 let refreshInterval;
 
 
@@ -162,9 +149,8 @@ function geocodeAddress(address, callback) {
 
 function disableNavbarLinks() {
     $('nav a').each(function () {
-        console.log("all links disabled")
-        $(this).addClass('disabled-link'); // Add a class to visually indicate disabled state
-        $(this).attr('href', '#'); // Override href to prevent navigation
+        $(this).addClass('disabled-link');
+        $(this).attr('href', '#');
     });
 }
 
@@ -172,23 +158,17 @@ function disableNavbarLinks() {
 function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-
             initMap(position.coords.latitude, position.coords.longitude);
-
         }, function (error) {
-
             $("#getLocationBtn").css("display", "block");
             showErrorMsg("Please allow the live location")
             initDefaultMap()
-            console.error('Geolocation Error: ', error);
         });
     } else {
         showErrorMsg('Error: Your browser doesn\'t support geolocation.');
     }
 }
 
-
-// Function to get address from coordinates
 function getAddressFromCoordinates(latitude, longitude) {
     var geocoder = new google.maps.Geocoder();
     var latlng = {lat: parseFloat(latitude), lng: parseFloat(longitude)};
@@ -196,7 +176,6 @@ function getAddressFromCoordinates(latitude, longitude) {
         if (status === 'OK') {
             if (results[0]) {
                 var address = results[0].formatted_address;
-                console.log('Address:', address);
                 saveAddressToBackend(address);
             } else {
                 showErrorMsg('No results found');
@@ -207,64 +186,51 @@ function getAddressFromCoordinates(latitude, longitude) {
     });
 }
 
-// Function to save address to the backend
 function saveAddressToBackend(address) {
     $.ajax({
-        url: 'save-captain-location', // Replace with your actual backend endpoint
+        url: 'save-captain-location',
         method: 'POST',
         data: {
             address: address
         },
         success: function (response) {
-            console.log('Address saved successfully:', response);
-
-            // Load trips data from backend
             startRefreshingTripsData();
         },
         error: function (xhr, status, error) {
-            console.error('Error saving address:', error);
         }
     });
 }
 
-
-// Event listener for button click to get location
 document.getElementById('getLocationBtn').addEventListener('click', getLocation);
 
-// Ensure the map is initialized with default coordinates on load
 function initDefaultMap() {
-    var defaultLat = 23.0225; // Default latitude (Ahmedabad)
-    var defaultLng = 72.5714; // Default longitude
+    var defaultLat = 23.0225;
+    var defaultLng = 72.5714;
     initMap(defaultLat, defaultLng);
 }
 
-// Wait until the Google Maps script is fully loaded
 $(document).ready(function () {
     $("#getLocationBtn").hide();
-
     getLocation();
 });
 
-
-//calculate distance between two markers by using coordinates
 function setDataForRiderAway(originAddress, destinationAddress) {
-
     const geocoder = new google.maps.Geocoder();
     const directionsService = new google.maps.DirectionsService();
     const directionsDisplay = new google.maps.DirectionsRenderer();
     const distanceService = new google.maps.DistanceMatrixService();
     const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12, center: {lat: 0, lng: 0}, // Set your map's initial center
+        zoom: 12, center: {lat: 0, lng: 0},
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'C', // Label for captain's location
+        map: map, label: 'C',
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'O', // Label for pickup point
+        map: map, label: 'O',
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'D', // Label for dropoff point
+        map: map, label: 'D',
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -283,7 +249,6 @@ function setDataForRiderAway(originAddress, destinationAddress) {
                             const distance = distanceResponse.rows[0].elements[0].distance.text;
                             const time = distanceResponse.rows[0].elements[0].duration.text;
 
-                            console.log(`Distance: ${distance}, Time: ${time}`);
 
                             $('#rider-distance-info').text(distance);
                             $('#rider-time-info').text(time);
@@ -295,7 +260,6 @@ function setDataForRiderAway(originAddress, destinationAddress) {
                             let tripid = $("#general-trip-id").val();
                             let estimatedDistance = $(".cap-estimated-waiting-distance").html();
                             let estimatedTime = $(".cap-estimated-waiting-time").html();
-                            console.log(estimatedTime + estimatedDistance + tripid)
 
                             let data = {
                                 tripId: tripid, captainAway: estimatedDistance, captainEstimatedReachTime: estimatedTime
@@ -305,7 +269,6 @@ function setDataForRiderAway(originAddress, destinationAddress) {
                             directionsService.route(request, (routeResponse, routeStatus) => {
                                 if (routeStatus === 'OK') {
                                     directionsDisplay.setDirections(routeResponse);
-
                                     const route = routeResponse.routes[0];
                                     const steps = route.legs[0].steps;
                                     let stepIndex = 0;
@@ -314,10 +277,6 @@ function setDataForRiderAway(originAddress, destinationAddress) {
                                         if (stepIndex >= steps.length) {
                                             showSuccesstMsg('Confirm the riders otp.');
                                             $('#otp-form-id').removeClass('d-none');
-
-//last step
-                                            // saveRideStartInfo();
-                                            // captainReached();
                                             return;
                                         }
                                         const step = steps[stepIndex];
@@ -325,40 +284,31 @@ function setDataForRiderAway(originAddress, destinationAddress) {
                                         for (let i = 0; i < nextSegment.length; i++) {
                                             captainMarker.setPosition(nextSegment[i]);
                                             map.panTo(nextSegment[i]);
-                                            // You can update other markers (pickupMarker, dropoffMarker) similarly if needed
-                                            // For example, pickupMarker.setPosition(pickupLocation);
                                         }
-                                        console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
-                                        setTimeout(moveNextStep, 3000); // Simulate delay between steps
+                                        setTimeout(moveNextStep, 3000);
                                     }
 
                                     moveNextStep();
-
                                 } else {
-                                    console.error('Error calculating route:', routeStatus);
                                     showErrorMsg('Error calculating route:', routeStatus);
                                 }
                             });
                         } else {
-                            console.error('Error calculating distance:', distanceStatus);
                             showErrorMsg('Error calculating distance:', distanceStatus);
                         }
                     });
                 } else {
-                    console.error('Error geocoding destination address:', destinationStatus);
                     showErrorMsg('Error geocoding destination address:', destinationStatus);
                 }
             });
         } else {
-            console.error('Error geocoding origin address:', originStatus);
             showErrorMsg('Error geocoding origin address:', originStatus);
         }
     });
 }
 
 $(document).ready(function () {
-    // Validate OTP form using jQuery Validation
     $('#otpForm').validate({
         rules: {
             captainOtp: {
@@ -375,47 +325,36 @@ $(document).ready(function () {
             }
         },
         submitHandler: function (form) {
-            // Extract tripId and otp from form fields
-            let tripId = parseInt($('#tripIdForOtp').val(), 10); // Convert tripId to integer
-            let otp = parseInt($('#opt').val(), 10); // Convert OTP to integer
+            let tripId = parseInt($('#tripIdForOtp').val(), 10);
+            let otp = parseInt($('#opt').val(), 10);
 
-            // Prepare payload object
             let payload = {
                 tripId: tripId,
                 otp: otp
             };
 
-            // AJAX request to submit OTP and tripId
             $.ajax({
-                url: $(form).attr('action'), // Form action URL
+                url: $(form).attr('action'),
                 method: 'POST',
-                contentType: 'application/json', // Set content type to JSON
-                data: JSON.stringify(payload), // Convert payload to JSON string
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
                 success: function (response) {
-                    // Handle success response
                     $('#otp-form-id').addClass('d-none');
-
                     let origin = $('#riderPickup').val();
                     let destination = $('#riderDropOff').val();
-                    console.log(response);
-                    theFinalRide(origin, destination); // Assuming this function handles next steps
+                    theFinalRide(origin, destination);
                     showSuccesstMsg('OTP verified successfully.');
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    // Log full error response
-                    console.error('AJAX Error: ', jqXHR, textStatus, errorThrown);
-                    console.log('Response Text: ', jqXHR.responseText);
                     showErrorMsg(jqXHR.responseText || errorThrown);
                 }
             });
 
-            return false; // Prevent normal form submission
+            return false;
         }
     });
 });
 
-
-//calculate distance between two markers by using coordinates
 function theFinalRide(originAddress, destinationAddress) {
 
     const geocoder = new google.maps.Geocoder();
@@ -423,17 +362,17 @@ function theFinalRide(originAddress, destinationAddress) {
     const directionsDisplay = new google.maps.DirectionsRenderer();
     const distanceService = new google.maps.DistanceMatrixService();
     const map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12, center: {lat: 0, lng: 0}, // Set your map's initial center
+        zoom: 12, center: {lat: 0, lng: 0},
     });
     directionsDisplay.setMap(map);
     const captainMarker = new google.maps.Marker({
-        map: map, label: 'C', // Label for captain's location
+        map: map, label: 'C',
     });
     const pickupMarker = new google.maps.Marker({
-        map: map, label: 'O', // Label for pickup point
+        map: map, label: 'O',
     });
     const dropoffMarker = new google.maps.Marker({
-        map: map, label: 'D', // Label for dropoff point
+        map: map, label: 'D',
     });
 
     geocoder.geocode({address: originAddress}, (originResults, originStatus) => {
@@ -451,8 +390,6 @@ function theFinalRide(originAddress, destinationAddress) {
                         if (distanceStatus === 'OK') {
                             const distance = distanceResponse.rows[0].elements[0].distance.text;
                             const time = distanceResponse.rows[0].elements[0].duration.text;
-
-                            console.log(`Distance: ${distance}, Time: ${time}`);
 
                             $('#rider-distance-info').text(distance);
                             $('#rider-time-info').text(time);
@@ -473,7 +410,6 @@ function theFinalRide(originAddress, destinationAddress) {
                                     function moveNextStep() {
                                         if (stepIndex >= steps.length) {
                                             showSuccesstMsg('You have reached your destination.');
-                                            // $('#otp-form-id').removeClass('d-none');
 
                                             $('#completionModal').modal('show');
                                             let charges = $('#rider-info-details-charges').html();
@@ -486,33 +422,26 @@ function theFinalRide(originAddress, destinationAddress) {
                                         for (let i = 0; i < nextSegment.length; i++) {
                                             captainMarker.setPosition(nextSegment[i]);
                                             map.panTo(nextSegment[i]);
-                                            // You can update other markers (pickupMarker, dropoffMarker) similarly if needed
-                                            // For example, pickupMarker.setPosition(pickupLocation);
                                         }
-                                        console.log(`Moving to step ${stepIndex + 1}: ${step.instructions}`);
                                         stepIndex++;
-                                        setTimeout(moveNextStep, 3000); // Simulate delay between steps
+                                        setTimeout(moveNextStep, 3000);
                                     }
 
                                     moveNextStep();
 
                                 } else {
-                                    console.error('Error calculating route:', routeStatus);
                                     showErrorMsg('Error calculating route:', routeStatus);
                                 }
                             });
                         } else {
-                            console.error('Error calculating distance:', distanceStatus);
                             showErrorMsg('Error calculating distance:', distanceStatus);
                         }
                     });
                 } else {
-                    console.error('Error geocoding destination address:', destinationStatus);
                     showErrorMsg('Error geocoding destination address:', destinationStatus);
                 }
             });
         } else {
-            console.error('Error geocoding origin address:', originStatus);
             showErrorMsg('Error geocoding origin address:', originStatus);
         }
     });
@@ -520,18 +449,12 @@ function theFinalRide(originAddress, destinationAddress) {
 
 
 $(document).ready(function () {
-    // Event listener for the "Conclude Ride" button
     $('#concludeRideBtn').on('click', function () {
-        // Close the modal
         $('#completionModal').modal('hide');
-
-        // Show success message
         showSuccesstMsg('Ride completed successfully');
-
-        // Reload the page after 3 seconds
         setTimeout(function () {
             location.reload();
-        }, 3000); // 3000 milliseconds = 3 seconds
+        }, 3000);
     });
 });
 

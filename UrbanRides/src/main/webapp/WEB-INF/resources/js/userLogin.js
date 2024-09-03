@@ -7,19 +7,18 @@ $("#myForm").validate({
     rules: {
         email: {
             required: true,
-            email: true, // Added email validation
+            email: true,
             minlength: 1,
-            maxlength: 30 // Increased maximum length
+            maxlength: 30
         },
         password: {
             required: true,
-            minlength: 8, // Minimum length for a secure password
-            maxlength: 16, // Increased maximum length
-            strongPass: true // Use custom validator for strong password
+            minlength: 8,
+            maxlength: 16,
+            strongPass: true
         },
     },
     messages: {
-        // Error messages for each field
         email: {
             required: "Please enter your email address",
             email: "Please enter a valid email address",
@@ -34,7 +33,6 @@ $("#myForm").validate({
         },
     },
 
-    // ignore: "#error-ignore",
     errorElement: "span",
     errorClass: "error",
     submitHandler: function (form) {
@@ -44,7 +42,6 @@ $("#myForm").validate({
         $.each(formData, function (index, element) {
             jsonData[element.name] = element.value;
         });
-        console.log(JSON.stringify(jsonData))
         $(".loader").css("display", "flex");
         $.ajax({
             url: form.action,
@@ -54,16 +51,13 @@ $("#myForm").validate({
             dataType: 'text',
             success: function (response) {
 
-                // Handle successful response
                 if (typeof response === 'string') {
-
                     if (response.startsWith("Login")) {
 
-                        let loginMessage = response.substring(0, response.indexOf("+")); // get the "Login successful" part
-                        showSuccesstMsg(loginMessage.trim()); // trim to remove extra spaces
-                        let accountType = response.substring(response.indexOf("+") + 1).trim(); // get the account type digit
+                        let loginMessage = response.substring(0, response.indexOf("+"));
+                        showSuccesstMsg(loginMessage.trim());
+                        let accountType = response.substring(response.indexOf("+") + 1).trim();
                         disableAllElements();
-
                         setTimeout(function () {
                             $(".loader").hide();
 
@@ -76,7 +70,7 @@ $("#myForm").validate({
                                 window.location.href = "/UrbanRides/admin/admin-dashboard";
                             }
 
-                        }, 3000); // 3000ms = 3 seconds
+                        }, 3000);
                     } else {
                         showErrorMsg(response);
                     }
@@ -89,31 +83,21 @@ $("#myForm").validate({
 
             },
             error: function (xhr, textStatus, errorThrown) {
-                console.error("Error:", xhr, textStatus, errorThrown);
 
                 $(".loader").hide();
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
                     if (Array.isArray(errorResponse.errors)) {
-                        // handle error response in the format {"errors":["Phone number must be between 10 and 13 characters"]}
                         const errorMessage = errorResponse.errors[0];
                         showErrorMsg(errorMessage);
-                        console.log("Backend try:", errorMessage);
                     } else {
-                        // handle non-array error response
                         showErrorMsg(errorResponse);
-                        console.log("Backend try:", errorResponse);
                     }
                 } catch (e) {
-                    // Handle non-JSON response
                     if (typeof xhr.responseText === 'string') {
-                        // handle string error response
                         showErrorMsg(xhr.responseText);
-                        console.log("Backend catch:", xhr.responseText);
                     } else {
-                        // handle non-string error response
                         showErrorMsg(xhr.responseText);
-                        console.log("Backend catch:", xhr.responseText);
                     }
                 }
             }
@@ -141,21 +125,19 @@ togglePassword.addEventListener('click', function (e) {
     }
 });
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 function disableAllElements() {
-    // Disable all buttons
     var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
     buttons.forEach(function (button) {
         button.disabled = true;
     });
 
-    // Disable all links
     var links = document.querySelectorAll('a');
     links.forEach(function (link) {
-        link.style.pointerEvents = 'none'; // Prevents clicking
-        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
-        link.removeAttribute('href'); // Optionally remove the href attribute
+        link.style.pointerEvents = 'none';
+        link.style.color = 'gray';
+        link.removeAttribute('href');
     });
 }

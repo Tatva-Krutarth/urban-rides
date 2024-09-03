@@ -15,9 +15,7 @@ public class WebServletHandler extends TextWebSocketHandler {
     private CabBookingService  cabBookingService;
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Handle incoming messages from the captain
         String rideId = message.getPayload();
-        // Notify the rider using the RiderController
         cabBookingService.acceptRideRiderSide(Integer.parseInt(rideId));
     }
 

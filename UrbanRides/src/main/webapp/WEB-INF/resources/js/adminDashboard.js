@@ -10,15 +10,14 @@ $(document).ready(function () {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             $('#counter1').attr('data-target', data.totalUserCount);
             $('#counter2').attr('data-target', data.generalBooking);
             $('#counter3').attr('data-target', data.serviceBooking);
             $('#counter4').attr('data-target', data.totalSuccessBooking);
 
             const counters = document.querySelectorAll('.counter');
-            const duration = 2000; // Duration of animation in milliseconds
-            const frameRate = 1000 / 60; // Roughly 60 frames per second
+            const duration = 2000;
+            const frameRate = 1000 / 60;
 
             counters.forEach(counter => {
                 const target = +counter.getAttribute('data-target');
@@ -44,16 +43,15 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-    // Fetch initial request data
     allRequestData(0, 10);
 });
 
 
 $('#ad-dash-support-types #all').on('click', function () {
     currentState = 'allRequests';
-    allRequestData(0, 10); // Initial page and size parameters
+    allRequestData(0, 10);
 });
-let currentState = 'allRequests'; // Default state
+let currentState = 'allRequests';
 
 function allRequestData(page, size) {
     $.ajax({
@@ -65,12 +63,7 @@ function allRequestData(page, size) {
             size: size
         },
         success: function (data) {
-            console.log(data);
-
-            // Call populateAllRequests function with the retrieved data
             populateAllRequests(data.content);
-
-            // Update the pagination controls
             updatePaginationControls(page, data.totalPages);
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -82,14 +75,10 @@ function allRequestData(page, size) {
 function updatePaginationControls(currentPage, totalPages) {
     const paginationCont = $('#pagination-cont .pagination-class');
     paginationCont.empty();
-
     paginationCont.append('<button class="previous">Previous</button>');
 
-    // Calculate the range of pages to display
     let startPage = Math.max(0, currentPage - 2);
     let endPage = Math.min(totalPages - 1, currentPage + 2);
-
-    // Adjust the range if there are fewer than 5 pages
     if (endPage - startPage + 1 < 5) {
         if (startPage === 0) {
             endPage = Math.min(totalPages - 1, 4);
@@ -104,8 +93,6 @@ function updatePaginationControls(currentPage, totalPages) {
     }
 
     paginationCont.append('<button class="next">Next</button>');
-    console.log(currentState)
-    // Add click event listeners to pagination buttons
     $('.pagination-class .number').on('click', function () {
         const page = parseInt($(this).data('page'));
         if (currentState === 'runningQueries') {
@@ -144,24 +131,14 @@ function updatePaginationControls(currentPage, totalPages) {
 
 
 function populateAllRequests(data) {
-    // Select the container where notifications will be appended
     var container = $('.parent-container');
-
-    // Clear existing content in the container (if needed)
     container.empty();
-
-    // Check if data is empty and display a message if necessary
     if (data.length === 0) {
         container.append('<p>No requests available.</p>');
         return;
     }
-
-    // Iterate through each item in 'data' array
     $.each(data, function (index, item) {
-        // Determine image source based on item.accountType
         var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/wallet-white.svg' : '/UrbanRides/resources/images/cash.svg';
-
-        // Construct HTML for each notification item
         var notification = `
             <div class="noti-container mt-2 mb-2">
                 <div class="noti-img-cont">
@@ -182,7 +159,7 @@ function populateAllRequests(data) {
                     </div>
                     <div class="querry-type">
                         <span>Support type :-</span>
-                        <span>${item.sypportType}</span> <!-- Adjust key based on actual data -->
+                        <span>${item.sypportType}</span> 
                     </div>
                     <div class="accoutn-type">
                         <span>Account type :-</span>
@@ -204,8 +181,6 @@ function populateAllRequests(data) {
                 </div>
             </div>
         `;
-
-        // Append the constructed HTML to the container
         container.append(notification);
     });
 }
@@ -217,45 +192,30 @@ function acceptRequest(requestId, button) {
         method: 'POST',
         data: {id: requestId},
         success: function (response) {
-            console.log(response);
-            // Show success message
             showSuccesstMsg("You have accepted the request");
-
-            // Remove the accepted notification from the UI
             $(button).closest('.noti-container').remove();
-
-            // Check if there are remaining notifications on the page
             if ($('.noti-container').length === 0) {
-                // Navigate to the previous page or the first page if current page is 0
                 const currentPage = $('.pagination-class .number.active').data('page');
                 const previousPage = currentPage > 0 ? currentPage - 1 : 0;
                 allRequestData(previousPage, 10);
             } else {
-                // Refresh current page's data
                 const currentPage = $('.pagination-class .number.active').data('page');
                 allRequestData(currentPage, 10);
             }
             $(".loader").hide();
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
             var responseText = jqXHR.responseText;
-
-            // Attempt to parse the response text as JSON
             try {
                 responseText = JSON.parse(responseText);
             } catch (e) {
-                // Handle cases where response is not valid JSON
                 showErrorMsg(jqXHR.responseText);
                 return;
             }
-
-            // Check if the response is a map with keys and values
             if (typeof responseText === 'object' && !Array.isArray(responseText)) {
                 var messages = Object.values(responseText).join(', ');
                 showErrorMsg(messages);
             } else {
-                // Handle generic or unexpected errors
                 showErrorMsg("An unexpected error occurred: " + jqXHR.responseText);
             }
         }
@@ -265,9 +225,8 @@ function acceptRequest(requestId, button) {
 
 // Event handler for running queries button
 $('#ad-dash-support-types #running').on('click', function () {
-    runningQuerries(0, 10); // Initial page and size parameters
-     currentState = 'runningQueries'; // Default state
-
+    runningQuerries(0, 10);
+    currentState = 'runningQueries';
 });
 
 function runningQuerries(page, size) {
@@ -280,12 +239,7 @@ function runningQuerries(page, size) {
             size: size
         },
         success: function (data) {
-            console.log(data);
-
-            // Call populateRunningRequests function with the retrieved data
             populateRunningRequests(data.content);
-
-            // Update the pagination controls
             updatePaginationControls(page, data.totalPages);
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -293,23 +247,16 @@ function runningQuerries(page, size) {
         }
     });
 }
+
 function populateRunningRequests(data) {
     var container = $('.parent-container');
-
-    // Clear existing content in the container
     container.empty();
-
-    // Check if data is empty and display a message if necessary
     if (data.length === 0) {
         container.append('<p>No running queries available.</p>');
         return;
     }
-
-    // Iterate through each item in 'data' array
     $.each(data, function (index, item) {
         var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/wallet-white.svg' : '/UrbanRides/resources/images/cash.svg';
-
-        // Determine if there's a document to view
         var viewDocumentLink = '';
         if (item.fileAvailable) {
             viewDocumentLink = `
@@ -318,8 +265,6 @@ function populateRunningRequests(data) {
                 </div>
             `;
         }
-
-        // Construct HTML for each notification item
         var notification = `
             <div class="noti-container mt-2 mb-2">
                 <div class="noti-img-cont">
@@ -350,8 +295,7 @@ function populateRunningRequests(data) {
                         <span>Message :-</span>
                         ${item.message}
                     </div>
-                                        ${viewDocumentLink} <!-- Add view document link if available -->
-
+                                        ${viewDocumentLink} 
                     <div class="noti-time mt-2">
                        ${item.createdDate}
                     </div>
@@ -363,12 +307,9 @@ function populateRunningRequests(data) {
                 </div>
             </div>
         `;
-
-        // Append the constructed HTML to the container
         container.append(notification);
     });
 }
-
 
 
 function completeRequest(requestId, button) {
@@ -379,44 +320,32 @@ function completeRequest(requestId, button) {
         method: 'POST',
         data: {id: requestId},
         success: function (response) {
-            console.log(response);
-            // Remove the accepted notification from the UI
             showSuccesstMsg("Request Concluded Succesfully");
-
             $(button).closest('.noti-container').remove();
             $(".loader").hide();
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
             $(".loader").hide();
             var responseText = jqXHR.responseText;
-
-            // Attempt to parse the response text as JSON
             try {
                 responseText = JSON.parse(responseText);
             } catch (e) {
-                // Handle cases where response is not valid JSON
                 showErrorMsg(jqXHR.responseText);
                 return;
             }
-
-            // Check if the response is a map with keys and values
             if (typeof responseText === 'object' && !Array.isArray(responseText)) {
                 var messages = Object.values(responseText).join(', ');
                 showErrorMsg(messages);
             } else {
-                // Handle generic or unexpected errors
                 showErrorMsg("An unexpected error occurred: " + jqXHR.responseText);
             }
         }
     });
 }
 
-// Event handler for completed queries button
 $('#ad-dash-support-types #completed').on('click', function () {
-    completedQuerries(0, 10); // Initial page and size parameters
-    currentState = 'completedQueries'; // Default state
-
+    completedQuerries(0, 10);
+    currentState = 'completedQueries';
 });
 
 function completedQuerries(page, size) {
@@ -429,12 +358,7 @@ function completedQuerries(page, size) {
             size: size
         },
         success: function (data) {
-            console.log(data);
-
-            // Call populateCompletedNotifications function with the retrieved data
             populateCompletedNotifications(data.content);
-
-            // Update the pagination controls
             updatePaginationControls(page, data.totalPages);
         },
         error: function (xhr, textStatus, errorThrown) {
@@ -444,29 +368,19 @@ function completedQuerries(page, size) {
 }
 
 function populateCompletedNotifications(data) {
-    // Select the container where notifications will be appended
     var container = $('.parent-container');
-
-    // Clear existing content in the container (if needed)
     container.empty();
-
-    // Check if data is empty and display a message if necessary
     if (data.length === 0) {
         container.append('<p>No completed queries available.</p>');
         return;
     }
-
-    // Iterate through each item in 'data' array
     $.each(data, function (index, item) {
-        // Determine image source based on item.accountType
         var imgSrc = '';
         if (item.accountType === 'Captain') {
-            imgSrc = '/UrbanRides/resources/images/wallet-white.svg'; // Adjust path as needed
+            imgSrc = '/UrbanRides/resources/images/wallet-white.svg';
         } else {
-            imgSrc = '/UrbanRides/resources/images/cash.svg'; // Adjust path as needed
+            imgSrc = '/UrbanRides/resources/images/cash.svg';
         }
-
-        // Construct HTML for each notification item
         var notification = `
             <div class="noti-container mt-2 mb-2">
                 <div class="noti-img-cont">
@@ -487,7 +401,7 @@ function populateCompletedNotifications(data) {
                     </div>
                     <div class="querry-type">
                         <span>Support type :-</span>
-                        <span>${item.sypportType}</span> <!-- Adjust key based on actual data -->
+                        <span>${item.sypportType}</span>
                     </div>
                     <div class="accoutn-type">
                         <span>Account type :-</span>
@@ -507,8 +421,6 @@ function populateCompletedNotifications(data) {
                 </div>
             </div>
         `;
-
-        // Append the constructed HTML to the container
         container.append(notification);
     });
 }

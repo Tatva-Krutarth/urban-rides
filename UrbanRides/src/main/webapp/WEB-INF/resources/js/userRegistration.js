@@ -9,10 +9,9 @@ const otpError = document.getElementById('otpError');
 const submitBtn = document.getElementById('submitBtn');
 const getOtpBtn = document.querySelector(".get-otp-btn");
 
-// Initially disable buttons and fields
 submitBtn.disabled = true;
 otpInput.disabled = true;
-otpInput.parentElement.style.display = 'none'; // Hide OTP field
+otpInput.parentElement.style.display = 'none';
 getOtpBtn.disabled = true;
 
 emailInput.addEventListener('input', validateEmail);
@@ -75,34 +74,12 @@ function validateConfPass() {
 }
 
 function enableOtp() {
-    // // Make confirm password field read-only
-    // confPassInput.readOnly = true;
-    //
-    // // Check if password and confirm password don't match
-    // const pass = passInput.value;
-    // const confPass = confPassInput.value;
-    //
-    // if (pass !== confPass) {
-    //     confPassError.style.display = 'initial';
-    // } else {
-    //     // If they match, hide the error message
-    //     confPassError.style.display = 'none';
-    // }
-    //
-    // // Rest of the function remains the same
-    // otpInput.disabled = false;
-    // emailInput.readOnly = true;
-    // passInput.readOnly = true;
-    // confPassInput.readOnly = true;
-    // const placeHolderElements = document.getElementsByClassName('place-holder');
-    // for (let i = 0; i < placeHolderElements.length; i++) {
-    //     placeHolderElements[i].style.display = 'none';
-    // }
+
 }
 
 function validateOtp() {
     const otp = otpInput.value;
-    const isValidOtp = /^\d{4}$/.test(otp); // Check if OTP is exactly 4 digits
+    const isValidOtp = /^\d{4}$/.test(otp);
 
     if (!isValidOtp) {
         otpError.style.display = 'initial';
@@ -136,48 +113,38 @@ function updateOtpButton() {
     const isValidConfPass = confPassError.style.display === 'none';
 
     if (isValidEmail && isValidPassLength && isValidConfPass) {
-        otpInput.parentElement.style.display = 'flex'; // Show OTP field
+        otpInput.parentElement.style.display = 'flex';
         getOtpBtn.disabled = false;
     } else {
-        otpInput.parentElement.style.display = 'none'; // Hide OTP field
+        otpInput.parentElement.style.display = 'none';
         getOtpBtn.disabled = true;
     }
 }
 
 
 function getOtp() {
-
-
     $(".loader").css("display", "flex");
-
-
-    // Check if password and confirm password don't match
     const pass = passInput.value;
     const confPasss = confPassInput.value;
-
     if (pass !== confPasss) {
         confPassError.style.display = 'initial';
     } else {
-        // If they match, hide the error message
         confPassError.style.display = 'none';
     }
-
-
     const placeHolderElements = document.getElementsByClassName('place-holder');
     for (let i = 0; i < placeHolderElements.length; i++) {
         placeHolderElements[i].style.display = 'none';
     }
 
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
     var email = $("#email").val();
     var password = $("#pass").val();
-    var confPass = $("#confPass").val(); // Corrected variable name
+    var confPass = $("#confPass").val();
 
     var formData = {
         email: email, password: password, confPass: confPass,
     };
-    console.log(formData)
     $.ajax({
         type: "POST",
         url: "../user-registration-otp",
@@ -186,12 +153,10 @@ function getOtp() {
         data: JSON.stringify(formData),
         success: function (response) {
             $(".loader").hide();
-            console.log("Form submitted successfully:", response);
             if (typeof response === 'string') {
                 if (response === "Email Send Successfully") {
                     showSuccesstMsg(response);
                     document.getElementById('get-otp-btnn').disabled = true;
-                    // Rest of the function remains the same
                     otpInput.disabled = false;
                     emailInput.readOnly = true;
                     passInput.readOnly = true;
@@ -200,35 +165,24 @@ function getOtp() {
                 } else {
                     showErrorMsg(response);
                 }
-                console.log("Form submitted successfully:", response);
             } else if (response.hasOwnProperty("errors")) {
                 let errorMessages = response.errors.join('<br/>');
                 showErrorMsg(errorMessages);
-                console.log("Form submitted with errors:", response);
             }
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.error("Error:", xhr, textStatus, errorThrown);
             $(".loader").hide();
             try {
                 const errorResponse = JSON.parse(xhr.responseText);
                 showErrorMsg(errorResponse);
-                console.log("Backend  try:", errorResponse);
             } catch (e) {
-                // Handle non-JSON response
                 showErrorMsg(xhr.responseText);
-                console.log("Backend catch:", xhr.responseText);
             }
         }
     });
-
-
     setTimeout(function () {
         document.getElementById('get-otp-btnn').disabled = false;
     }, 10000);
-
-
-    //not used
     const otpButton1 = document.getElementById('get-otp-btnn');
     otpButton1.addEventListener('click', function (event) {
         if (otpButton1.disabled) {
@@ -272,23 +226,22 @@ togglePassword1.addEventListener('click', function (e) {
 
 $(document).ready(function () {
     $("#submitBtn").click(function (event) {
-        event.preventDefault(); // Prevent default form submission
+        event.preventDefault();
         var email = $("#email").val();
         var password = $("#pass").val();
-        var otp = $("#otp").val(); // Corrected variable name
-        var confPass = $("#confPass").val(); // Corrected variable name
+        var otp = $("#otp").val();
+        var confPass = $("#confPass").val();
         var accountTypeId = parseInt($("#accountType").val());
         var formData = {
             email: email, password: password, otp: otp, confPass: confPass, acccoutTypeId: accountTypeId,
         };
 
-        console.log(JSON.stringify(formData));
         $(".loader").css("display", "flex");
 
         $.ajax({
-            type: "POST", // HTTP method
-            url: "../user-registration-submit", // URL to submit the form data
-            data: JSON.stringify(formData), // Serialized form data
+            type: "POST",
+            url: "../user-registration-submit",
+            data: JSON.stringify(formData),
             contentType: 'application/json',
             dataType: 'text',
             success: function (response) {
@@ -301,7 +254,7 @@ $(document).ready(function () {
                         setTimeout(function () {
                             const redirectUrl = response === "Rider Registered" ? "../rider/rider-personal-details" : "../captain/captain-personal-details";
                             window.location.href = redirectUrl;
-                        }, 3000); // 3000ms = 3 seconds
+                        }, 3000);
                     } else {
                         showErrorMsg(response);
                         $(".loader").hide();
@@ -310,37 +263,22 @@ $(document).ready(function () {
                     showErrorMsg(response);
                     $(".loader").hide();
                 }
-                console.log("Form submitted successfully:", response);
-
-
-                // You can update UI, display messages, etc. based on the response
-            }, error: function (error) {
+            },
+            error: function (error) {
                 $(".loader").hide();
-
-                // Handle error response
-                console.error("Error:", error);
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
                     if (Array.isArray(errorResponse.errors)) {
-                        // handle error response in the format {"errors":["Phone number must be between 10 and 13 characters"]}
                         const errorMessage = errorResponse.errors[0];
                         showErrorMsg(errorMessage);
-                        console.log("Backend try:", errorMessage);
                     } else {
-                        // handle non-array error response
                         showErrorMsg(errorResponse);
-                        console.log("Backend try:", errorResponse);
                     }
                 } catch (e) {
-                    // Handle non-JSON response
                     if (typeof xhr.responseText === 'string') {
-                        // handle string error response
                         showErrorMsg(xhr.responseText);
-                        console.log("Backend catch:", xhr.responseText);
                     } else {
-                        // handle non-string error response
                         showErrorMsg(xhr.responseText);
-                        console.log("Backend catch:", xhr.responseText);
                     }
                 }
             }
@@ -349,21 +287,19 @@ $(document).ready(function () {
 });
 
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 function disableAllElements() {
-    // Disable all buttons
     var buttons = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
     buttons.forEach(function (button) {
         button.disabled = true;
     });
 
-    // Disable all links
     var links = document.querySelectorAll('a');
     links.forEach(function (link) {
-        link.style.pointerEvents = 'none'; // Prevents clicking
-        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
-        link.removeAttribute('href'); // Optionally remove the href attribute
+        link.style.pointerEvents = 'none';
+        link.style.color = 'gray';
+        link.removeAttribute('href');
     });
 }

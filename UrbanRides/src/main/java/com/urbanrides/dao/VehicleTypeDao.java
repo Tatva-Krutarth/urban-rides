@@ -14,13 +14,8 @@ import javax.transaction.Transactional;
 
 @Repository
 public class VehicleTypeDao {
-
     @Autowired
     private HibernateTemplate hibernateTemplate;
-
-    @Autowired
-    private SessionFactory sessionFactory;
-
 
     public VehicleType getVehicaleId(Integer vehicleId) {
         return this.hibernateTemplate.get(VehicleType.class, vehicleId);

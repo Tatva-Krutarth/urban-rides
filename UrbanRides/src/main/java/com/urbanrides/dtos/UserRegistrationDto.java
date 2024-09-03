@@ -28,7 +28,6 @@ public class UserRegistrationDto {
     @NotNull
     @NotBlank(message = "Conf Password cannot be blank")
     @Size(min = 8, max = 16, message = "Conf password must be at least 8 characters")
-//    @PasswordMatches
     private String confPass;
 
     @NotNull

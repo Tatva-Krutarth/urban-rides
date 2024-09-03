@@ -7,9 +7,6 @@ import javax.validation.constraints.*;
 
 @Data
 public class RiderPersonalDetailsDto {
-//    @NotBlank(message = "First-name is required")
-//    @Size(max = 50, message = "First-name cannot exceed 50 characters")
-//    private String fNamee;
 
     @NotBlank(message = "Pickup Address is required")
     @Length(max = 20, message = "First-name cannot exceed 20 characters")

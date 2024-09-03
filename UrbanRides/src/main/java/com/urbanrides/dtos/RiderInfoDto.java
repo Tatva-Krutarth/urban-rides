@@ -14,8 +14,6 @@ public class RiderInfoDto {
     private String photoLocation;
     private String riderPickupLocation;
     private String riderDropOffLocation;
-    //    private String distance;
-//    private String estimatedTime;
     private String charges;
     private int isProfilePhoto;
     private String captainLocation;

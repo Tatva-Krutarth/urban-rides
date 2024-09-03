@@ -1,10 +1,10 @@
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 
 function toggleAccordion(event, collapseId) {
-    event.stopPropagation(); // Prevent default button behavior
+    event.stopPropagation();
     const collapseElement = document.getElementById(collapseId);
     const bsCollapse = new bootstrap.Collapse(collapseElement, {
         toggle: true
@@ -17,25 +17,25 @@ $(document).ready(function () {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             populateTransactionDetails(data);
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.error('Error fetching transaction details:', xhr, textStatus, errorThrown);
             showErrorMsg('Failed to fetch trip details. Please try again later.');
         }
     });
 
     function populateTransactionDetails(data) {
         var accordionExample = $('#accordionExample');
-        accordionExample.empty(); // Clear any existing content
+        accordionExample.empty();
 
+        if (data.length === 0) {
+            accordionExample.append('<div class="no-records">No trip history found.</div>');
+            return;
+        }
         data.forEach(function (trip, index) {
             var serviceTypeText = getServiceTypeText(trip.serviceTypeId);
             var notiImgSrc = getNotificationImage(trip.serviceTypeId);
             var statusText, statusColor;
-
-            // Determine status text and color
             switch (trip.status) {
                 case 1:
                     statusText = 'Completed';
@@ -105,36 +105,36 @@ $(document).ready(function () {
                                                 <div class="captain-org-name">
                                                     You have rated ${trip.captainName}
                                                 </div>
-                                                <!-- Initialize star rating here based on your logic -->
-                                                <!-- Example: <div id="rating-system${index}"></div> -->
                                             </div>
                                         </div>
                                     </div>
                                 ` : ''}
-                                        ${trip.serviceTypeId == 1 ? `
-                                    <div class="trip-details-bottom-cont">
-                                        <div class="left-part">
-                                            <div>
-                                                <span>Distance: </span>
-                                                <span>${trip.distance}</span>
-                                            </div>
-                                            <div>
+                                 ${trip.serviceTypeId == 1 ? `
+                                          <div class="trip-details-bottom-cont">
+                                            <div class="left-part">
+                                              ${trip.distance ? `
+                                                <div>
+                                                  <span>Distance: </span>
+                                                  <span>${trip.distance}</span>
+                                                </div>` : ''}
+                                              <div>
                                                 <span>Charges: </span>
                                                 <span>${trip.charges} rs</span>
+                                              </div>
                                             </div>
-                                        </div>
-                                        <div class="right-part">
-                                            <div>
+                                            <div class="right-part">
+                                              <div>
                                                 <span>Duration: </span>
                                                 <span>${trip.duration}</span>
-                                            </div>
-                                            <div>
+                                              </div>
+                                              <div>
                                                 <span>Trip Id: </span>
                                                 <span>${trip.tripId}</span>
+                                              </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                          ` : ''}
+                                          </div>
+                                        ` : ''}
+
                                     ${trip.serviceTypeId !== 1 || trip.serviceTypeId == 2 ? `
                                         <div class="trip-details-bottom-cont">
                                             <div class="left-part">

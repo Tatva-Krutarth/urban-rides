@@ -1,9 +1,9 @@
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 function toggleAccordion(event, collapseId) {
-    event.stopPropagation(); // Prevent default button behavior
+    event.stopPropagation();
     const collapseElement = document.getElementById(collapseId);
     const bsCollapse = new bootstrap.Collapse(collapseElement, {
         toggle: true
@@ -11,15 +11,12 @@ function toggleAccordion(event, collapseId) {
 }
 
 $(document).ready(function () {
-    loadTripDetails(); // Initial load
+    loadTripDetails();
 
-    // Event listener for modals based on service type
     $(document).on('show.bs.modal', '#concludeModalRentTaxi, #concludeModalDailyPickup', function (event) {
-        const button = $(event.relatedTarget); // Button that triggered the modal
-        const tripId = button.data('trip-id'); // Extract trip ID from data attribute
-        const vehicleName = button.data('vehicle-name'); // Extract vehicle name from data attribute
-
-        // Store trip ID and vehicle name in modal for use on form submission
+        const button = $(event.relatedTarget);
+        const tripId = button.data('trip-id');
+        const vehicleName = button.data('vehicle-name');
         if ($(this).attr('id') === 'concludeModalRentTaxi') {
             $('#modalTripIdRentTaxi').val(tripId);
             $('#vehicleNameInModal').val(vehicleName);
@@ -39,7 +36,7 @@ $(document).ready(function () {
                 number: true,
                 min: 5,
                 max: 5000,
-                digits: true // Ensures only digits are allowed
+                digits: true
             }
         },
         messages: {
@@ -58,7 +55,6 @@ $(document).ready(function () {
         submitHandler: function (form) {
             const tripId = $('#modalTripIdRentTaxi').val();
             const vehicleName = $('#vehicleNameInModal').val();
-            console.log(vehicleName)
             const conclusionNote = $('#conclusionNoteRentTaxi').val();
             const charges = $('#chargesRentTaxi').val();
             const paymentMethod = $('#paymentMethodRentTaxi').val();
@@ -83,18 +79,15 @@ $(document).ready(function () {
                     form.reset();
                     $(".loader").hide();
 
-                    loadTripDetails(); // Reload data after concluding
+                    loadTripDetails();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(xhr);
                     $(".loader").hide();
 
-                    // Attempt to parse the response as JSON
                     try {
-                        var responseText = xhr.responseJSON.errors; // Access the first error message
+                        var responseText = xhr.responseJSON.errors;
                         showErrorMsg(responseText);
                     } catch (e) {
-                        // Handle cases where response is not valid JSON
                         showErrorMsg("Error while concluding the request");
                     }
                 }
@@ -104,16 +97,19 @@ $(document).ready(function () {
     });
 
     $("#concludeFormDailyPickup").validate({
-        // rules: {
-        //     conclusionNoteDailyPickup: {
-        //         required: true
-        //     }
-        // },
-        // messages: {
-        //     conclusionNoteDailyPickup: {
-        //         required: "Please enter a conclusion note."
-        //     }
-        // },
+        rules: {
+            conclusionNoteDailyPickup: {
+                required: false,
+                maxlength: 80
+            },
+        },
+        messages: {
+            conclusionNoteDailyPickup: {
+                maxlength: "Conclude notes cannot exceed 80 characters in length."
+            },
+        },
+
+
         submitHandler: function (form) {
             const tripId = $('#modalTripIdDailyPickup').val();
             const conclusionNote = $('#conclusionNoteDailyPickup').val();
@@ -136,18 +132,14 @@ $(document).ready(function () {
                     form.reset();
                     $(".loader").hide();
 
-                    loadTripDetails(); // Reload data after concluding
+                    loadTripDetails();
                 },
                 error: function (xhr, textStatus, errorThrown) {
-                    console.log(xhr);
                     $(".loader").hide();
-
-                    // Attempt to parse the response as JSON
                     try {
-                        var responseText = xhr.responseJSON.errors; // Access the first error message
+                        var responseText = xhr.responseJSON.errors;
                         showErrorMsg(responseText);
                     } catch (e) {
-                        // Handle cases where response is not valid JSON
                         showErrorMsg("Error while concluding the request");
                     }
                 }
@@ -162,18 +154,15 @@ function loadTripDetails() {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            console.log(data);
             populateTheData(data);
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.error('Error fetching trip details:', xhr, textStatus, errorThrown);
             showErrorMsg('Failed to fetch trip details. Please try again later.');
         }
     });
 }
 
 function populateTheData(data) {
-    // Clear existing content
     $('#rentATaxiAccor').empty();
     $('#packageServiceAccor').empty();
     $('#currentRunning').empty();
@@ -202,6 +191,7 @@ function populateTheData(data) {
         $('#currentRunning').append('<p>You have no active requests</p>');
     }
 }
+
 function createTripElement(trip) {
     const serviceType = trip.serviceTypeId === 2 ? 'Rent a Taxi' : 'Daily Pickup';
     const pickDropLocation = trip.serviceTypeId === 2
@@ -218,13 +208,9 @@ function createTripElement(trip) {
                 <span class="my-trip-pickup">${trip.dropOffLocation}</span>
            </div>`;
 
-    const distanceSection = trip.distance ? `<div><span>Distance: -</span><span>${trip.distance} Km</span></div>` : '';
+    const distanceSection = trip.distance ? `<div><span>Distance: -</span><span>${trip.distance}</span></div>` : '';
     const dailyPickupDaysSection = trip.dailyPickUpDays ? `<div><span>Daily pickup days: -</span><span>${trip.dailyPickUpDays}</span></div>` : '';
-
-    // Set the image based on the service type
     const imageSrc = trip.serviceTypeId === 2 ? '/UrbanRides/resources/images/taxi-rent-car.png' : '/UrbanRides/resources/images/taxi-car-route.png';
-
-    // Conditionally render the special instructions
     const specialInstructionSection = trip.specialInstruction
         ? `<div><span>Special Instruction: -</span><span>${trip.specialInstruction}</span></div>`
         : '';
@@ -288,7 +274,6 @@ function createTripElement(trip) {
 }
 
 
-
 function acceptRide(tripId) {
     $(".loader").css("display", "flex");
 
@@ -300,20 +285,15 @@ function acceptRide(tripId) {
         success: function (response) {
             showSuccesstMsg(response.message);
             $(".loader").hide();
-
-            loadTripDetails(); // Refresh data after accepting ride
+            loadTripDetails();
         },
         error: function (xhr, textStatus, errorThrown) {
-            console.log(xhr);
             $(".loader").hide();
-
-
-            // Attempt to parse the response as JSON
+            console.log(xhr)
             try {
-                var responseText = xhr.responseJSON.errors; // Access the first error message
+                var responseText = xhr.responseJSON.errors;
                 showErrorMsg(responseText);
             } catch (e) {
-                // Handle cases where response is not valid JSON
                 showErrorMsg("Error while concluding the request");
             }
         }
@@ -339,10 +319,9 @@ function calPriceByDistance() {
             chargeFactor = 10;
             break;
         default:
-            console.error('Unknown vehicle type:', vehicleName);
-            chargeFactor = 0; // Default to 0 if the vehicle type is unknown
+            chargeFactor = 0;
     }
 
-    const charge = Math.round(distance * chargeFactor); // Round off the charge
+    const charge = Math.round(distance * chargeFactor);
     $('#chargesRentTaxi').val(charge);
 }

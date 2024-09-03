@@ -4,7 +4,6 @@
 <%@page isELIgnored="false" %>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="<c:url value='/resources/css/forgetPassword.css' />">
     <link rel="stylesheet" href="<c:url value='/resources/css/toaster.css' />">
     <link rel="icon" href="<c:url value='/resources/images/Icon.png' />" type="image/icon type">
@@ -37,7 +35,6 @@
         <div>
             Urban Rides
         </div>
-        <!-- <img src="../../images/Icon.png" alt="companyLogo" class="mx-2"> -->
     </div>
 
 </nav>
@@ -124,7 +121,6 @@
 <script src="<c:url value='/resources/js/toaster.js'/>"></script>
 <script src="<c:url value='https://code.jquery.com/jquery-3.6.0.min.js'/>"></script>
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js'/>"></script>
-<%--<script src="<c:url value='/resources/js/forgetPassword.js'/>"></script>--%>
 <script src="<c:url value='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js'/>"></script>
 <script src="<c:url value='/resources/js/userRegistrationBackground.js'/>"></script>
 <script src="<c:url value="/resources/js/forgetPassword.js"/>"></script>

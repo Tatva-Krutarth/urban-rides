@@ -7,7 +7,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.validation.constraints.*;
-import java.util.Optional;
 
 @Data
 public class CaptainReuploadDataDto {

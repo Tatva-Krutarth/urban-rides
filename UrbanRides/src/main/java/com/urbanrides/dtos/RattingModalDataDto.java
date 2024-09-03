@@ -10,5 +10,4 @@ public class RattingModalDataDto {
     private String profilePhoto;
     private BigDecimal balance;
     private String captainName;
-
 }

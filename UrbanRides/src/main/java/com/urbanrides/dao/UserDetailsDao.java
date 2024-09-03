@@ -34,7 +34,6 @@ public class UserDetailsDao {
         String hql = "FROM UserDetails WHERE userDetailsId = :id";
         Query<UserDetails> query = session.createQuery(hql, UserDetails.class);
         query.setParameter("id", id);
-
         List<UserDetails> list = query.getResultList();
         return list.isEmpty() ? null : list.get(0);
     }
@@ -45,7 +44,6 @@ public class UserDetailsDao {
         String hql = "FROM UserDetails WHERE user.userId = :id";
         Query<UserDetails> query = session.createQuery(hql, UserDetails.class);
         query.setParameter("id", id);
-
         List<UserDetails> list = query.getResultList();
         return list.isEmpty() ? null : list.get(0);
     }

@@ -14,5 +14,4 @@ public class AdminUserManagementAllDto {
     private int totalSuccestrip;
     private int totalFailedTrip;
     private int riderUserId;
-//    private int onGoingRide;
 }

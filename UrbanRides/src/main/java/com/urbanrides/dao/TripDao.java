@@ -4,7 +4,6 @@ package com.urbanrides.dao;
 
 
 import com.urbanrides.dtos.AdminRidesFilterData;
-import com.urbanrides.model.NotificationLogs;
 import com.urbanrides.model.Trip;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -13,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +29,7 @@ public class TripDao {
     @Transactional
     public int saveGeneralTrip(Trip generalTrip) {
         this.hibernateTemplate.save(generalTrip);
-        return generalTrip.getTripId(); // Assuming GeneralTrip has a getId() method
+        return generalTrip.getTripId();
     }
 
     private Session getCurrentSession() {
@@ -76,17 +71,14 @@ public class TripDao {
         String hql = "FROM Trip WHERE tripId = :tripId";
         Query<Trip> query = session.createQuery(hql, Trip.class);
         query.setParameter("tripId", tripId);
-
         List<Trip> result = query.getResultList();
         return result.isEmpty() ? null : result.get(0);
     }
-
 
     @Transactional
     public void updateTrip(Trip tripId) {
         this.hibernateTemplate.update(tripId);
     }
-
 
     @Transactional
     public List<Trip> getAllTrip(int userId) {
@@ -94,7 +86,6 @@ public class TripDao {
         String hql = "FROM Trip WHERE tripUserId.userId = :userId";
         Query<Trip> query = session.createQuery(hql, Trip.class);
         query.setParameter("userId", userId);
-
         List<Trip> result = query.getResultList();
         return result.isEmpty() ? null : result;
     }
@@ -105,7 +96,6 @@ public class TripDao {
         String hql = "FROM Trip WHERE captainUserObj.userId = :userId AND paymentMethod != null And isAccepted = true";
         Query<Trip> query = session.createQuery(hql, Trip.class);
         query.setParameter("userId", userId);
-
         List<Trip> result = query.getResultList();
         return result.isEmpty() ? null : result;
     }
@@ -116,7 +106,6 @@ public class TripDao {
         String hql = "FROM Trip WHERE captainUserObj.userId = :userId";
         Query<Trip> query = session.createQuery(hql, Trip.class);
         query.setParameter("userId", userId);
-
         List<Trip> result = query.getResultList();
         return result.isEmpty() ? null : result;
     }
@@ -137,16 +126,12 @@ public class TripDao {
     public List<Trip> getAllTripByFilter(AdminRidesFilterData filterData) {
         Session session = getCurrentSession();
         StringBuilder hql = new StringBuilder("FROM Trip t WHERE 1=1");
-
-        // Adding conditions based on filter data
         if (filterData.getTripCode() != null && !filterData.getTripCode().isEmpty()) {
             hql.append(" AND t.tripCode = : tripCode");
         }
         if (filterData.getServiceType() != 0) {
             hql.append(" AND t.ServiceType.serviceTypeId = : serviceType");
         }
-
-        // Adding trip status conditions
         if (filterData.getTripStatus() == 1) {
             hql.append(" AND t.isAccepted = false AND t.reasonForCancellation IS NULL");
         } else if (filterData.getTripStatus() == 2) {
@@ -160,39 +145,29 @@ public class TripDao {
         }
         try {
             Query<Trip> query = session.createQuery(hql.toString(), Trip.class);
-
             if (filterData.getTripCode() != null && !filterData.getTripCode().isEmpty()) {
                 query.setParameter("tripCode", filterData.getTripCode());
             }
             if (filterData.getServiceType() != 0) {
                 query.setParameter("serviceType", filterData.getServiceType());
             }
-
             List<Trip> result = query.getResultList();
-            System.out.println(result);
             return result;
         } catch (Exception e) {
             e.printStackTrace();
-            // Handle exception appropriately
-            return new ArrayList<>(); // Return an empty list or handle the exception according to your application's logic
+            return new ArrayList<>();
         }
     }
 
     @Transactional
     public List<Trip> getAllTripOfCaptainDashboard(int vehicledId) {
         Session session = getCurrentSession();
-        // Corrected HQL query with parameter placeholder
         String hql = "FROM Trip WHERE isAccepted = false AND ServiceType.serviceTypeId = 1 AND reasonForCancellation IS NULL AND vehicleId.vehicleId = :vehicledId";
-
-        // Create query and set the parameter
         Query<Trip> query = session.createQuery(hql, Trip.class);
         query.setParameter("vehicledId", vehicledId);
-
         List<Trip> result = query.getResultList();
         return result.isEmpty() ? null : result;
     }
-
-
     @Transactional
     public int getCountOfGeneralBooking() {
         Session session = sessionFactory.getCurrentSession();
@@ -201,7 +176,6 @@ public class TripDao {
         Long count = query.uniqueResult();
         return count.intValue();
     }
-
     @Transactional
     public int getCountOfServiceBooking() {
         Session session = sessionFactory.getCurrentSession();
@@ -210,7 +184,6 @@ public class TripDao {
         Long count = query.uniqueResult();
         return count.intValue();
     }
-
     @Transactional
     public int getSuccessTripCount() {
         Session session = sessionFactory.getCurrentSession();
@@ -219,7 +192,6 @@ public class TripDao {
         Long count = query.uniqueResult();
         return count.intValue();
     }
-
 
     @Transactional
     public int getSuccessTripCountPerUser(int userId) {
@@ -230,7 +202,6 @@ public class TripDao {
         Long count = query.uniqueResult();
         return count != null ? count.intValue() : 0;
     }
-
     @Transactional
     public int getFailedTripCount(int userId) {
         Session session = sessionFactory.getCurrentSession();
@@ -241,14 +212,12 @@ public class TripDao {
         Long count = query.uniqueResult();
         return count.intValue();
     }
-
     @Transactional
     public int getTotalTripCount(int userId) {
         Session session = sessionFactory.getCurrentSession();
         String hql = "SELECT COUNT(*) FROM Trip WHERE tripUserId.userId = :userId AND isAccepted = TRUE";
         Query<Long> query = session.createQuery(hql, Long.class);
         query.setParameter("userId", userId);
-
         Long count = query.uniqueResult();
         return count.intValue();
     }

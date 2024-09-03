@@ -1,16 +1,4 @@
-// showToast(
-//     {
-//         eleWrapper: '#example',
-//         msg: 'There is an error while sending message. Please try again later.',
-//         theme: 'error',
-//         afterShow: function(){
-//             console.log('After show function');
-//         },
-//         afterClose: function(){
-//             console.log('After close function');
-//         }
-//     }
-// );
+
 
 function showToastOnReceive(responseMessage) {
     showToast({

@@ -18,8 +18,10 @@ import java.util.List;
 
 @Repository
 public class CaptainDetailsDao {
+
     @Autowired
     private HibernateTemplate hibernateTemplate;
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -27,7 +29,6 @@ public class CaptainDetailsDao {
     public void saveCaptainDetails(CaptainDetails captainDetails) {
         this.hibernateTemplate.save(captainDetails);
     }
-
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,16 +39,13 @@ public class CaptainDetailsDao {
         String hql = "FROM CaptainDetails WHERE user.userId = :userId";
         Query<CaptainDetails> query = session.createQuery(hql, CaptainDetails.class);
         query.setParameter("userId", userId);
-
         List<CaptainDetails> result = query.getResultList();
-
         if (result.isEmpty()) {
             return null;
         } else {
             return result.get(0);
         }
     }
-
     private Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }

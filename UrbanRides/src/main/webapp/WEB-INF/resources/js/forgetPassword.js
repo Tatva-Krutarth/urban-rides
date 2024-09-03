@@ -16,7 +16,6 @@ $(document).ready(function () {
             }
         },
         submitHandler: function (form) {
-            // Enable the OTP button only if email is valid
             $("#get-otp-btn").prop("disabled", false);
         }
     });
@@ -80,7 +79,7 @@ $(document).ready(function () {
                 required: true,
                 minlength: 8,
                 maxlength: 16,
-                strongPass: true // Use custom validator for strong password
+                strongPass: true
 
             },
             confPass: {
@@ -163,7 +162,6 @@ $(document).ready(function () {
                             errorMsg = errorResponse.errors[0];
                         }
                     } catch (e) {
-                        // Handle non-JSON response
                     }
                     showErrorMsg(errorMsg);
                     $(".loader").hide();
@@ -200,7 +198,7 @@ $(document).ready(function () {
     });
 });
 document.getElementById('back-button').addEventListener('click', function () {
-    history.go(-1); /* move back in history on click */
+    history.go(-1);
 });
 
 function disableAllElements() {
@@ -213,8 +211,8 @@ function disableAllElements() {
     // Disable all links
     var links = document.querySelectorAll('a');
     links.forEach(function(link) {
-        link.style.pointerEvents = 'none'; // Prevents clicking
-        link.style.color = 'gray'; // Optional: visually indicate that the link is disabled
-        link.removeAttribute('href'); // Optionally remove the href attribute
+        link.style.pointerEvents = 'none';
+        link.style.color = 'gray';
+        link.removeAttribute('href');
     });
 }

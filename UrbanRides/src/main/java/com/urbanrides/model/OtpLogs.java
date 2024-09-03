@@ -32,16 +32,12 @@ public class OtpLogs {
     @Column(name = "opt_req_send_time")
     private LocalTime optReqSendTime;
 
-    @Column(name = "opt_submit_time")
-    private LocalTime optSubmitTime;
+
 
     @NotNull(message = "Generated OTP cannot be null")
     @Column(name = "generated_otp")
     private int generatedOtp;
 
-    @NotNull(message = "Is OTP passed cannot be null")
-    @Column(name = "is_otp_passed")
-    private boolean isOtpPassed;
 
     @CreationTimestamp
     @Column(name = "created_date")

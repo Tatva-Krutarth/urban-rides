@@ -1,5 +1,5 @@
 function toggleAccordion(event, collapseId) {
-    event.stopPropagation(); // Prevent default button behavior
+    event.stopPropagation();
     const collapseElement = document.getElementById(collapseId);
     const bsCollapse = new bootstrap.Collapse(collapseElement, {
         toggle: true
@@ -7,7 +7,6 @@ function toggleAccordion(event, collapseId) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Attach event listener to filter inputs
     document.getElementById('trip-id').addEventListener('input', applyFilters);
     document.getElementById('service-type').addEventListener('change', applyFilters);
     document.getElementById('trip-status').addEventListener('change', applyFilters);
@@ -25,27 +24,20 @@ function applyFilters() {
     payload["tripCode"] = tripId
     payload["serviceType"] = serviceType
     payload["tripStatus"] = tripStatus
-    // Send the filter values to the backend via AJAX
-    // $(".loader").css("display", "flex");
 
     $.ajax({
-        url: 'admin-rides-filter-trips', // Update this with your actual backend endpoint
+        url: 'admin-rides-filter-trips',
         method: 'POST', contentType: 'application/json', data: JSON.stringify(payload), success: function (response) {
-            // Update the UI with the filtered data
             populateTrips(response);
-            // $(".loader").hide();
-
         }, error: function (xhr, textStatus, errorThrown) {
             showErrorMsg("Error while processing the filter data")
-            // $(".loader").hide();
-
         }
     });
 }
 
 function populateTrips(data) {
     const accordion = document.getElementById('accordionExample');
-    accordion.innerHTML = ''; // Clear existing trip cards
+    accordion.innerHTML = '';
 
     if (data && data.length > 0) {
         data.forEach((trip, index) => {
@@ -56,7 +48,6 @@ function populateTrips(data) {
             const statusColor = getStatusColor(trip.status);
             const notiImgSrc = getNotificationImage(trip.serviceTypeId);
 
-            // Determine the label for location based on service type
             const locationLabel = trip.serviceTypeId === 2 ? "Drop off/Pickup location" : "Pickup location";
             const dropOffLocationLabel = trip.serviceTypeId === 2 ? "" : `
                 <div class="pickup-dropp">

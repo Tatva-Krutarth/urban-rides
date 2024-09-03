@@ -28,23 +28,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"
             integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <%--    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>--%>
-    <%--    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>--%>
-    <%--    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrapbootstrap.min.js"></script>--%>
-
-    <!-- Add custom CSS file (replace 'landingPage.css' with your CSS file name) -->
-
     <link rel="stylesheet" href="<c:url value="/resources/css/riderWallet.css" />">
     <link rel="stylesheet" href="<c:url value="/resources/css/toaster.css" />">
-
-    <!-- Icon -->
     <link rel="icon" href="<c:url value="/resources/images/Icon.png" />" type="image/icon type">
-
-
-    <!-- font  -->
     <link href="<c:url value="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />"
           rel="stylesheet">
-
 </head>
 <body>
 <%@include file="../commonImports/loader.jsp" %>
@@ -124,11 +112,7 @@
 
 <div class="hs-toast-wrapper  hs-toast-fixed-top " id="example"></div>
 <script src="<c:url value="/resources/js/toaster.js"/>"></script>
-
-
-<%------------------------------------jquerry  validation--%>
 <script src="<c:url value="/resources/js/captain-web-socket.js"/>"></script>
-
 <script src="<c:url value="/resources/js/captainEarnings.js"/>"></script>
 </body>
 </html>

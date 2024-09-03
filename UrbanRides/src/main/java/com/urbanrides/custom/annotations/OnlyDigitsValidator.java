@@ -10,7 +10,7 @@ public class OnlyDigitsValidator implements ConstraintValidator<OnlyDigits, Stri
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) return true; // allow null values
-        return value.matches("\\d*"); // only digits are allowed
+        if (value == null) return true;
+        return value.matches("\\d*");
     }
 }
