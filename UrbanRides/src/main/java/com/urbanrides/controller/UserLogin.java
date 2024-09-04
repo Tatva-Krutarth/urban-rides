@@ -67,7 +67,7 @@ public class UserLogin {
 
     @RequestMapping(path = "/forget-pass-otp", method = RequestMethod.POST)
     @ResponseBody
-    public String sendLinkSubmit(@RequestParam("email") String email, Model model) {
+    public String sendLinkSubmit(@RequestParam("email") String email) {
         String toasterMsg = loginServices.forgetOtpService(email);
         return toasterMsg;
     }

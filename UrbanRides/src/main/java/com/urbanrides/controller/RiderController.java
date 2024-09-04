@@ -10,7 +10,6 @@ import com.urbanrides.service.LoginServices;
 import com.urbanrides.service.RiderOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -216,8 +215,8 @@ public class RiderController {
 
     @ResponseBody
     @RequestMapping("/rider-transaction-details")
-    public List<RiderWalletDataDto> getWalletData(HttpServletRequest req) {
-        List<RiderWalletDataDto> listOfWalletData = riderOtherService.getPaymentData(req);
+    public List<RiderWalletDataDto> getWalletData() {
+        List<RiderWalletDataDto> listOfWalletData = riderOtherService.getPaymentData();
         return listOfWalletData;
     }
 
@@ -238,14 +237,14 @@ public class RiderController {
 
     @ResponseBody
     @RequestMapping("/rider-usermanagement-details")
-    public UserManagementDataDto userManagementDetails(HttpServletRequest req) {
+    public UserManagementDataDto userManagementDetails() {
         UserManagementDataDto userManagementDataDto = riderOtherService.getUserManagementDetails();
         return userManagementDataDto;
     }
 
     @ResponseBody
     @PostMapping("/update-personal-details")
-    public ResponseEntity<Map<String, String>> riderPersonalDetailSubmit(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> riderPersonalDetailSubmit(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
         return riderOtherService.riderPersonalDetailSubmit(riderUMPersonalDetailDto);
     }
 

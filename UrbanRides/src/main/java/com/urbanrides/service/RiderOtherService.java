@@ -144,7 +144,7 @@ public class RiderOtherService {
         simpMessagingTemplate.convertAndSend("/topic/rider-incoming-notifications", notification);
     }
 
-    public List<RiderWalletDataDto> getPaymentData(HttpServletRequest req) {
+    public List<RiderWalletDataDto> getPaymentData() {
         List<RiderWalletDataDto> walletList = new ArrayList<>();
         UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
         List<Trip> tripList = tripDao.getTripForPayment(userSessionObj.getUserId());

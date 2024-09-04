@@ -244,7 +244,6 @@ public class LoginServices {
             return "User details already filled, please login";
         }
         userDetails.setUser(user);
-        System.out.println(userDetails);
         userSessionObj.setAccountStatus(5);
         session.setAttribute("riderSessionObj", userSessionObj);
         usersDao.updateUser(user);
@@ -390,7 +389,6 @@ public class LoginServices {
         }
         OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(email);
         if (eachLog == null) {
-            System.out.println("First Time");
             OtpLogs otpLogs = setOtpLogDataForgetData(email);
             try {
                 this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());

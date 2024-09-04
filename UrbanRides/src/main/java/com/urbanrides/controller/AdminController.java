@@ -228,7 +228,7 @@ public class AdminController {
 
     @ResponseBody
     @PostMapping("/update-personal-details")
-    public ResponseEntity<Map<String, String>> adminPersonalDetailSubmit(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> adminPersonalDetailSubmit(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
         return adminService.adminPersonalDetailSubmit(riderUMPersonalDetailDto);
     }
 

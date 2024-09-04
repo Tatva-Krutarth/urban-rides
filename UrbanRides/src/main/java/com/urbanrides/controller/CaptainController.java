@@ -208,7 +208,7 @@ public class CaptainController {
 
     @ResponseBody
     @RequestMapping("/captain-usermanagement-details")
-    public UserManagementDataDto userManagementDetails(HttpServletRequest req) {
+    public UserManagementDataDto userManagementDetails() {
         UserManagementDataDto userManagementDataDto = captainOtherService.getUserManagementDetails();
         return userManagementDataDto;
     }
@@ -216,7 +216,7 @@ public class CaptainController {
 
     @ResponseBody
     @PostMapping("/update-personal-details")
-    public ResponseEntity<Map<String, String>> captainPersonalDetails(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> captainPersonalDetails(@Valid @RequestBody RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
         return captainOtherService.captainPersonalDetailSubmit(riderUMPersonalDetailDto);
     }
 
@@ -235,7 +235,7 @@ public class CaptainController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
         } catch (RuntimeException e) {
             response.put("errors", "An error occurred: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // added .status()
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
