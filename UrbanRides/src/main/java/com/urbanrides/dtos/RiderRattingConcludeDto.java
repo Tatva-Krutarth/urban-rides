@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.*;
 
 @Data
-public class RiderRattingConclude {
+public class RiderRattingConcludeDto {
 
     @NotNull(message = "Trip ID cannot be null")
     @Positive(message = "Trip ID must be positive")

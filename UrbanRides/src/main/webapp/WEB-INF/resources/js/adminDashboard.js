@@ -45,13 +45,13 @@ $(document).ready(function () {
 $(document).ready(function () {
     allRequestData(0, 10);
 });
+let currentState = 'allRequests';
 
 
-$('#ad-dash-support-types #all').on('click', function () {
+$('#ad-dash-support-types #querry').on('click', function () {
     currentState = 'allRequests';
     allRequestData(0, 10);
 });
-let currentState = 'allRequests';
 
 function allRequestData(page, size) {
     $.ajax({
@@ -138,7 +138,7 @@ function populateAllRequests(data) {
         return;
     }
     $.each(data, function (index, item) {
-        var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/wallet-white.svg' : '/UrbanRides/resources/images/cash.svg';
+        var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/captain2.png' : '/UrbanRides/resources/images/passengerwhite.png';
         var notification = `
             <div class="noti-container mt-2 mb-2">
                 <div class="noti-img-cont">
@@ -256,9 +256,9 @@ function populateRunningRequests(data) {
         return;
     }
     $.each(data, function (index, item) {
-        var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/wallet-white.svg' : '/UrbanRides/resources/images/cash.svg';
+        var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/captain2.png' : '/UrbanRides/resources/images/passengerwhite.png';
         var viewDocumentLink = '';
-        if (item.fileAvailable) {
+        if (item.fileAvailable == 1) {
             viewDocumentLink = `
                 <div class="view-document mt-2 mb-3">
                  <span class="doc-heading">Document :- </span>   <a href="${item.fileLocaton}" target="_blank" id="document-id">View Document</a>
@@ -368,6 +368,7 @@ function completedQuerries(page, size) {
 }
 
 function populateCompletedNotifications(data) {
+
     var container = $('.parent-container');
     container.empty();
     if (data.length === 0) {
@@ -375,12 +376,8 @@ function populateCompletedNotifications(data) {
         return;
     }
     $.each(data, function (index, item) {
-        var imgSrc = '';
-        if (item.accountType === 'Captain') {
-            imgSrc = '/UrbanRides/resources/images/wallet-white.svg';
-        } else {
-            imgSrc = '/UrbanRides/resources/images/cash.svg';
-        }
+            var imgSrc = item.accountType === 'Captain' ? '/UrbanRides/resources/images/captain2.png' : '/UrbanRides/resources/images/passengerwhite.png';
+
         var notification = `
             <div class="noti-container mt-2 mb-2">
                 <div class="noti-img-cont">

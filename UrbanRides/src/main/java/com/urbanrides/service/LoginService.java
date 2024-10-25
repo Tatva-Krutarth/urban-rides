@@ -3,6 +3,7 @@ package com.urbanrides.service;
 
 import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
+import com.urbanrides.enums.NotificationTypeEnum;
 import com.urbanrides.helper.*;
 import com.urbanrides.model.*;
 
@@ -27,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class LoginServices {
+public class LoginService {
 
     @Autowired
     UserRegistrationDao userRegistrationDao;
@@ -50,66 +51,51 @@ public class LoginServices {
     UserDetailsDao userDetailsDao;
 
     @Autowired
-    private DateTimeConverter dateTimeConverter;
+    DateTimeConverter dateTimeConverter;
 
     @Autowired
     NotificationLogsDao notificationLogsDao;
 
     @Autowired
-    private CaptainDetailsDao captainDetailsDao;
+    CaptainDetailsDao captainDetailsDao;
 
     @Autowired
-    private HttpSession httpSession;
+    HttpSession httpSession;
 
     @Autowired
     VehicleTypeDao vehicleTypeDao;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    SimpMessagingTemplate simpMessagingTemplate;
 
-    public String otpService(UserRegistrationDto userRegistrationDto) {
+    public void otpService(UserRegistrationDto userRegistrationDto) {
         String error = validateUserRegistration(userRegistrationDto);
         if (error != null) {
-            return error;
+            throw new IllegalArgumentException(error);
         }
+
         userRegistrationDto.setEmail(userRegistrationDto.getEmail().toLowerCase());
-        OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(userRegistrationDto.getEmail());
-        if (eachLog == null) {
-            OtpLogs otpLogs = setOtpLogData(userRegistrationDto);
-            try {
-                this.emailSend.userRegistrationOtp(userRegistrationDto, otpLogs.getGeneratedOtp());
-            } catch (Exception e) {
-                return "Email not send";
-            }
-            userRegistrationDao.saveUser(otpLogs);
-            return "Email Send Successfully";
+        OtpLogs existingLog = userRegistrationDao.getOtpLogsByEmail(userRegistrationDto.getEmail());
+
+        if (existingLog == null || !existingLog.getCreatedDate().isEqual(LocalDate.now())) {
+            sendAndSaveOtp(userRegistrationDto);
+        } else if (ChronoUnit.MINUTES.between(existingLog.getOptReqSendTime(), LocalDateTime.now()) > 2) {
+            sendAndSaveOtp(userRegistrationDto);
         } else {
-            LocalDate createdDate = eachLog.getCreatedDate();
-            if (createdDate.isEqual(LocalDate.now())) {
-                if (Math.abs(ChronoUnit.MINUTES.between(eachLog.getOptReqSendTime(), LocalDateTime.now())) <= 2) {
-                    return "Please Wait for 2 minutes before getting new otp";
-                } else {
-                    OtpLogs otpLogs = setOtpLogData(userRegistrationDto);
-                    try {
-                        this.emailSend.userRegistrationOtp(userRegistrationDto, otpLogs.getGeneratedOtp());
-                    } catch (Exception e) {
-                        return "Email not send";
-                    }
-                    userRegistrationDao.saveUser(otpLogs);
-                    return "Email Send Successfully";
-                }
-            } else {
-                OtpLogs otpLogs = setOtpLogData(userRegistrationDto);
-                try {
-                    this.emailSend.userRegistrationOtp(userRegistrationDto, otpLogs.getGeneratedOtp());
-                } catch (Exception e) {
-                    return "Email not send";
-                }
-                userRegistrationDao.saveUser(otpLogs);
-                return "Email Send Successfully";
-            }
+            throw new IllegalArgumentException("Please wait for 2 minutes before requesting a new OTP");
         }
     }
+
+    public void sendAndSaveOtp(UserRegistrationDto userRegistrationDto) {
+        OtpLogs otpLogs = setOtpLogData(userRegistrationDto);
+        try {
+            this.emailSend.userRegistrationOtp(userRegistrationDto, otpLogs.getGeneratedOtp());
+        } catch (Exception e) {
+            throw new RuntimeException("Email not sent");
+        }
+        userRegistrationDao.saveUser(otpLogs);
+    }
+
 
     public OtpLogs setOtpLogData(UserRegistrationDto userRegistrationDto) {
         OtpLogs otpLogs = new OtpLogs();
@@ -147,69 +133,67 @@ public class LoginServices {
         return null;
     }
 
-    public String submitRegistration(UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
-        OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(userRegistrationDto.getEmail());
+    public void submitRegistration(UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
         userRegistrationDto.setEmail(userRegistrationDto.getEmail().toLowerCase());
+        OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(userRegistrationDto.getEmail());
+
         if (eachLog == null) {
-            return "Get Otp first";
-        } else {
-            LocalDate createdDate = eachLog.getCreatedDate();
-            if (createdDate.isEqual(LocalDate.now())) {
-                if (Math.abs(ChronoUnit.MINUTES.between(eachLog.getOptReqSendTime(), LocalDateTime.now())) <= 2) {
-                    if (Integer.parseInt(userRegistrationDto.getOtp()) == eachLog.getGeneratedOtp()) {
-                        String msgFromSumbitting = submitData(userRegistrationDto, request);
-                        return msgFromSumbitting;
-                    } else {
-                        return "Invalid OTP";
-                    }
+            throw new IllegalArgumentException("Get OTP first");
+        }
+
+        LocalDate createdDate = eachLog.getCreatedDate();
+        if (createdDate.isEqual(LocalDate.now())) {
+            if (Math.abs(ChronoUnit.MINUTES.between(eachLog.getOptReqSendTime(), LocalDateTime.now())) <= 2) {
+                if (Integer.parseInt(userRegistrationDto.getOtp()) == eachLog.getGeneratedOtp()) {
+                    submitData(userRegistrationDto, request);
                 } else {
-                    return "OTP Time is over get a new Otp";
+                    throw new IllegalArgumentException("Invalid OTP");
                 }
             } else {
-                return "OTP Time is over get a new Otp";
+                throw new IllegalArgumentException("OTP time is over, get a new OTP");
             }
+        } else {
+            throw new IllegalArgumentException("OTP time is over, get a new OTP");
         }
     }
 
-    public String submitData(UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
+    public void submitData(UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
         String error = validateUserRegistration(userRegistrationDto);
         if (error != null) {
-            return error;
+            throw new IllegalArgumentException(error);
         }
+
         if (!commonValidation.isValidOtp(userRegistrationDto.getOtp())) {
-            return "Invalid otp format";
+            throw new IllegalArgumentException("Invalid OTP format");
         }
+
         User user = usersDao.getUserByEmail(userRegistrationDto.getEmail());
         if (user == null) {
             int userId = setUserData(userRegistrationDto);
             User justRegisteredUser = usersDao.getUserByUserId(userId);
             justRegisteredUser.setAccountStatus(1);
             usersDao.updateUser(justRegisteredUser);
+
+            HttpSession session = request.getSession();
+            UserSessionObjDto userSessionObj = new UserSessionObjDto();
+            userSessionObj.setUserId(justRegisteredUser.getUserId());
+            userSessionObj.setAccountStatus(1);
+            userSessionObj.setAccountTypeId(justRegisteredUser.getAccountType());
+
             if (userRegistrationDto.getAcccoutTypeId() == 3) {
-                HttpSession session = request.getSession();
-                UserSessionObj userSessionObj = new UserSessionObj();
-                userSessionObj.setUserId(justRegisteredUser.getUserId());
-                userSessionObj.setAccountStatus(1);
-                userSessionObj.setAccountTypeId(justRegisteredUser.getAccountType());
                 session.setAttribute("riderSessionObj", userSessionObj);
-                return "Rider Registered";
             } else {
-                HttpSession session = request.getSession();
-                UserSessionObj userSessionObj = new UserSessionObj();
-                userSessionObj.setUserId(justRegisteredUser.getUserId());
-                userSessionObj.setAccountStatus(1);
-                userSessionObj.setAccountTypeId(justRegisteredUser.getAccountType());
                 session.setAttribute("captainSessionObj", userSessionObj);
-                return "Captain Registered";
             }
         } else {
-            if (userRegistrationDto.getAcccoutTypeId() == 3) {
-                return "Rider already exists";
+            if (user.getAccountType() == 3) {
+                throw new IllegalArgumentException("Rider already exists");
             } else {
-                return "Captain already exists";
+                throw new IllegalArgumentException("Captain already exists");
             }
         }
     }
+
 
     public int setUserData(UserRegistrationDto userRegistrationDto) {
         User user = new User();
@@ -233,7 +217,7 @@ public class LoginServices {
         userDetails.setPhone(riderPersonalDetailsDto.getPhone());
         userDetails.setAge(riderPersonalDetailsDto.getAge());
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         if (user == null) {
             return "User not found";
@@ -267,7 +251,7 @@ public class LoginServices {
         userDetails.setPhone(riderPersonalDetailsDto.getPhone());
         userDetails.setAge(riderPersonalDetailsDto.getAge());
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         if (user == null) {
             return "User not found";
@@ -296,7 +280,7 @@ public class LoginServices {
         userDetails.setPhone(riderPersonalDetailsDto.getPhone());
         userDetails.setAge(riderPersonalDetailsDto.getAge());
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("adminSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("adminSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         if (user == null) {
             return "User not found";
@@ -316,7 +300,7 @@ public class LoginServices {
 
     public String getCapatainName(HttpServletRequest req) {
         HttpSession session = req.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
         String capatainName = userDetails.getFirstName() + " , " + userDetails.getLastName();
         return capatainName;
@@ -330,7 +314,7 @@ public class LoginServices {
             Boolean verified = passwordToHash.checkPassword(userLoginDto.getPassword(), user.getSalt(), user.getPasswordHash());
             if (verified) {
                 UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
-                UserSessionObj userSessionObj = new UserSessionObj();
+                UserSessionObjDto userSessionObj = new UserSessionObjDto();
                 if (user.getAccountType() == 3) {
                     HttpSession session = request.getSession();
                     userSessionObj.setUserId(user.getUserId());
@@ -377,41 +361,41 @@ public class LoginServices {
         }
     }
 
-    public String forgetOtpService(String emaile) {
+    public void forgetOtpService(String emaile) {
         String email = emaile.toLowerCase();
         String error = emailValidation(email);
         if (error != null) {
-            return error;
+            throw new IllegalArgumentException(error);
         }
+
         User user = usersDao.getUserByEmail(email);
         if (user == null) {
-            return "User Doesn't exist";
+            throw new IllegalArgumentException("User doesn't exist");
         }
+
         OtpLogs eachLog = userRegistrationDao.getOtpLogsByEmail(email);
         if (eachLog == null) {
             OtpLogs otpLogs = setOtpLogDataForgetData(email);
             try {
                 this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());
             } catch (Exception e) {
-                return "Email not send";
+                throw new RuntimeException("Email not sent");
             }
             userRegistrationDao.saveUser(otpLogs);
-            return "Email Send Successfully";
         } else {
             LocalDate createdDate = eachLog.getCreatedDate();
             if (createdDate.isEqual(LocalDate.now())) {
                 if (Math.abs(ChronoUnit.MINUTES.between(eachLog.getOptReqSendTime(), LocalDateTime.now())) <= 2) {
-                    return "Please Wait for 2 minutes before getting new otp";
+                    throw new IllegalArgumentException("Please wait for 2 minutes before getting a new OTP");
                 } else {
                     userRegistrationDao.deleteOtpLogsByEmail(email);
                     OtpLogs otpLogs = setOtpLogDataForgetData(email);
                     try {
                         this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());
                     } catch (Exception e) {
-                        return "Email not send";
+                        throw new RuntimeException("Email not sent");
                     }
                     userRegistrationDao.saveUser(otpLogs);
-                    return "Email Send Successfully";
                 }
             } else {
                 OtpLogs otpLogs = setOtpLogDataForgetData(email);
@@ -419,10 +403,9 @@ public class LoginServices {
                 try {
                     this.emailSend.userForgetOtp(email, otpLogs.getGeneratedOtp());
                 } catch (Exception e) {
-                    return "Email not send";
+                    throw new RuntimeException("Email not sent");
                 }
                 userRegistrationDao.saveUser(otpLogs);
-                return "Email Send Successfully";
             }
         }
     }
@@ -503,7 +486,7 @@ public class LoginServices {
     }
 
     public void saveCaptainPersonalDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session, HttpServletRequest request) throws Exception {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
         if (captainDetails != null) {
             throw new Exception("User documents are already filled.");
@@ -515,12 +498,12 @@ public class LoginServices {
         saveCaptainDetails(captainPersonalDetailsDto, request);
     }
 
-    public void saveCaptainDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpServletRequest request) throws Exception {
+    public void saveCaptainDetails(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpServletRequest request)  {
         CaptainDetails captainDetails = new CaptainDetails();
         String originalFileName = captainPersonalDetailsDto.getProfilePhoto().getOriginalFilename();
         String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
         user.setAccountStatus(3);
@@ -546,7 +529,7 @@ public class LoginServices {
 
 
     public int uploadDocumentCaptain(CaptainPersonalDetailsDto captainPersonalDetailsDto, HttpSession session) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         String captainId = String.valueOf(userSessionObj.getUserId()); // assuming this method exists
         String folderName = "captain" + captainId;
         String folderPath = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "captainDocuments" + File.separator + folderName;
@@ -596,9 +579,9 @@ public class LoginServices {
         return i;
     }
 
-    public CaptainReuploadDataRendering getCaptainReuploadData() {
-        CaptainReuploadDataRendering captainReuploadDataRendering = new CaptainReuploadDataRendering();
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+    public CaptainReuploadDataRenderingDto getCaptainReuploadData() {
+        CaptainReuploadDataRenderingDto captainReuploadDataRendering = new CaptainReuploadDataRenderingDto();
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
@@ -650,7 +633,7 @@ public class LoginServices {
 
     public ResponseEntity<Map<String, String>> saveCaptainDetailsReupload(CaptainReuploadDataDto captainReuploadDataDto, HttpServletRequest request) {
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
         user.setAccountStatus(3);
@@ -675,7 +658,7 @@ public class LoginServices {
 
 
     public int uploadDocumentCaptainReupload(CaptainReuploadDataDto captainReuploadDataDto, HttpSession session) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         String captainId = String.valueOf(userSessionObj.getUserId());
         String folderName = "captain" + captainId;
         String folderPath = session.getServletContext().getRealPath("/") + "WEB-INF" + File.separator + "resources" + File.separator + "uploads" + File.separator + "captainDocuments" + File.separator + folderName;

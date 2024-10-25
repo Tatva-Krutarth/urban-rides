@@ -212,8 +212,7 @@
                                 </div>
                             </div>
 
-                            <div class="charges-notes mt-4" id="hide-chages-notes">Note:- Charges exclude vehicle
-                                maintenance charges. Additional charges for kilometers traveled will be applied
+                            <div class="charges-notes mt-4" id="hide-chages-notes">Note:- Charges exclude vehicle maintenance charges. Additional charges for kilometers traveled will be applied
                             </div>
                             <input type="text" class="d-none" name="validLocation" id="valid-location-package" value="">
                             <input type="text" id="numberOfDays" class="d-none" name="numberOfDays"

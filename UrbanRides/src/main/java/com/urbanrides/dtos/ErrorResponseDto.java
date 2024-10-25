@@ -1,9 +1,9 @@
 package com.urbanrides.dtos;
 
-public class ErrorResponse {
+public class ErrorResponseDto {
     private String message;
 
-    public ErrorResponse(String message) {
+    public ErrorResponseDto(String message) {
         this.message = message;
     }
 

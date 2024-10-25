@@ -34,7 +34,7 @@ public class Trip {
     private User tripUserId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "servide_type_id", nullable = false)
+    @JoinColumn(name = "service_type_id", nullable = false)
     @NotNull(message = "Service type cannot be null")
     private ServiceType ServiceType;
 
@@ -45,10 +45,12 @@ public class Trip {
 
     @NotBlank(message = "Pickup Address is required")
     @Length(max = 200, message = "Pickup address cannot be more than 200 characters")
+    @Column(name = "pick_up_address", nullable = false)
     private String pickupAddress;
 
     @NotBlank(message = "Dropoff Address is required")
     @Length(max = 200, message = "Dropoff address cannot be more than 200 characters")
+    @Column(name = "drop_off_address", nullable = false)
     private String dropoffAddress;
 
     @Column(name = "is_accepted", nullable = false, columnDefinition = "boolean default false")
@@ -65,6 +67,7 @@ public class Trip {
     @Size(max = 20, message = "Distance cannot be more than 20 characters")
     private String distance;
 
+    @Column(name = "estimated_time")
     private LocalTime estimatedTime;
 
     @Column(name = "charges", nullable = false)

@@ -59,9 +59,9 @@ public class GeneralTripDetails  {
     @Column(name = "feedback")
     private String feedback;
 
-    @Column(name = "captain_ratting")
+    @Column(name = "captain_rating")
     @Nullable
-    private float captainRatting = 0.0f;
+    private float captainRating = 0.0f;
 
 
 

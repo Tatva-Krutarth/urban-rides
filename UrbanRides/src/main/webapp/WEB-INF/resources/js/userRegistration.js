@@ -141,7 +141,6 @@ function getOtp() {
     var email = $("#email").val();
     var password = $("#pass").val();
     var confPass = $("#confPass").val();
-
     var formData = {
         email: email, password: password, confPass: confPass,
     };
@@ -153,22 +152,12 @@ function getOtp() {
         data: JSON.stringify(formData),
         success: function (response) {
             $(".loader").hide();
-            if (typeof response === 'string') {
-                if (response === "Email Send Successfully") {
                     showSuccesstMsg(response);
                     document.getElementById('get-otp-btnn').disabled = true;
                     otpInput.disabled = false;
                     emailInput.readOnly = true;
                     passInput.readOnly = true;
                     confPassInput.readOnly = true;
-
-                } else {
-                    showErrorMsg(response);
-                }
-            } else if (response.hasOwnProperty("errors")) {
-                let errorMessages = response.errors.join('<br/>');
-                showErrorMsg(errorMessages);
-            }
         },
         error: function (xhr, textStatus, errorThrown) {
             $(".loader").hide();
@@ -223,17 +212,22 @@ togglePassword1.addEventListener('click', function (e) {
         togglePassword1.src = "../resources/images/password-eye-slash.svg";
     }
 });
-
 $(document).ready(function () {
     $("#submitBtn").click(function (event) {
         event.preventDefault();
+
         var email = $("#email").val();
         var password = $("#pass").val();
         var otp = $("#otp").val();
         var confPass = $("#confPass").val();
         var accountTypeId = parseInt($("#accountType").val());
+
         var formData = {
-            email: email, password: password, otp: otp, confPass: confPass, acccoutTypeId: accountTypeId,
+            email: email,
+            password: password,
+            otp: otp,
+            confPass: confPass,
+            acccoutTypeId: accountTypeId
         };
 
         $(".loader").css("display", "flex");
@@ -245,27 +239,22 @@ $(document).ready(function () {
             contentType: 'application/json',
             dataType: 'text',
             success: function (response) {
-                if (typeof response === 'string') {
-                    if (response === "Rider Registered" || response === "Captain Registered") {
-                        $(".loader").hide();
-
-                        showSuccesstMsg(response);
-                        disableAllElements();
-                        setTimeout(function () {
-                            const redirectUrl = response === "Rider Registered" ? "../rider/rider-personal-details" : "../captain/captain-personal-details";
-                            window.location.href = redirectUrl;
-                        }, 3000);
-                    } else {
-                        showErrorMsg(response);
-                        $(".loader").hide();
-                    }
-                } else {
-                    showErrorMsg(response);
-                    $(".loader").hide();
-                }
-            },
-            error: function (error) {
+                console.log(response);
                 $(".loader").hide();
+                showSuccesstMsg(response);
+                disableAllElements();
+
+                setTimeout(function () {
+                    console.log(response);
+                    const redirectUrl = response === "Rider Registered"
+                        ? "../rider/rider-personal-details"
+                        : "../captain/captain-personal-details";
+                    window.location.href = redirectUrl;
+                }, 3000);
+            },
+            error: function (xhr, error) {
+                $(".loader").hide();
+
                 try {
                     const errorResponse = JSON.parse(xhr.responseText);
                     if (Array.isArray(errorResponse.errors)) {

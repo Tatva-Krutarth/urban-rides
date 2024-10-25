@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
-public class RiderUMLoginDetails {
+public class RiderUMLoginDetailsDto {
     @Size(min = 8, max = 16, message = "Password must be between 8 and 16 characters")
     @NotNull(message = "Password is required")
     private String currentPassword;

@@ -6,7 +6,7 @@ import com.urbanrides.exceptions.CustomExceptions;
 import com.urbanrides.exceptions.CustomValidationException;
 import com.urbanrides.exceptions.InsufficientFundsException;
 import com.urbanrides.service.CabBookingService;
-import com.urbanrides.service.LoginServices;
+import com.urbanrides.service.LoginService;
 import com.urbanrides.service.RiderOtherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -39,7 +39,7 @@ public class RiderController {
     private RiderOtherService riderOtherService;
 
     @Autowired
-    private LoginServices loginServices;
+    private LoginService loginServices;
 
     @RequestMapping("/rider-personal-details")
     public String riderPersonalDetails() {
@@ -80,7 +80,7 @@ public class RiderController {
 
     @PostMapping("/rider-reach-info")
     @ResponseBody
-    public int riderReachInfo(@RequestBody RiderReachInfo riderReachInfo) {
+    public int riderReachInfo(@RequestBody RiderReachInfoDto riderReachInfo) {
         int generalTripDetailId = cabBookingService.saveGeneralTripInfo(riderReachInfo);
         return generalTripDetailId;
     }
@@ -105,10 +105,10 @@ public class RiderController {
 
     @PostMapping("/ride-ratting-submit")
     @ResponseBody
-    public ResponseEntity<Map<String, String>> rideRattingSubmit(@Valid @RequestBody RiderRattingConclude riderRattingConclude, BindingResult bindingResult) throws MethodArgumentNotValidException {
+    public ResponseEntity<Map<String, String>> rideRattingSubmit(@Valid @RequestBody RiderRattingConcludeDto riderRattingConclude, BindingResult bindingResult) throws MethodArgumentNotValidException {
         Map<String, String> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            Method method = ReflectionUtils.findMethod(getClass(), "rideRattingSubmit", RiderRattingConclude.class, BindingResult.class, HttpSession.class);
+            Method method = ReflectionUtils.findMethod(getClass(), "rideRattingSubmit", RiderRattingConcludeDto.class, BindingResult.class, HttpSession.class);
             MethodParameter methodParameter = new MethodParameter(method, 0);
             throw new MethodArgumentNotValidException(methodParameter, bindingResult);
         }
@@ -250,7 +250,7 @@ public class RiderController {
 
     @ResponseBody
     @PostMapping("/update-login-details")
-    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetailsDto riderUMLoginDetails, HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
         try {
             String result = riderOtherService.sendPassToService(riderUMLoginDetails, request);
@@ -268,7 +268,7 @@ public class RiderController {
 
     @ResponseBody
     @PostMapping("/update-profile-photo")
-    public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) throws MethodArgumentNotValidException {
+    public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogoDto riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) throws MethodArgumentNotValidException {
         Map<String, String> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
             response.put("error", "Only JPG and PNG files are allowed of size less than 1 mb");

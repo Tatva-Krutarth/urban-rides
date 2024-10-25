@@ -3,6 +3,8 @@ package com.urbanrides.service;
 
 import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
+import com.urbanrides.enums.NotificationTypeEnum;
+import com.urbanrides.enums.SupportType;
 import com.urbanrides.helper.*;
 import com.urbanrides.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CaptainOtherService {
@@ -68,7 +68,7 @@ public class CaptainOtherService {
     private  DateTimeConverter dateTimeConverter;
     public List<NotificationDataDto> getNotificationData() {
         List<NotificationDataDto> notiDtoList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         List<NotificationLogs> notificationLogsList = notificationLogsDao.getAllNotificationLogs(userSessionObj.getUserId());
         if (notificationLogsList != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
@@ -89,7 +89,7 @@ public class CaptainOtherService {
     }
 
     public UserManagementDataDto getUserManagementDetails() {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
         UserManagementDataDto userManagementDataDto = new UserManagementDataDto();
@@ -106,7 +106,7 @@ public class CaptainOtherService {
     public ResponseEntity<Map<String, String>> captainPersonalDetailSubmit(RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
         Map<String, String> response = new HashMap<>();
         try {
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
             String firstName = capitalizeFirstLetter(riderUMPersonalDetailDto.getFirstName());
             String lastName = capitalizeFirstLetter(riderUMPersonalDetailDto.getLastName());
             UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
@@ -132,13 +132,13 @@ public class CaptainOtherService {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
-    public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest req) throws Exception {
+    public String sendPassToService(RiderUMLoginDetailsDto riderUMLoginDetails, HttpServletRequest req) throws Exception {
         try {
             String error = passwordValidation(riderUMLoginDetails);
             if (error != null) {
                 return error;
             }
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
             if (userSessionObj == null) {
                 throw new Exception("User session not found");
             }
@@ -159,7 +159,7 @@ public class CaptainOtherService {
         }
     }
 
-    public String passwordValidation(RiderUMLoginDetails riderUMLoginDetails) {
+    public String passwordValidation(RiderUMLoginDetailsDto riderUMLoginDetails) {
         if (!commonValidation.isValidPassword(riderUMLoginDetails.getNewPassword())) {
             return "Password must be between 8 and 13 characters.";
         }
@@ -169,8 +169,8 @@ public class CaptainOtherService {
         return null;
     }
 
-    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) throws Exception {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+    public void updatePassword(RiderUMLoginDetailsDto riderUMLoginDetails, HttpServletRequest request) throws Exception {
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         if (user == null) {
             throw new Exception("User not found");
@@ -184,7 +184,7 @@ public class CaptainOtherService {
         }
     }
 
-    public User updateToDB(User user, RiderUMLoginDetails riderUMLoginDetails) throws Exception {
+    public User updateToDB(User user, RiderUMLoginDetailsDto riderUMLoginDetails) throws Exception {
         try {
             String saltString = passwordToHash.generateSalt();
             String hashedPasswordString = passwordToHash.hashPassword(riderUMLoginDetails.getNewPassword(), saltString);
@@ -197,8 +197,8 @@ public class CaptainOtherService {
         }
     }
 
-    public String updateProfilePic(RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session) throws IOException {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+    public String updateProfilePic(RiderUMUpdateProfileLogoDto riderUMUpdateProfileLogo, HttpSession session) throws IOException {
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         if (userSessionObj == null) {
             throw new IOException("User session not found.");
         }
@@ -280,7 +280,7 @@ public class CaptainOtherService {
     }
 
     public void getSupportSaveToLogs(RiderGetSupportDto riderGetSupportDto, HttpSession session) throws IOException {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         SupportTypeLogs supportTypeLogs = new SupportTypeLogs();
         try {
             supportTypeLogs.setSupportType(SupportType.getValueById(riderGetSupportDto.getSupportType()));
@@ -338,7 +338,7 @@ public class CaptainOtherService {
     }
 
     public double getAmount() {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         BigDecimal walletAmount = userDetails.getWallet();
         double amountDouble = walletAmount.setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -346,7 +346,7 @@ public class CaptainOtherService {
     }
 
     public double getTotalEarnings() {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         List<Trip> trips = tripDao.getTripsForTotalEarnings(userSessionObj.getUserId());
         double totalEarnings = 0.0;
         if (trips == null) {
@@ -376,7 +376,7 @@ public class CaptainOtherService {
     }
 
     public double depositAmount(double amount) {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         try {
             UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
             BigDecimal currentAmount = userDetails.getWallet();
@@ -400,7 +400,7 @@ public class CaptainOtherService {
 
     public List<RiderWalletDataDto> getPaymentData() {
         List<RiderWalletDataDto> walletList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         List<Trip> tripList = tripDao.getTripForPaymentForCaptain(userSessionObj.getUserId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
         if (tripList == null) {
@@ -426,7 +426,7 @@ public class CaptainOtherService {
 
     public List<RiderMyTripDataDto> getTripDetails() {
         List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         List<Trip> tripList = tripDao.getAllTripOfCaptain(userSessionObj.getUserId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a, d'th' MMMM yyyy");
         if (tripList == null) {
@@ -461,7 +461,7 @@ public class CaptainOtherService {
                 if (generalTripDetails == null) {
                     riderDataList.setStatus(2);
                 } else {
-                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRatting());
+                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRating());
                     if (generalTripDetails.getIsTripCompleted()) {
                         riderDataList.setStatus(1);
                     } else {
@@ -522,7 +522,7 @@ public class CaptainOtherService {
     }
     public List<CaptainPackageTripsDataDto> getCaptainPackageTripData() {
         List<CaptainPackageTripsDataDto> riderMyTripList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
         List<Trip> tripList = tripDao.getAllPackageTrips(userSessionObj.getUserId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a, d'th' MMMM yyyy");
         for (Trip perTrip : tripList) {
@@ -574,7 +574,7 @@ public class CaptainOtherService {
             if (trip == null) {
                 throw new IllegalArgumentException("Trip not found with ID: " + tripId);
             }
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
             if (userSessionObj == null) {
                 throw new IllegalStateException("User session not found");
             }
@@ -635,7 +635,7 @@ public class CaptainOtherService {
             if (trip == null) {
                 throw new IllegalArgumentException("Trip not found with ID: " + concludeRideRequestRentTaxDto.getTripId());
             }
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
             UserDetails captainUser = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
             CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
             if (captainUser == null || captainDetails == null) {
@@ -720,7 +720,7 @@ public class CaptainOtherService {
             if (trip == null) {
                 throw new IllegalArgumentException("Trip not found with ID: " + concludeRideRequestDailyPickUpDto.getTripId());
             }
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
             UserDetails captainUser = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
             CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
             if (captainUser == null || captainDetails == null) {
@@ -770,6 +770,9 @@ public class CaptainOtherService {
     public SupportRequestDataDto findSupportRequestById(String id) {
         SupportTypeLogs supportTypeLogs = supportTypeLogsDao.getSupportPerData(id);
         SupportRequestDataDto supportRequestDataDto = new SupportRequestDataDto();
+        if (supportTypeLogs == null) {
+            return supportRequestDataDto;
+        }
         supportRequestDataDto.setId(supportTypeLogs.getSupportCaseId());
         supportRequestDataDto.setType(supportTypeLogs.getSupportType());
         supportRequestDataDto.setDescription(supportTypeLogs.getDescription());

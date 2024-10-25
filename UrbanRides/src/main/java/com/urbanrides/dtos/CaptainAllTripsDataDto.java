@@ -4,7 +4,7 @@ package com.urbanrides.dtos;
 import lombok.Data;
 
 @Data
-public class CaptainAllTripsData {
+public class CaptainAllTripsDataDto {
 
     private int tripId;
     private String passengerName;

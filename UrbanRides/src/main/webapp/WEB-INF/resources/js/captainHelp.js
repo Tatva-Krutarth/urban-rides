@@ -98,7 +98,7 @@ $(document).ready(function () {
                 }
             },
             error: function (e) {
-                showErrorMsg('Error occurred while searching for the support request.');
+                showErrorMsg('No support request found with the given ID.');
             }
         });
     });

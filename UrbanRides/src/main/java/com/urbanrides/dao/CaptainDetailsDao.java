@@ -67,7 +67,7 @@ public class CaptainDetailsDao {
     @Transactional
     public List<CaptainDetails> getCaptainDataList() {
         Session s = getCurrentSession();
-        String queryString = "FROM CaptainDetails where isLive = true and isFree = true ";
+        String queryString = "FROM CaptainDetails where isAvailable = true and isFree = true ";
         Query<CaptainDetails> query = s.createQuery(queryString, CaptainDetails.class);
         List<CaptainDetails> results = query.getResultList();
         return results;

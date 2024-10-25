@@ -84,9 +84,9 @@ $(document).ready(function () {
         $.ajax({
             type: 'GET',
             url: 'search-support-request',
-            data: {id: queryId},
+            data: { id: queryId },
             success: function (data) {
-                if (data && data.id) {
+                if (data && data.id) {  // Check if response has id (indicating success)
                     $('#requestId').text(data.id);
                     $('#requestType').text(data.type);
                     $('#requestDescription').text(data.description);
@@ -96,10 +96,11 @@ $(document).ready(function () {
                     showErrorMsg('No support request found with the given ID.');
                 }
             },
-            error: function (e) {
-                showErrorMsg('Error occurred while searching for the support request.');
+            error: function (xhr) {
+                showErrorMsg(xhr.responseText || 'An error occurred');
             }
         });
+
     });
 });
 

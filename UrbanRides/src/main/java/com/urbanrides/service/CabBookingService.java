@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.urbanrides.dao.*;
 import com.urbanrides.dao.TripDao;
 import com.urbanrides.dtos.*;
+import com.urbanrides.enums.NotificationTypeEnum;
 import com.urbanrides.exceptions.CustomExceptions;
 import com.urbanrides.exceptions.InsufficientFundsException;
 import com.urbanrides.helper.*;
@@ -84,7 +85,7 @@ public class CabBookingService {
 
     public String generalRide(RiderNormalRideDto riderNormalRideDto) throws CustomExceptions {
         try {
-            UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
             User userObj = usersDao.getUserByUserId(userSessionObj.getUserId());
             Trip trip = new Trip();
             trip.setTripCode(generateTripId(userSessionObj.getUserId()));
@@ -168,7 +169,7 @@ public class CabBookingService {
     }
 
     public String acceptRideRiderSide(int tripId) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         User captainUser = usersDao.getUserByUserId(userSessionObj.getUserId());
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
         UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
@@ -187,7 +188,7 @@ public class CabBookingService {
         OtpLogs otpLogs = setOtpLogData(trip.getTripUserId().getEmail());
         captainInfoDto.setOtp(otpLogs.getGeneratedOtp());
         captainInfoDto.setPhoto("/UrbanRides/resources/uploads/captainDocuments/" + folderName + "/" + fileNameProfile);
-        captainInfoDto.setRatings(captainDetails.getRatting());
+        captainInfoDto.setRatings(captainDetails.getRating());
         captainInfoDto.setTripId(tripId);
         captainInfoDto.setRiderAddress(captainDetails.getCaptainLocatation());
         captainInfoDto.setVehicleNumber(captainDetails.getNumberPlate());
@@ -218,7 +219,7 @@ public class CabBookingService {
     }
 
     public RiderInfoDto acceptRideCaptainSide(int tripId) throws CustomExceptions {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         Trip trip = tripDao.getTipById(tripId);
         if (trip.getCaptainUserObj() != null || trip.getReasonForCancellation() != null || trip.isAccepted()) {
             throw new CustomExceptions("The trip has already been accepted by another captain or it has been cancelled by the rider.");
@@ -270,7 +271,7 @@ public class CabBookingService {
     }
 
     public String cancelRide(String cancelReason, int tripId) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
         userDetails.setFailTripCount(userDetails.getFailTripCount() + 1);
         userDetailsDao.updateUserDetails(userDetails);
@@ -286,7 +287,7 @@ public class CabBookingService {
         return LocalDateTime.of(LocalDate.now(), LocalTime.of(0, minutes));
     }
 
-    public int saveGeneralTripInfo(RiderReachInfo riderReachInfo) {
+    public int saveGeneralTripInfo(RiderReachInfoDto riderReachInfo) {
         GeneralTripDetails generalTripDetails = new GeneralTripDetails();
         Trip trip = tripDao.getTipById(riderReachInfo.getTripId());
         generalTripDetails.setCaptainAway(riderReachInfo.getCaptainAway());
@@ -304,7 +305,7 @@ public class CabBookingService {
     }
 
     public RattingModalDataDto saveRideEndInfo(int tripId) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         UserDetails riderUserDetails = userDetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
         GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripDetailsById(tripId);
         generalTripDetails.setTripStartTime(LocalDateTime.now());
@@ -324,7 +325,7 @@ public class CabBookingService {
         return rattingModalDataDto;
     }
 
-    public void saveRattingInfo(RiderRattingConclude riderRattingConclude) {
+    public void saveRattingInfo(RiderRattingConcludeDto riderRattingConclude) {
         GeneralTripDetails generalTripDetails = generalTripDetailsDao.getGeneralTripDetailsById(riderRattingConclude.getTripId());
         Trip trip = tripDao.getTipById(generalTripDetails.getTripObj().getTripId());
         UserDetails captainUserDetails = userDetailsDao.getUserDetailsByUserId(trip.getCaptainUserObj().getUserId());
@@ -339,7 +340,7 @@ public class CabBookingService {
         generalTripDetails.setTripEndTime(LocalDateTime.now());
         generalTripDetails.setFeedback(riderRattingConclude.getFeedback());
         generalTripDetails.setIsTripCompleted(true);
-        generalTripDetails.setCaptainRatting(riderRattingConclude.getRattings());
+        generalTripDetails.setCaptainRating(riderRattingConclude.getRattings());
         BigDecimal tripCharge = BigDecimal.valueOf(trip.getCharges());
         float earnings = tripCharge.floatValue();
         captainDetails.setTotalEarnings(captainDetails.getTotalEarnings() + earnings);
@@ -368,17 +369,17 @@ public class CabBookingService {
         generalTripDetailsDao.updateGeneralTripDetails(generalTripDetails);
     }
 
-    public void updateCaptainRating(CaptainDetails captainDetails, RiderRattingConclude riderRattingConclude, UserDetails captainUserDetails) {
-        float currentRating = captainDetails.getRatting();
+    public void updateCaptainRating(CaptainDetails captainDetails, RiderRattingConcludeDto riderRattingConclude, UserDetails captainUserDetails) {
+        float currentRating = captainDetails.getRating();
         float newRating = riderRattingConclude.getRattings();
         int successTripCount = captainUserDetails.getSuccessTripCount();
         int failTripCount = captainUserDetails.getFailTripCount();
         int totalTrips = successTripCount + failTripCount + 1;
         if (totalTrips == 0) {
-            captainDetails.setRatting(0.0f);
+            captainDetails.setRating(0.0f);
         } else {
             float updatedRating = (newRating + currentRating * successTripCount) / totalTrips;
-            captainDetails.setRatting(updatedRating);
+            captainDetails.setRating(updatedRating);
         }
     }
 
@@ -395,6 +396,25 @@ public class CabBookingService {
         } else {
             throw new IllegalArgumentException("Service type is not specified");
         }
+    }
+    public List<CaptainAllTripsDataDto> getTripsData() {
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
+        CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
+        List<Trip> trips = tripDao.getAllTripOfCaptainDashboard(captainDetails.getVehicleType().getVehicleId());
+        List<CaptainAllTripsDataDto> captainDataList = new ArrayList<>();
+        if (trips != null) {
+            for (Trip trip : trips) {
+                UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(trip.getTripUserId().getUserId());
+                CaptainAllTripsDataDto captainData = new CaptainAllTripsDataDto();
+                captainData.setTripId(trip.getTripId());
+                captainData.setPassengerName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+                captainData.setPickUpLocation(trip.getPickupAddress());
+                captainData.setCharges(trip.getCharges());
+                captainData.setDropLocation(trip.getDropoffAddress());
+                captainDataList.add(captainData);
+            }
+        }
+        return captainDataList;
     }
 
     private double calculateCharges(PackageServiceDto packageServiceDto) {
@@ -540,7 +560,7 @@ public class CabBookingService {
     }
 
     public void savePackageRentATaxi(PackageServiceDto packageServiceDto) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         User userObj = usersDao.getUserByUserId(userSessionObj.getUserId());
         Trip trip = new Trip();
         trip.setTripCode(generateTripId(userSessionObj.getUserId()));
@@ -601,7 +621,7 @@ public class CabBookingService {
 
     private Trip buildTripObject(PackageServiceDto packageServiceDto) {
         Trip trip = new Trip();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         User userObj = usersDao.getUserByUserId(userSessionObj.getUserId());
         trip.setTripCode(generateTripId(userSessionObj.getUserId()));
         trip.setTripUserId(userObj);
@@ -617,10 +637,10 @@ public class CabBookingService {
     }
 
     public void saveCaptainLocation(String address) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         CaptainDetails captainDetails = captainDetailsDao.getCaptainDetailByUserId(userSessionObj.getUserId());
         captainDetails.setCaptainLocatation(address);
-        captainDetails.setLive(true);
+        captainDetails.setAvailable(true);
         captainDetailsDao.updateCaptainDetail(captainDetails);
     }
 }

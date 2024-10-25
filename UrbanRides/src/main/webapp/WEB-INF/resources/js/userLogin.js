@@ -70,7 +70,7 @@ $("#myForm").validate({
                                 window.location.href = "/UrbanRides/admin/admin-dashboard";
                             }
 
-                        }, 3000);
+                        }, 1000);
                     } else {
                         showErrorMsg(response);
                     }

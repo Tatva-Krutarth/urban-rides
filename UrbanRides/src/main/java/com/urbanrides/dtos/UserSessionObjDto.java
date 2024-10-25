@@ -1,10 +1,16 @@
 package com.urbanrides.dtos;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
+@Getter
+@Setter
+@NoArgsConstructor
 
-public class UserSessionObj {
+public class UserSessionObjDto {
 
     private int userId;
     private int accountTypeId;

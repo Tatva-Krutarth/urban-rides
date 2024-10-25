@@ -3,6 +3,8 @@ package com.urbanrides.service;
 
 import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
+import com.urbanrides.enums.NotificationTypeEnum;
+import com.urbanrides.enums.UserTypeEnum;
 import com.urbanrides.helper.*;
 import com.urbanrides.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,8 +81,8 @@ public class AdminService {
     @Autowired
     DateTimeConverter dateTimeConverter;
 
-    public AdminCountData getDashCount() {
-        AdminCountData adminCountData = new AdminCountData();
+    public AdminCountDataDto getDashCount() {
+        AdminCountDataDto adminCountData = new AdminCountDataDto();
         adminCountData.setTotalUserCount(usersDao.totalCount());
         adminCountData.setGeneralBooking(tripDao.getCountOfGeneralBooking());
         adminCountData.setServiceBooking(tripDao.getCountOfServiceBooking());
@@ -89,10 +90,11 @@ public class AdminService {
         return adminCountData;
     }
 
-    public Page<AdminQuerries> getSupportData(Pageable pageable) {
+    public Page<AdminQuerriesDto> getSupportData(Pageable pageable) {
         Page<SupportTypeLogs> supportTypeLogsPage = supportTypeLogsDao.getAllLogsData(pageable);
-        List<AdminQuerries> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
-            AdminQuerries adminQuerries = new AdminQuerries();
+        List<AdminQuerriesDto> adminQuerriesList = new ArrayList<>();
+        for (SupportTypeLogs supportTypeLogs : supportTypeLogsPage.getContent()) {
+            AdminQuerriesDto adminQuerries = new AdminQuerriesDto();
             adminQuerries.setUserID(supportTypeLogs.getUserObj().getUserId());
             adminQuerries.setSupportId(supportTypeLogs.getSupportLogsId());
             UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
@@ -105,28 +107,33 @@ public class AdminService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = createdDate.format(formatter);
             adminQuerries.setCreatedDate(formattedDate);
-            return adminQuerries;
-        }).collect(Collectors.toList());
+            adminQuerriesList.add(adminQuerries);
+        }
+
         return new PageImpl<>(adminQuerriesList, pageable, supportTypeLogsPage.getTotalElements());
     }
 
-    public Page<AdminQuerries> getRunningData(Pageable pageable) {
+    public Page<AdminQuerriesDto> getRunningData(Pageable pageable) {
         Page<SupportTypeLogs> supportTypeLogsPage = supportTypeLogsDao.getRunningData(pageable);
-        List<AdminQuerries> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
-            AdminQuerries adminQuerries = new AdminQuerries();
+        List<AdminQuerriesDto> adminQuerriesList = new ArrayList<>();
+        for (SupportTypeLogs supportTypeLogs : supportTypeLogsPage.getContent()) {
+            AdminQuerriesDto adminQuerries = new AdminQuerriesDto();
             adminQuerries.setUserID(supportTypeLogs.getUserObj().getUserId());
             adminQuerries.setSupportId(supportTypeLogs.getSupportLogsId());
+
             UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
             adminQuerries.setContactDetails(userDetails.getPhone());
             adminQuerries.setSypportType(supportTypeLogs.getSupportType());
             adminQuerries.setAccountType(UserTypeEnum.getValueById(supportTypeLogs.getUserObj().getAccountType()));
             adminQuerries.setMessage(supportTypeLogs.getDescription());
             adminQuerries.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
+
             if (supportTypeLogs.isFile()) {
                 adminQuerries.setFileAvailable(1);
             } else {
                 adminQuerries.setFileAvailable(2);
             }
+
             String fileLocation;
             if (supportTypeLogs.getUserObj().getAccountType() == 3) {
                 fileLocation = "/UrbanRides/resources/uploads/riderDocuments/riderComplain" + userDetails.getUser().getUserId() + "/complain" + userDetails.getUser().getUserId() + supportTypeLogs.getFileExtention();
@@ -134,19 +141,22 @@ public class AdminService {
                 fileLocation = "/UrbanRides/resources/uploads/captainDocuments/captainComplain" + userDetails.getUser().getUserId() + "/complain" + userDetails.getUser().getUserId() + supportTypeLogs.getFileExtention();
             }
             adminQuerries.setFileLocaton(fileLocation);
+
             LocalDate createdDate = supportTypeLogs.getCreatedDate();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             String formattedDate = createdDate.format(formatter);
             adminQuerries.setCreatedDate(formattedDate);
-            return adminQuerries;
-        }).collect(Collectors.toList());
+
+            adminQuerriesList.add(adminQuerries);
+        }
+
         return new PageImpl<>(adminQuerriesList, pageable, supportTypeLogsPage.getTotalElements());
     }
 
-    public Page<AdminQuerries> getCompletedData(Pageable pageable) {
+    public Page<AdminQuerriesDto> getCompletedData(Pageable pageable) {
         Page<SupportTypeLogs> supportTypeLogsPage = supportTypeLogsDao.getCompletedData(pageable);
-        List<AdminQuerries> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
-            AdminQuerries adminQuerries = new AdminQuerries();
+        List<AdminQuerriesDto> adminQuerriesList = supportTypeLogsPage.getContent().stream().map(supportTypeLogs -> {
+            AdminQuerriesDto adminQuerries = new AdminQuerriesDto();
             adminQuerries.setUserID(supportTypeLogs.getUserObj().getUserId());
             adminQuerries.setSupportId(supportTypeLogs.getSupportLogsId());
             UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(supportTypeLogs.getUserObj().getUserId());
@@ -167,7 +177,7 @@ public class AdminService {
     }
 
     public UserManagementDataDto getUserManagementDetails() {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("adminSessionObj");
         UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
         UserManagementDataDto userManagementDataDto = new UserManagementDataDto();
         userManagementDataDto.setFirstName(userDetails.getFirstName());
@@ -184,7 +194,7 @@ public class AdminService {
     public ResponseEntity<Map<String, String>> adminPersonalDetailSubmit(RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
         Map<String, String> response = new HashMap<>();
         try {
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("adminSessionObj");
             UserDetails userDetails = userdetailsDao.getUserDetailsByUserId(userSessionObj.getUserId());
             if (userDetails == null) {
                 response.put("message", "User not found");
@@ -211,7 +221,7 @@ public class AdminService {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
-    public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails) throws Exception {
+    public String sendPassToService(RiderUMLoginDetailsDto riderUMLoginDetails) throws Exception {
         String error = passwordValidation(riderUMLoginDetails);
         if (error != null) {
             return error;
@@ -220,7 +230,7 @@ public class AdminService {
         return null;
     }
 
-    public String passwordValidation(RiderUMLoginDetails riderUMLoginDetails) {
+    public String passwordValidation(RiderUMLoginDetailsDto riderUMLoginDetails) {
         if (!commonValidation.isValidPassword(riderUMLoginDetails.getNewPassword())) {
             return "Password must be between 8 and 13 characters.";
         }
@@ -230,8 +240,8 @@ public class AdminService {
         return null;
     }
 
-    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails) throws Exception {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
+    public void updatePassword(RiderUMLoginDetailsDto riderUMLoginDetails) throws Exception {
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("adminSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         if (user == null) {
             throw new Exception("User not found");
@@ -245,7 +255,7 @@ public class AdminService {
         }
     }
 
-    public User updateToDB(User user, RiderUMLoginDetails riderUMLoginDetails) throws Exception {
+    public User updateToDB(User user, RiderUMLoginDetailsDto riderUMLoginDetails) throws Exception {
         try {
             String saltString = passwordToHash.generateSalt();
             String hashedPasswordString = passwordToHash.hashPassword(riderUMLoginDetails.getNewPassword(), saltString);
@@ -271,8 +281,8 @@ public class AdminService {
         simpMessagingTemplate.convertAndSend("/topic/rider-incoming-notifications", notification);
     }
 
-    public String updateProfilePic(RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session) throws IOException {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("adminSessionObj");
+    public String updateProfilePic(RiderUMUpdateProfileLogoDto riderUMUpdateProfileLogo, HttpSession session) throws IOException {
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("adminSessionObj");
         if (userSessionObj == null) {
             throw new IOException("User session not found.");
         }
@@ -362,7 +372,7 @@ public class AdminService {
 
     public boolean acceptRequest(int id) {
         SupportTypeLogs supportTypeLogs = supportTypeLogsDao.getSupportBySupportId(id);
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("adminSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("adminSessionObj");
         User user = usersDao.getUserByUserId(userSessionObj.getUserId());
         supportTypeLogs.setAdminObj(user);
         supportTypeLogsDao.updateSupportTypeLogs(supportTypeLogs);
@@ -388,6 +398,9 @@ public class AdminService {
             allDataObj.setRiderUserId(user.getUserId());
             allDataObj.setStatus(user.getAccountStatus());
             UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+            if(userDetails == null){
+                continue;
+            }
             allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
             allDataObj.setPhone(userDetails.getPhone());
             int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
@@ -411,6 +424,9 @@ public class AdminService {
             allDataObj.setRiderUserId(user.getUserId());
             allDataObj.setStatus(user.getAccountStatus());
             UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+            if(userDetails == null){
+                continue;
+            }
             allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
             allDataObj.setPhone(userDetails.getPhone());
             int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
@@ -434,6 +450,9 @@ public class AdminService {
             allDataObj.setRiderUserId(user.getUserId());
             allDataObj.setStatus(user.getAccountStatus());
             UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+            if(userDetails == null){
+                continue;
+            }
             allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
             allDataObj.setPhone(userDetails.getPhone());
             int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
@@ -457,6 +476,9 @@ public class AdminService {
             allDataObj.setRiderUserId(user.getUserId());
             allDataObj.setStatus(user.getAccountStatus());
             UserDetails userDetails = userDetailsDao.getUserDetailsByUserId(user.getUserId());
+            if(userDetails == null){
+                continue;
+            }
             allDataObj.setUserName(userDetails.getFirstName() + " , " + userDetails.getLastName());
             allDataObj.setPhone(userDetails.getPhone());
             int sucessTripCount = tripDao.getSuccessTripCountPerUser(user.getUserId());
@@ -521,7 +543,7 @@ public class AdminService {
         user.setAccountStatus(6);
         if (user.getAccountType() == 2) {
             sendNotiToCaptain(notificationLogs.getNotificationMsg());
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("captainSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("captainSessionObj");
             if (userSessionObj != null && userSessionObj.getUserId() == userId) {
                 HttpSession session = httpServletRequest.getSession(false);
                 if (session != null) {
@@ -530,7 +552,7 @@ public class AdminService {
             }
         } else {
             sendNotiToRider(notificationLogs.getNotificationMsg());
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("riderSessionObj");
             if (userSessionObj != null && userSessionObj.getUserId() == userId) {
                 HttpSession session = httpServletRequest.getSession(false);
                 if (session != null) {
@@ -551,7 +573,7 @@ public class AdminService {
         return dateTime.format(formatter);
     }
 
-    public List<RiderMyTripDataDto> ridesFilterData(AdminRidesFilterData filterData) {
+    public List<RiderMyTripDataDto> ridesFilterData(AdminRidesFilterDataDto filterData) {
         List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
 
         List<Trip> tripList = tripDao.getAllTripByFilter(filterData);

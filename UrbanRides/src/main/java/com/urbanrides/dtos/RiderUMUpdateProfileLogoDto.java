@@ -7,7 +7,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class RiderUMUpdateProfileLogo {
+public class RiderUMUpdateProfileLogoDto {
 
     @NotNull(message = "Profile photo is required")
     @ValidMultipartFile(maxSize = 1048576, message = "Profile photo file size should not exceed 1MB")

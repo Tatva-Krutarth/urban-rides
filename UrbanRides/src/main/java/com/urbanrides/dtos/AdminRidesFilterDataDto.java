@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class AdminRidesFilterData {
+public class AdminRidesFilterDataDto {
 
 
     @Pattern(regexp = "^[A-Za-z0-9]*$", message = "Trip ID must be alphanumeric.")

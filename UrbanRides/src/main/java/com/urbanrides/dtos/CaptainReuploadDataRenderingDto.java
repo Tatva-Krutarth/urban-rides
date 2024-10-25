@@ -3,7 +3,7 @@ package com.urbanrides.dtos;
 import lombok.Data;
 
 @Data
-public class CaptainReuploadDataRendering {
+public class CaptainReuploadDataRenderingDto {
 
     private int captainId;
     private String captainName;

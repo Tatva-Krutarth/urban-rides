@@ -584,6 +584,6 @@ div.default-bg {
 }
 
 .pagination-class button.active {
-    background-color: red; /* Highlight color */
+    background-color: #0D63A5; /* Highlight color */
     color: white; /* Text color for visibility */
 }

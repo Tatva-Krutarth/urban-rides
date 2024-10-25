@@ -35,7 +35,7 @@ $(document).ready(function () {
                 data: formData,
                 success: function (response) {
                     $(".loader").hide();
-                    if (response === "Email Send Successfully") {
+                    console.log(response)
                         showSuccesstMsg(response);
                         $("#otp").prop("disabled", false);
                         $("#email").prop("readonly", true);
@@ -58,9 +58,8 @@ $(document).ready(function () {
                         }
 
 
-                    } else {
-                        showErrorMsg(response);
-                    }
+
+
                 },
                 error: function (xhr) {
                     showErrorMsg(xhr.responseText);
@@ -97,13 +96,7 @@ $(document).ready(function () {
             }
         },
         messages: {
-            otp: {
-                required: "OTP is required",
-                digits: "OTP must only contain digits",
-                minlength: "OTP must be 4 digits long",
-                maxlength: "OTP must be 4 digits long",
 
-            },
             password: {
                 required: "Please enter your password",
                 minlength: "Password must be at least 8 characters long",
@@ -115,6 +108,12 @@ $(document).ready(function () {
                 equalTo: "Passwords do not match",
                 minlength: "Password must be at least 8 characters long",
                 maxlength: "Password cannot exceed 16 characters"
+            },
+            otp: {
+                            required: "OTP is required",
+                            digits: "OTP must only contain digits",
+                            minlength: "OTP must be 4 digits long",
+                            maxlength: "OTP must be 4 digits long",
             }
         },
         errorPlacement: function (error, element) {
@@ -122,6 +121,8 @@ $(document).ready(function () {
                 error.insertAfter("#passError");
             } else if (element.attr("name") == "confPass") {
                 error.insertAfter("#confPasswordError");
+            } else if (element.attr("name") == "otp") {
+                error.insertAfter("#otpError");
             } else {
                 error.insertAfter(element);
             }
@@ -148,7 +149,7 @@ $(document).ready(function () {
                         setTimeout(function () {
                             $(".loader").hide();
                             window.location.href = "user-login";
-                        }, 3000);
+                        }, 1000);
                     } else {
                         showErrorMsg(response);
                         $(".loader").hide();

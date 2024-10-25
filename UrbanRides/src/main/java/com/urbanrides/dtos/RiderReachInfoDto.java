@@ -2,11 +2,8 @@ package com.urbanrides.dtos;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import java.time.LocalDateTime;
-
 @Data
-public class RiderReachInfo {
+public class RiderReachInfoDto {
 
     private String captainEstimatedReachTime;
     private int tripId;

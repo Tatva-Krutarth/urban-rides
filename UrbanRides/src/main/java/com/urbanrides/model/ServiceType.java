@@ -12,9 +12,9 @@ import javax.validation.constraints.Size;
 public class ServiceType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "service_type_id", nullable = false)
     private int serviceTypeId;
 
-    @NotBlank(message = "Service type is mandatory")
-    @Size(max = 20, message = "Service type must be less than 20 characters")
+    @Column(name = "service_type", nullable = false)
     private String serviceType;
 }

@@ -45,7 +45,7 @@
 <div class="container-fluid d-flex justify-content-center align-items-center tt">
     <div id="form-setting" class="d-flex justify-content-center">
 
-        <div id="registration-form-container" class="py-5">
+        <div id="registration-form-container" class="py-5" style="max-width: 570px">
             <form id="emailForm" class="d-flex justify-content-center flex-column" method="post"
                   action="forget-pass-otp">
 
@@ -73,8 +73,8 @@
 
                         </div>
                         <label class="floating-label">Otp</label>
+                        <span id="otpError" class="error"></span>
                     </div>
-                    <span id="otpError" class="error"></span>
                 </div>
             </form>
 

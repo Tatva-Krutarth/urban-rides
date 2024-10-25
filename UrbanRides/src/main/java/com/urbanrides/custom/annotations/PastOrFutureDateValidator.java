@@ -1,4 +1,4 @@
-package com.urbanrides.exceptions;
+package com.urbanrides.custom.annotations;
 
 
 import java.time.LocalDate;

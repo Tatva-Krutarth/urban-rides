@@ -4,9 +4,8 @@ package com.urbanrides.controller;
 import com.urbanrides.dtos.*;
 import com.urbanrides.exceptions.CustomExceptions;
 import com.urbanrides.service.CabBookingService;
-import com.urbanrides.service.CabConfirming;
 import com.urbanrides.service.CaptainOtherService;
-import com.urbanrides.service.LoginServices;
+import com.urbanrides.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.core.MethodParameter;
@@ -37,10 +36,7 @@ public class CaptainController {
     private CabBookingService cabBookingService;
 
     @Autowired
-    private LoginServices loginServices;
-
-    @Autowired
-    private CabConfirming cabConfirming;
+    private LoginService loginServices;
 
     @Autowired
     private CaptainOtherService captainOtherService;
@@ -61,7 +57,7 @@ public class CaptainController {
     @GetMapping("/get-captain-document-reupload-details")
     public ResponseEntity<?> getDocReuploadData() {
         try {
-            CaptainReuploadDataRendering captainReuploadDataRendering = loginServices.getCaptainReuploadData();
+            CaptainReuploadDataRenderingDto captainReuploadDataRendering = loginServices.getCaptainReuploadData();
             return ResponseEntity.ok(captainReuploadDataRendering);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch document approval data.");
@@ -131,8 +127,8 @@ public class CaptainController {
 
     @ResponseBody
     @RequestMapping("/get-all-trips-data")
-    public List<CaptainAllTripsData> getAllTripData() {
-        List<CaptainAllTripsData> listOfTrips = cabConfirming.getTripsData();
+    public List<CaptainAllTripsDataDto> getAllTripData() {
+        List<CaptainAllTripsDataDto> listOfTrips = cabBookingService.getTripsData();
         return listOfTrips;
     }
 
@@ -144,10 +140,10 @@ public class CaptainController {
             cabBookingService.acceptRideRiderSide(tripId);
             return ResponseEntity.ok(riderInfoDto);
         } catch (CustomExceptions ex) {
-            ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+            ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception ex) {
-            ErrorResponse errorResponse = new ErrorResponse("An unexpected error occurred.");
+            ErrorResponseDto errorResponse = new ErrorResponseDto("An unexpected error occurred.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -241,7 +237,7 @@ public class CaptainController {
 
     @ResponseBody
     @PostMapping("/update-login-details")
-    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetailsDto riderUMLoginDetails, HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
         try {
             String result = captainOtherService.sendPassToService(riderUMLoginDetails, request);
@@ -258,7 +254,7 @@ public class CaptainController {
     }
 
     @PostMapping("/update-profile-photo")
-    public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogoDto riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) {
         Map<String, String> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
             response.put("error", "Only JPG and PNG files are allowed of size less than 1 mb");

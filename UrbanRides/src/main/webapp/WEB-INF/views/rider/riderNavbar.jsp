@@ -83,7 +83,7 @@
                 </div>
                 <a href="rider-wallet" class="dropdown-list " style="text-decoration: none">
                     <img src="<c:url value='/resources/images/wallet.svg' />" alt="">    </span>
-                    Wallet</a>
+                    Transactions History</a>
                 <div>
                     <hr class="hr-setting">
                 </div>

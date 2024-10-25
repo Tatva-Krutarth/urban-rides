@@ -38,6 +38,7 @@ public class CaptainDetails {
 
     @Column(name = "is_license_approved", nullable = false)
     private boolean isLicenseApproved = false;
+
     @Column(name = "is_free", nullable = false)
     private boolean isFree = true;
 
@@ -67,8 +68,8 @@ public class CaptainDetails {
     @Column(name = "is_license_expiration_date_approved", nullable = false)
     private boolean isLicenseExpirationDateApproved = false;
 
-    @Column(name = "is_live", nullable = false)
-    private boolean isLive = false;
+    @Column(name = "is_available", nullable = false)
+    private boolean isAvailable = false;
 
     @Column(name = "total_earnings", nullable = false)
     @Min(value = 0, message = "Total earnings cannot be negative")
@@ -96,6 +97,6 @@ public class CaptainDetails {
     @Column(name = "is_number_plate_approved", nullable = false)
     private boolean isNumberplateApproved = false;
 
-    @Column(name = "ratting", nullable = false)
-    private float ratting = 0.0f;
+    @Column(name = "rating", nullable = false)
+    private float rating = 0.0f;
 }

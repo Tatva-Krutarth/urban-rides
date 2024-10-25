@@ -3,7 +3,7 @@
 package com.urbanrides.dao;
 
 
-import com.urbanrides.dtos.AdminRidesFilterData;
+import com.urbanrides.dtos.AdminRidesFilterDataDto;
 import com.urbanrides.model.Trip;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -123,7 +123,7 @@ public class TripDao {
 
 
     @Transactional
-    public List<Trip> getAllTripByFilter(AdminRidesFilterData filterData) {
+    public List<Trip> getAllTripByFilter(AdminRidesFilterDataDto filterData) {
         Session session = getCurrentSession();
         StringBuilder hql = new StringBuilder("FROM Trip t WHERE 1=1");
         if (filterData.getTripCode() != null && !filterData.getTripCode().isEmpty()) {

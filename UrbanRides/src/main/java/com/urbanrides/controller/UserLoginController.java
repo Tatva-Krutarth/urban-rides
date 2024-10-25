@@ -7,18 +7,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import com.urbanrides.service.LoginServices;
+import com.urbanrides.service.LoginService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
-public class UserLogin {
+public class UserLoginController {
 
     //    private static final Logger log = LoggerFactory.getLogger(UserLogin.class);
     //    private static final Logger log = LoggerFactory.getLogger(UserLogin.class);
     @Autowired
-    private LoginServices loginServices;
+    private LoginService loginServices;
 
     @RequestMapping("/")
     public String langingPg() {
@@ -34,19 +34,34 @@ public class UserLogin {
     @ResponseBody
     @PostMapping("/user-registration-otp")
     public ResponseEntity<String> userRegistrationGetOtp(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
-        String toasterMsg = loginServices.otpService(userRegistrationDto);
-        if (toasterMsg.contains("error")) {
-            return new ResponseEntity<>(toasterMsg, HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            loginServices.otpService(userRegistrationDto);
+            return new ResponseEntity<>("Email Sent Successfully", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
     }
+
 
     @ResponseBody
     @PostMapping("/user-registration-submit")
     public ResponseEntity<String> userRegistrationSubmit(@Valid @RequestBody UserRegistrationDto userRegistrationDto, HttpServletRequest request) {
-        String toasterMsg = loginServices.submitRegistration(userRegistrationDto, request);
-        return new ResponseEntity<>(toasterMsg, HttpStatus.OK);
+        try {
+            loginServices.submitRegistration(userRegistrationDto, request);
+            if (userRegistrationDto.getAcccoutTypeId() == 3) {
+                return new ResponseEntity<>("Rider Registered", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Captain Registered", HttpStatus.OK);
+            }
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
     @RequestMapping("/user-login")
     public String userLogin() {
@@ -67,10 +82,17 @@ public class UserLogin {
 
     @RequestMapping(path = "/forget-pass-otp", method = RequestMethod.POST)
     @ResponseBody
-    public String sendLinkSubmit(@RequestParam("email") String email) {
-        String toasterMsg = loginServices.forgetOtpService(email);
-        return toasterMsg;
+    public ResponseEntity<String> sendLinkSubmit(@RequestParam("email") String email) {
+        try {
+            loginServices.forgetOtpService(email);
+            return new ResponseEntity<>("Email sent successfully", HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
     @ResponseBody
     @PostMapping("/forget-pass-submit")

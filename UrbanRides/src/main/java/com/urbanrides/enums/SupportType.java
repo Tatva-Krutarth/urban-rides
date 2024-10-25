@@ -1,4 +1,4 @@
-package com.urbanrides.helper;
+package com.urbanrides.enums;
 
 public enum SupportType {
 

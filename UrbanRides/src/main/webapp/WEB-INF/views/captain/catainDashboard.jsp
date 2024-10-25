@@ -123,7 +123,7 @@
                 </div>
                 <div class="rider-info-details-cont">
                     <div class="rider-info-details-left">
-                        Estimated time to reach rider :-
+                        Estimated time to reach:-
                     </div>
                     <div class="rider-info-details-right" id="rider-time-info">
                         35 Min
@@ -171,7 +171,6 @@
             <div class="modal-content">
                 <div class="modal-header modal-header-bg">
                     <h5 class="modal-title" id="completionModalLabel">The Ride is Completed</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Rider has to pay you <span id="charges-in-pop-up"> 43 Rs</span> for the ride. Please ensure the

@@ -1,18 +1,15 @@
 package com.urbanrides.controller;
 
 import com.urbanrides.dtos.*;
-import com.urbanrides.exceptions.CustomValidationException;
 import com.urbanrides.service.AdminService;
-import com.urbanrides.service.LoginServices;
+import com.urbanrides.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +30,7 @@ public class AdminController {
     private AdminService adminService;
 
     @Autowired
-    private LoginServices loginServices;
+    private LoginService loginServices;
 
     @ResponseBody
     @PostMapping("/admin-personal-details-submit")
@@ -72,30 +69,31 @@ public class AdminController {
         }
     }
 
+
     @ResponseBody
     @RequestMapping("/admin-count-data")
-    public AdminCountData getCountData() {
-        AdminCountData adminCountData = adminService.getDashCount();
+    public AdminCountDataDto getCountData() {
+        AdminCountDataDto adminCountData = adminService.getDashCount();
         return adminCountData;
     }
 
     @ResponseBody
     @GetMapping("/query-data")
-    public Page<AdminQuerries> getDashData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public Page<AdminQuerriesDto> getDashData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getSupportData(pageable);
     }
 
     @ResponseBody
     @GetMapping("/admin-running-querry-data")
-    public Page<AdminQuerries> getRunningData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public Page<AdminQuerriesDto> getRunningData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getRunningData(pageable);
     }
 
     @ResponseBody
     @GetMapping("/admin-completed-querry-data")
-    public Page<AdminQuerries> getCompletedData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public Page<AdminQuerriesDto> getCompletedData(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return adminService.getCompletedData(pageable);
     }
@@ -180,7 +178,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/admin-rides-filter-trips", method = RequestMethod.POST)
-    public @ResponseBody List<RiderMyTripDataDto> filterTrips(@RequestBody AdminRidesFilterData filterData) {
+    public @ResponseBody List<RiderMyTripDataDto> filterTrips(@RequestBody AdminRidesFilterDataDto filterData) {
         List<RiderMyTripDataDto> riderMyTripList = adminService.ridesFilterData(filterData);
         return riderMyTripList;
     }
@@ -234,7 +232,7 @@ public class AdminController {
 
     @ResponseBody
     @PostMapping("/update-login-details")
-    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetails riderUMLoginDetails) {
+    public ResponseEntity<Map<String, String>> updateLoginDetails(@Valid @RequestBody RiderUMLoginDetailsDto riderUMLoginDetails) {
         Map<String, String> response = new HashMap<>();
         try {
             String result = adminService.sendPassToService(riderUMLoginDetails);
@@ -251,7 +249,7 @@ public class AdminController {
     }
 
     @PostMapping("/update-profile-photo")
-    public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) {
+    public ResponseEntity<Map<String, String>> updateProfilePhoto(@Valid @ModelAttribute RiderUMUpdateProfileLogoDto riderUMUpdateProfileLogo, HttpSession session, BindingResult bindingResult) {
         Map<String, String> response = new HashMap<>();
 
         if (bindingResult.hasErrors()) {

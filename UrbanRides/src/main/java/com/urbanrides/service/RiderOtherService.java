@@ -2,6 +2,8 @@ package com.urbanrides.service;
 
 import com.urbanrides.dao.*;
 import com.urbanrides.dtos.*;
+import com.urbanrides.enums.NotificationTypeEnum;
+import com.urbanrides.enums.SupportType;
 import com.urbanrides.helper.*;
 import com.urbanrides.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class RiderOtherService {
@@ -72,7 +72,7 @@ public class RiderOtherService {
 
     public List<NotificationDataDto> getNotificationData() {
         List<NotificationDataDto> notiDtoList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         List<NotificationLogs> notificationLogsList = notificationLogsDao.getAllNotificationLogs(userSessionObj.getUserId());
         if (notificationLogsList != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
@@ -93,7 +93,7 @@ public class RiderOtherService {
     }
 
     public double getAmount() {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         BigDecimal walletAmount = userDetails.getWallet();
         double amountDouble = walletAmount.setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -118,7 +118,7 @@ public class RiderOtherService {
     }
 
     public double depositAmount(double amount) {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         try {
             UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
             BigDecimal currentAmount = userDetails.getWallet();
@@ -146,7 +146,7 @@ public class RiderOtherService {
 
     public List<RiderWalletDataDto> getPaymentData() {
         List<RiderWalletDataDto> walletList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         List<Trip> tripList = tripDao.getTripForPayment(userSessionObj.getUserId());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm d'th' MMMM");
         for (Trip perTrip : tripList) {
@@ -167,7 +167,7 @@ public class RiderOtherService {
     }
 
     public UserManagementDataDto getUserManagementDetails() {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("riderSessionObj");
         UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         UserManagementDataDto userManagementDataDto = new UserManagementDataDto();
         userManagementDataDto.setFirstName(userDetails.getFirstName());
@@ -183,7 +183,7 @@ public class RiderOtherService {
     public ResponseEntity<Map<String, String>> riderPersonalDetailSubmit(RiderUMPersonalDetailDto riderUMPersonalDetailDto) {
         Map<String, String> response = new HashMap<>();
         try {
-            UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("riderSessionObj");
             UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
             if (userDetails == null) {
                 response.put("message", "User not found");
@@ -210,13 +210,13 @@ public class RiderOtherService {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
-    public String sendPassToService(RiderUMLoginDetails riderUMLoginDetails, HttpServletRequest req) throws Exception {
+    public String sendPassToService(RiderUMLoginDetailsDto riderUMLoginDetails, HttpServletRequest req) throws Exception {
         try {
             String error = passwordValidation(riderUMLoginDetails);
             if (error != null) {
                 return error;
             }
-            UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+            UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
             if (userSessionObj == null) {
                 throw new Exception("User session not found");
             }
@@ -237,7 +237,7 @@ public class RiderOtherService {
         }
     }
 
-    public String passwordValidation(RiderUMLoginDetails riderUMLoginDetails) {
+    public String passwordValidation(RiderUMLoginDetailsDto riderUMLoginDetails) {
         if (!commonValidation.isValidPassword(riderUMLoginDetails.getNewPassword())) {
             return "Password must be between 8 and 13 characters.";
         }
@@ -247,8 +247,8 @@ public class RiderOtherService {
         return null;
     }
 
-    public void updatePassword(RiderUMLoginDetails riderUMLoginDetails) throws Exception {
-        UserSessionObj userSessionObj = (UserSessionObj) httpSession.getAttribute("riderSessionObj");
+    public void updatePassword(RiderUMLoginDetailsDto riderUMLoginDetails) throws Exception {
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) httpSession.getAttribute("riderSessionObj");
         if (userSessionObj == null) {
             throw new Exception("User session not found");
         }
@@ -265,7 +265,7 @@ public class RiderOtherService {
         }
     }
 
-    public User updateToDB(User user, RiderUMLoginDetails riderUMLoginDetails) throws Exception {
+    public User updateToDB(User user, RiderUMLoginDetailsDto riderUMLoginDetails) throws Exception {
         try {
             String saltString = passwordToHash.generateSalt();
             String hashedPasswordString = passwordToHash.hashPassword(riderUMLoginDetails.getNewPassword(), saltString);
@@ -279,9 +279,9 @@ public class RiderOtherService {
         }
     }
 
-    public Map<String, String> updateProfilePic(RiderUMUpdateProfileLogo riderUMUpdateProfileLogo, HttpSession session) throws IOException {
+    public Map<String, String> updateProfilePic(RiderUMUpdateProfileLogoDto riderUMUpdateProfileLogo, HttpSession session) throws IOException {
         Map<String, String> response = new HashMap<>();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         UserDetails userDetails = userdetailsdao.getUserDetailsByUserId(userSessionObj.getUserId());
         String riderId = String.valueOf(userSessionObj.getUserId());
         String folderName = "riderProfilePics" + riderId;
@@ -359,7 +359,7 @@ public class RiderOtherService {
 
     public List<RiderMyTripDataDto> getTripDetails() {
         List<RiderMyTripDataDto> riderMyTripList = new ArrayList<>();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         List<Trip> tripList = tripDao.getAllTrip(userSessionObj.getUserId());
         if (tripList == null) {
             return riderMyTripList;
@@ -392,7 +392,7 @@ public class RiderOtherService {
                 if (generalTripDetails == null) {
                     riderDataList.setStatus(2);
                 } else {
-                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRatting());
+                    riderDataList.setCaptainRatting(generalTripDetails.getCaptainRating());
                     if (generalTripDetails.getIsTripCompleted()) {
                         riderDataList.setStatus(1);
                         riderDataList.setConcludeNotes(generalTripDetails.getFeedback());
@@ -465,7 +465,7 @@ public class RiderOtherService {
     }
 
     public void getSupportSaveToLogs(RiderGetSupportDto riderGetSupportDto, HttpSession session) throws IOException {
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("riderSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("riderSessionObj");
         SupportTypeLogs supportTypeLogs = new SupportTypeLogs();
         try {
             SupportTypeLogs activeSupport = supportTypeLogsDao.checkActiveRequests(userSessionObj.getUserId());
@@ -499,13 +499,14 @@ public class RiderOtherService {
             notificationLogs.setNotificationType(NotificationTypeEnum.getValueById("ID5"));
             notificationLogs.setNotificationMsg("You have raised a " + supportTypeLogs.getSupportType());
             notificationLogs.setUser(user);
-            notificationLogsDao.saveNotificationLog(notificationLogs);
-            supportTypeLogsDao.saveSupportLogs(supportTypeLogs);
             try {
                 emailSend.getSupportRequest(user.getEmail(), supportTypeLogs.getSupportCaseId(), supportTypeLogs.getSupportType(), supportTypeLogs.getDescription());
             } catch (Exception e) {
                 throw new IllegalStateException("Error while sending email");
             }
+            notificationLogsDao.saveNotificationLog(notificationLogs);
+            supportTypeLogsDao.saveSupportLogs(supportTypeLogs);
+
         } catch (IOException e) {
             throw new IOException("Failed to handle file upload", e);
         } catch (IllegalStateException e) {
@@ -522,6 +523,10 @@ public class RiderOtherService {
     public SupportRequestDataDto findSupportRequestById(String id) {
         SupportTypeLogs supportTypeLogs = supportTypeLogsDao.getSupportPerData(id);
         SupportRequestDataDto supportRequestDataDto = new SupportRequestDataDto();
+
+        if (supportTypeLogs == null) {
+            return supportRequestDataDto;
+        }
         supportRequestDataDto.setId(supportTypeLogs.getSupportCaseId());
         supportRequestDataDto.setType(supportTypeLogs.getSupportType());
         supportRequestDataDto.setDescription(supportTypeLogs.getDescription());

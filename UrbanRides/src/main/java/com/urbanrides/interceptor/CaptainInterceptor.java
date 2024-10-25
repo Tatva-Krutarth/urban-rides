@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.urbanrides.dtos.UserSessionObj;
+import com.urbanrides.dtos.UserSessionObjDto;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class CaptainInterceptor extends HandlerInterceptorAdapter {
@@ -16,7 +16,7 @@ public class CaptainInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         HttpSession session = request.getSession();
-        UserSessionObj userSessionObj = (UserSessionObj) session.getAttribute("captainSessionObj");
+        UserSessionObjDto userSessionObj = (UserSessionObjDto) session.getAttribute("captainSessionObj");
         if (userSessionObj == null) {
             response.sendRedirect(request.getContextPath() + "/no-session");
             return false;

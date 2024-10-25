@@ -90,7 +90,7 @@
             <div id="forget-pass-text" class="d-flex flex-column justify-content-center align-item-center mt-3">
                 <div class="text-center">
                     <a href="forget-password" class="forget-pass-link">
-                        Foget Password ?
+                        Forget Password ?
                     </a>
                 </div>
                 <div class="text-center mt-2">

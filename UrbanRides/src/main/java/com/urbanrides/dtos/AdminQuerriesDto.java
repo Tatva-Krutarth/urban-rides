@@ -3,7 +3,7 @@ package com.urbanrides.dtos;
 import lombok.Data;
 
 @Data
-public class AdminQuerries {
+public class AdminQuerriesDto {
 
     private int userID;
     private int supportId;

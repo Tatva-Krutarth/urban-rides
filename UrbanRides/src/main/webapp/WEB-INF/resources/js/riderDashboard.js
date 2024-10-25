@@ -306,6 +306,8 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                             const distanceValue = response.rows[0].elements[0].distance.value;
                             const time = response.rows[0].elements[0].duration.text;
                             const distanceInKm = distanceValue / 1000;
+                            const distanceTextTrimmed = parseFloat(distanceText); // Extracts the numeric part, e.g., 4.5
+
                             if (distanceInKm < 1 || distanceInKm > 50) {
                                 showErrorMsg('The distance should be between 1 than 50 km.');
                                 document.getElementById('submitBtn').disabled = true;
@@ -314,7 +316,9 @@ function calculateDistanceByAddress(originAddress, destinationAddress) {
                             document.querySelectorAll('.dynamic-distance').forEach((element) => {
                                 element.innerText = distanceText;
                             });
-                            const distanceInNumber = Math.round(distanceInKm);
+                            const distanceInNumber = (distanceTextTrimmed % 1 === 0.5)
+                                ? Math.ceil(distanceInKm)
+                                : Math.round(distanceInKm);
                             const multipliers = [5, 6, 8, 10];
                             const timeWeightage = getTimeWeightage();
                             document.querySelectorAll('.vehicle-price-text').forEach((element, index) => {

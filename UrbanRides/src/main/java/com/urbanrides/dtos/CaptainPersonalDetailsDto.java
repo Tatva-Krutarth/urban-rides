@@ -2,7 +2,7 @@ package com.urbanrides.dtos;
 
 import com.urbanrides.custom.annotations.PdfValidMultipartFile;
 import com.urbanrides.custom.annotations.ValidMultipartFile;
-import com.urbanrides.exceptions.PastOrFutureDate;
+import com.urbanrides.custom.annotations.PastOrFutureDate;
 import lombok.Data;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 

@@ -123,7 +123,7 @@
                     </div>
                 </div>
 
-                <div class="edit-btn-cont mt-4">
+                <div class="edit-btn-cont mt-4 mb-2">
                     <button id="hide-btn" class="edit-button-login-details login-first common-btn-color3-theme"
                             type="button">
                         Edit Login Credentials
